@@ -12,6 +12,9 @@ class JSONSerializableObject(Protocol):
         """Transforms initialized object to JSON-serializable dictionary to be saved into a file."""
         pass
 
+    def get_target_path(self) -> str:
+        pass
+
 
 class FiledataManager(ABC):
     """Abstract implementation of class that loads and saves data to files."""
@@ -32,13 +35,12 @@ class JSONFiledataManager(FiledataManager):
         with open(filepath, "r") as file:
             return json.load(file)
 
-    def save_file(self, obj: JSONSerializableObject, filepath: str):
+    def save_file(self, obj: JSONSerializableObject, filepath: str = None):
         """Converts object to a dictionary to be saved to target path in a JSON file."""
         data_to_save: dict = obj.to_json()
-        filepath = self._create_filepath(data_to_save, filepath)
+
+        if filepath is None:
+            filepath = obj.get_target_path()
 
         with open(filepath, "w+") as file:
             json.dump(data_to_save, file, indent=3)
-
-    def _create_filepath(self, data: dict, filepath: str) -> str:
-        return f"{filepath}/{data['name']}.json"

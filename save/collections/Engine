@@ -1,0 +1,25 @@
+{
+   "name": "Engine",
+   "children": [
+      {
+         "name": "Spark Plug",
+         "path": "./save/components/Spark Plug"
+      },
+      {
+         "name": "Power",
+         "path": "./save/collections/Power"
+      },
+      {
+         "name": "Valves",
+         "path": "./save/components/Valves"
+      },
+      {
+         "name": "Engine Oil",
+         "path": "./save/components/Engine Oil"
+      },
+      {
+         "name": "Engine Oil",
+         "path": "./save/components/Engine Oil"
+      }
+   ]
+}

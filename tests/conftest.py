@@ -34,9 +34,9 @@ def mock_component_collection() -> ComponentCollection:
     engine_c = ComponentCollection("Engine")
     elec_c = ComponentCollection("Power")
 
-    engine_c.car_components.append(sp)
-    elec_c.car_components.append(bat)
-    engine_c.car_components.append(elec_c)
-    engine_c.car_components.append(v)
+    engine_c.children.append(sp)
+    elec_c.children.append(bat)
+    engine_c.children.append(elec_c)
+    engine_c.children.append(v)
 
     return engine_c
