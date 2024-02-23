@@ -1,4 +1,6 @@
-TestComponent.json
+# Loose JSON files
+*.json
+
 info.md
 *.pytest_cache
 *.coverage
