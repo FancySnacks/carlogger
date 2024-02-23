@@ -12,6 +12,7 @@ class ArgParser:
 
     def setup_args(self):
         self.parser.add_argument()
+        # --gui argument
         # argument for creating collections
         # argument for creating components
         # argument for creating entries
