@@ -63,4 +63,4 @@ class ComponentCollection:
         return {'name': obj.name, 'path': obj.get_target_path()}
 
     def get_target_path(self) -> str:
-        return f"./save/collections/{self.name}"
+        return f"./save/collections/{self.name}.json"

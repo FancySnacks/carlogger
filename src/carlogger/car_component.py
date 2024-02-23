@@ -77,7 +77,7 @@ class CarComponent:
         return d
 
     def get_target_path(self) -> str:
-        return f"./save/components/{self.name}"
+        return f"./save/components/{self.name}.json"
 
     def _add_search_tags_from_entry(self, entry: LogEntry):
         string_tags = entry.desc, *entry.tags, entry.component.name, entry.category, entry.date
