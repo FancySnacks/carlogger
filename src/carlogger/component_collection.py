@@ -54,13 +54,14 @@ class ComponentCollection:
     
     def to_json(self) -> dict:
         d = {'name': self.name,
-             'children': [self._create_child_reference(child) for child in self.children]
+             'children': [self._create_child_reference(child, "json") for child in self.children]
              }
 
         return d
 
-    def _create_child_reference(self, obj: CarComponent | ComponentCollection) -> dict:
-        return {'name': obj.name, 'path': obj.get_target_path()}
+    def _create_child_reference(self, obj: CarComponent | ComponentCollection, extension: str) -> dict:
+        return {'name': obj.name, 'path': obj.get_target_path(extension)}
 
-    def get_target_path(self) -> str:
-        return f"./save/collections/{self.name}.json"
+    def get_target_path(self, extension: str) -> str:
+        """Extension without the dot"""
+        return f"./save/collections/{self.name.replace(' ', '_')}.{extension}"

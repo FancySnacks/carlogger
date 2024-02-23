@@ -12,7 +12,7 @@ class JSONSerializableObject(Protocol):
         """Transforms initialized object to JSON-serializable dictionary to be saved into a file."""
         pass
 
-    def get_target_path(self) -> str:
+    def get_target_path(self, extension: str) -> str:
         pass
 
 
@@ -40,7 +40,7 @@ class JSONFiledataManager(FiledataManager):
         data_to_save: dict = obj.to_json()
 
         if filepath is None:
-            filepath = obj.get_target_path()
+            filepath = obj.get_target_path("json")
 
         with open(filepath, "w+") as file:
             json.dump(data_to_save, file, indent=3)

@@ -76,8 +76,9 @@ class CarComponent:
 
         return d
 
-    def get_target_path(self) -> str:
-        return f"./save/components/{self.name}.json"
+    def get_target_path(self, extension: str) -> str:
+        """Extension without the dot"""
+        return f"./save/components/{self.name.replace(' ', '_')}.{extension}"
 
     def _add_search_tags_from_entry(self, entry: LogEntry):
         string_tags = entry.desc, *entry.tags, entry.component.name, entry.category, entry.date

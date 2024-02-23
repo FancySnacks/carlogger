@@ -3,23 +3,23 @@
    "children": [
       {
          "name": "Spark Plug",
-         "path": "./save/components/Spark Plug"
+         "path": "./save/components/Spark_Plug.json"
       },
       {
          "name": "Power",
-         "path": "./save/collections/Power"
+         "path": "./save/collections/Power.json"
       },
       {
          "name": "Valves",
-         "path": "./save/components/Valves"
+         "path": "./save/components/Valves.json"
       },
       {
          "name": "Engine Oil",
-         "path": "./save/components/Engine Oil"
+         "path": "./save/components/Engine_Oil.json"
       },
       {
          "name": "Engine Oil",
-         "path": "./save/components/Engine Oil"
+         "path": "./save/components/Engine_Oil.json"
       }
    ]
 }
