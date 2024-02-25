@@ -12,3 +12,7 @@ class CarInfo:
     body: str
     length: int
     weight: int
+
+    def to_json(self) -> dict:
+        """Return a json-serializable dictionary of the class."""
+        return vars(self)
