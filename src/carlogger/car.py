@@ -24,6 +24,8 @@ class Car:
     def get_all_entry_logs(self) -> list[LogEntry]:
         """Get ALL log entries regarding this car.\n
         NOTE: it's a heavy operation, use it sparingly."""
-        entries = [collection.get_all_log_entries() for collection in self.collections]
+        entries = [collection.get_all_log_entries(collection.children) for collection in self.collections]
+        entries_joined = []
+        [entries_joined.extend(entry_list) for entry_list in entries]
 
-        return sorted(entries, key=lambda entry: format_date_string_to_tuple(entry.date))
+        return sorted(entries_joined, key=lambda entry: format_date_string_to_tuple(entry.date))
