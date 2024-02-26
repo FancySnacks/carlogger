@@ -30,7 +30,7 @@ def test_saves_collection_as_json(mock_component_collection, tmp_path):
     saver = JSONFiledataManager()
     saver.save_file(mock_component_collection, f"{tmp_path}/{filename}")
 
-    files: list[str] = os.listdir(".")
+    files: list[str] = os.listdir(tmp_path)
 
     assert filename in files
 
@@ -45,4 +45,3 @@ def test_save_and_load_collection_json(mock_component_collection, tmp_path):
     loaded_data = saver.load_file(f"{tmp_path}/{filename}")
 
     assert data == loaded_data
-

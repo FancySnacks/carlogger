@@ -2,9 +2,20 @@
 
 import time
 
+from pathlib import Path
+
+from carlogger.const import CARS_PATH
+
+
+# ===== SAVING ===== #
+
+def create_car_dir_path(car_info: dict) -> Path:
+    name = car_info['name'].replace(" ", "_")
+    path = CARS_PATH.joinpath(f"{name}")
+    return path
+
 
 # ===== DATE ===== #
-
 
 def format_date_struct_to_tuple(current_time: time.struct_time) -> tuple[int, int, int]:
     """Format time.localtime() to a usable tuple containing day, month and year."""
