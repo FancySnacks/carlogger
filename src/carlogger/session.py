@@ -1,7 +1,5 @@
 """Class that combines everything together, the heart of the program"""
 
-import os
-
 from carlogger.directory_manager import DirectoryManager
 from carlogger.car import Car
 from carlogger.car_info import CarInfo
@@ -24,4 +22,3 @@ class AppSession:
                       path=path)
 
         self.directory_manager.create_car_directory(new_car)
-
