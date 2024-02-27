@@ -11,21 +11,25 @@ def main(argv: list[str] = None) -> int:
     parser = ArgParser()
     parsed_args: dict = parser.parse_args(argv)
 
-    new_car = CarInfo(name='Daily',
-                      manufacturer='Seat',
+    new_car = CarInfo(manufacturer='Seat',
                       model='Leon 1',
                       year=2003,
                       body='hatchback',
                       length=4140,
                       mileage=205000,
-                      weight=1700)
+                      weight=1700,
+                      name='Daily')
 
     data_manager = JSONFiledataManager()
-    filedata_manager = DirectoryManager(data_manager)
+    directory_manager = DirectoryManager(data_manager)
+    cars = directory_manager.load_all_car_dir()
 
-    app = AppSession(filedata_manager)
+    app = AppSession(directory_manager)
+    app.cars = cars
+    print(app.cars)
+
     app.add_new_car(new_car.to_json())
-    app.remove_car("Daily")
+    #app.remove_car("Daily")
 
     # create a new app session
     # load saved info: car -> collections -> car parts -> entries

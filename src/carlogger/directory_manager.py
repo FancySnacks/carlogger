@@ -5,6 +5,7 @@ import shutil
 
 from carlogger.car import Car
 from carlogger.filedata_manager import FiledataManager
+from carlogger.const import CARS_PATH
 
 
 class DirectoryManager:
@@ -27,9 +28,27 @@ class DirectoryManager:
             return
 
     def remove_car_directory(self, car: Car):
+        """Delete a car directory along with all its data files from 'save' directory if it exists."""
         path = car.path
 
         try:
             shutil.rmtree(path)
         except OSError:
             return
+
+    def load_all_car_dir(self) -> list[Car]:
+        """Load all saved cars inside 'save' folder and return them as list of objects."""
+        cars: list[Car] = []
+        car_dirs = list(filter(lambda x: os.path.isdir(CARS_PATH.joinpath(x)), os.listdir(CARS_PATH)))
+
+        for directory in car_dirs:
+            path = CARS_PATH.joinpath(directory)
+            car_info = self.data_manager.load_file(self._create_car_info_path(path))
+            cars.append(Car(car_info,
+                            path=path))
+
+        return cars
+
+    def _create_car_info_path(self, dir_path):
+        a = dir_path.joinpath(f"{dir_path.name}.{self.data_manager.suffix}")
+        return a
