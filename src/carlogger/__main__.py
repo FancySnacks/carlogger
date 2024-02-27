@@ -25,6 +25,7 @@ def main(argv: list[str] = None) -> int:
 
     app = AppSession(filedata_manager)
     app.add_new_car(new_car.to_json())
+    app.remove_car("Daily")
 
     # create a new app session
     # load saved info: car -> collections -> car parts -> entries

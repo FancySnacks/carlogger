@@ -15,10 +15,21 @@ class AppSession:
         self.selected_car: Car = ...
 
     def add_new_car(self, car_info: dict):
+        """Create a new car directory."""
         car_info = CarInfo(**car_info)
         path = create_car_dir_path(car_info.to_json())
-
         new_car = Car(car_info=car_info,
                       path=path)
 
+        self.cars.append(new_car)
+
         self.directory_manager.create_car_directory(new_car)
+
+    def remove_car(self, car_name: str):
+        """Delete car directory by name."""
+        car_to_remove = self.find_car_by_name(car_name)
+        self.directory_manager.remove_car_directory(car_to_remove)
+        self.cars.remove(car_to_remove)
+
+    def find_car_by_name(self, car_name: str) -> Car:
+        return list(filter(lambda x: x.car_info.name == car_name, self.cars))[0]

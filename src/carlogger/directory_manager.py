@@ -1,6 +1,7 @@
 """Manage car save directories."""
 
 import os
+import shutil
 
 from carlogger.car import Car
 from carlogger.filedata_manager import FiledataManager
@@ -23,4 +24,12 @@ class DirectoryManager:
             os.mkdir(path.joinpath("collections"))
             os.mkdir(path.joinpath("components"))
         except FileExistsError:
+            return
+
+    def remove_car_directory(self, car: Car):
+        path = car.path
+
+        try:
+            shutil.rmtree(path)
+        except OSError:
             return
