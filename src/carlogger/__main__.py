@@ -2,7 +2,8 @@
 
 from carlogger.session import AppSession
 from carlogger.argparser import ArgParser
-from carlogger.filedata_manager import CarDirectoryManager, JSONFiledataManager
+from carlogger.directory_manager import DirectoryManager
+from carlogger.filedata_manager import JSONFiledataManager
 from carlogger.car_info import CarInfo
 
 
@@ -20,7 +21,7 @@ def main(argv: list[str] = None) -> int:
                       weight=1700)
 
     data_manager = JSONFiledataManager()
-    filedata_manager = CarDirectoryManager(data_manager)
+    filedata_manager = DirectoryManager(data_manager)
 
     app = AppSession(filedata_manager)
     app.add_new_car(new_car.to_json())

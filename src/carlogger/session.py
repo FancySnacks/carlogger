@@ -2,7 +2,7 @@
 
 import os
 
-from carlogger.filedata_manager import CarDirectoryManager
+from carlogger.directory_manager import DirectoryManager
 from carlogger.car import Car
 from carlogger.car_info import CarInfo
 from carlogger.util import create_car_dir_path
@@ -10,7 +10,7 @@ from carlogger.util import create_car_dir_path
 
 class AppSession:
     """Setup current app session, load saved info: load collections, components and log entries."""
-    def __init__(self, directory_manager: CarDirectoryManager):
+    def __init__(self, directory_manager: DirectoryManager):
         self.directory_manager = directory_manager
 
         self.cars: list[Car] = []
