@@ -6,7 +6,7 @@ from functools import lru_cache
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from carlogger.util import format_date_string_to_tuple
+from carlogger.util import format_date_string_to_tuple, create_car_dir_path
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -22,6 +22,10 @@ class Car:
     collections: list[ComponentCollection] = field(default_factory=list)
     path: Path = ""
 
+    def __post_init__(self):
+        if self.path == "":
+            self._create_path()
+
     @lru_cache(maxsize=10)
     def get_all_entry_logs(self) -> list[LogEntry]:
         """Get ALL log entries regarding this car.\n
@@ -31,3 +35,6 @@ class Car:
         [entries_joined.extend(entry_list) for entry_list in entries]
 
         return sorted(entries_joined, key=lambda entry: format_date_string_to_tuple(entry.date))
+
+    def _create_path(self):
+        self.path = create_car_dir_path(self.car_info.to_json())

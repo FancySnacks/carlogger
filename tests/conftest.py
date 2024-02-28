@@ -1,8 +1,26 @@
 import pytest
 
-from carlogger.car_component import  CarComponent
+from carlogger.car_component import CarComponent
 from carlogger.component_collection import ComponentCollection
 from carlogger.entry_category import EntryCategory
+from carlogger.directory_manager import DirectoryManager
+from carlogger.filedata_manager import JSONFiledataManager
+
+
+@pytest.fixture(scope="session")
+def mock_car_info() -> dict:
+    d = {
+        'manufacturer': 'Seat',
+        'model': 'Leon 1',
+        'year': 2003,
+        'body': 'hatchback',
+        'length': 4140,
+        'mileage': 205000,
+        'weight': 1700,
+        'name': 'Daily'
+    }
+
+    return d
 
 
 @pytest.fixture(scope="session")
@@ -40,3 +58,8 @@ def mock_component_collection() -> ComponentCollection:
     engine_c.children.append(v)
 
     return engine_c
+
+
+@pytest.fixture(scope="session")
+def directory_manager() -> DirectoryManager:
+    return DirectoryManager(JSONFiledataManager())

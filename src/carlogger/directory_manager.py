@@ -21,6 +21,7 @@ class DirectoryManager:
     def _create_car_dir(self, path):
         """Create a new car save directory if it doesn't exist."""
         try:
+            print(path)
             os.mkdir(path)
             os.mkdir(path.joinpath("collections"))
             os.mkdir(path.joinpath("components"))

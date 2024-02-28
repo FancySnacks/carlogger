@@ -17,9 +17,7 @@ class AppSession:
     def add_new_car(self, car_info: dict):
         """Create a new car directory."""
         car_info = CarInfo(**car_info)
-        path = create_car_dir_path(car_info.to_json())
-        new_car = Car(car_info=car_info,
-                      path=path)
+        new_car = Car(car_info=car_info)
 
         self.cars.append(new_car)
 
