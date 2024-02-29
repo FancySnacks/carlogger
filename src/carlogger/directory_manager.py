@@ -6,6 +6,7 @@ import shutil
 from carlogger.car import Car
 from carlogger.filedata_manager import FiledataManager
 from carlogger.component_collection import ComponentCollection
+from carlogger.car_component import CarComponent
 from carlogger.const import CARS_PATH
 
 
@@ -58,13 +59,23 @@ class DirectoryManager:
     def load_car_collections_from_path(self, path) -> list[ComponentCollection]:
         """Load collections from target car directory and return them as list."""
         colls = []
-        path = path.joinpath("collections")
+        coll_path = path.joinpath("collections")
 
         for coll in os.listdir(path):
-            coll_data = self.data_manager.load_file(path.joinpath(coll))
+            coll_data = self.data_manager.load_file(coll_path.joinpath(coll))
             colls.append(ComponentCollection(**coll_data))
 
         return colls
+
+    def load_car_components_from_path(self, collection: ComponentCollection, path) -> list[CarComponent]:
+        coms = []
+        com_path = path.joinpath("components")
+
+        for child in collection.children:
+            comp_data = self.data_manager.load_file(com_path.joinpath(child))
+            coms.append(CarComponent(**comp_data))
+
+        return coms
 
     def _create_car_info_path(self, dir_path):
         a = dir_path.joinpath(f"{dir_path.name}.{self.data_manager.suffix}")
