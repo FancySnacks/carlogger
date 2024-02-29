@@ -5,6 +5,8 @@ from carlogger.argparser import ArgParser
 from carlogger.directory_manager import DirectoryManager
 from carlogger.filedata_manager import JSONFiledataManager
 from carlogger.car_info import CarInfo
+from carlogger.log_entry import LogEntry
+from carlogger.car_component import CarComponent
 
 
 def main(argv: list[str] = None) -> int:

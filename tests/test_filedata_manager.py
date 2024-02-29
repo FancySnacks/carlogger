@@ -8,7 +8,7 @@ def test_saves_entry_data_as_json(mock_component, tmp_path):
     saver = JSONFiledataManager()
     saver.save_file(mock_component, f"{tmp_path}/{filename}")
 
-    files: list[str] = os.listdir(".")
+    files: list[str] = os.listdir(tmp_path)
 
     assert filename in files
 

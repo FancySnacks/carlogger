@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from carlogger.car import Car
 from carlogger.car_component import CarComponent
 from carlogger.log_entry import LogEntry
 
@@ -20,6 +21,7 @@ class ComponentCollection:
 
     name: str
     children: list[ComponentCollection | CarComponent] = field(default_factory=list)
+    path: str = ""
 
     def get_all_components(self,  list_to_search: list, buffer_list: list = None) -> list[CarComponent]:
         """Returns all CarComponent items from all children collections."""
@@ -64,4 +66,4 @@ class ComponentCollection:
 
     def get_target_path(self, extension: str) -> str:
         """Extension without the dot"""
-        return f"./save/collections/{self.name.replace(' ', '_')}.{extension}"
+        return self.path.join(f"{self.name.replace(' ', '_')}.{extension}")

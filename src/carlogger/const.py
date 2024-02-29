@@ -3,4 +3,4 @@
 import pathlib
 
 PATH = pathlib.Path(__file__).parent.parent.parent
-CARS_PATH = PATH.joinpath("save")
+CARS_PATH = PATH.joinpath("save").joinpath("cars")

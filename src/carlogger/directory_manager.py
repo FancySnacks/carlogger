@@ -23,7 +23,6 @@ class DirectoryManager:
     def _create_car_dir(self, path):
         """Create a new car save directory if it doesn't exist."""
         try:
-            print(path)
             os.mkdir(path)
             os.mkdir(path.joinpath("collections"))
             os.mkdir(path.joinpath("components"))
@@ -48,31 +47,38 @@ class DirectoryManager:
             path = CARS_PATH.joinpath(directory)
             car_info = self.data_manager.load_file(self._create_car_info_path(path))
 
-            colls = self.load_car_collections_from_path(path)
+            collections = self.load_car_collections_from_path(path)
 
             cars.append(Car(car_info,
-                            collections=colls,
+                            collections=collections,
                             path=path))
 
         return cars
 
     def load_car_collections_from_path(self, path) -> list[ComponentCollection]:
         """Load collections from target car directory and return them as list."""
-        colls = []
-        coll_path = path.joinpath("collections")
+        collections = []
+        collections_path = path.joinpath("collections")
 
-        for coll in os.listdir(path):
-            coll_data = self.data_manager.load_file(coll_path.joinpath(coll))
-            colls.append(ComponentCollection(**coll_data))
+        for coll in os.listdir(collections_path):
+            collection_data = self.data_manager.load_file(collections_path.joinpath(coll))
+            new_collection = ComponentCollection(**collection_data, path=collections_path)
+            components = self.load_car_components_from_path(new_collection, path)
+            new_collection.children.clear()
+            
+            for comp in components:
+                new_collection.children.append(comp)
+            
+            collections.append(new_collection)
 
-        return colls
+        return collections
 
     def load_car_components_from_path(self, collection: ComponentCollection, path) -> list[CarComponent]:
         coms = []
         com_path = path.joinpath("components")
 
         for child in collection.children:
-            comp_data = self.data_manager.load_file(com_path.joinpath(child))
+            comp_data = self.data_manager.load_file(child['path'])
             coms.append(CarComponent(**comp_data))
 
         return coms

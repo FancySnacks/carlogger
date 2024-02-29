@@ -14,6 +14,7 @@ class CarComponent:
     name: str
     log_entries: list[LogEntry] = field(init=False, default_factory=list)
     search_tags: set[str] = field(init=False, default_factory=set)
+    path: str = ""
 
     def __post_init__(self):
         self.search_tags.add(self.name)
@@ -78,7 +79,7 @@ class CarComponent:
 
     def get_target_path(self, extension: str) -> str:
         """Extension without the dot"""
-        return f"./save/components/{self.name.replace(' ', '_')}.{extension}"
+        return self.path.join(f"{self.name.replace(' ', '_')}.{extension}")
 
     def _add_search_tags_from_entry(self, entry: LogEntry):
         string_tags = entry.desc, *entry.tags, entry.component.name, entry.category, entry.date
