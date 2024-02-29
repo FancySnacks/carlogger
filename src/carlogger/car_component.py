@@ -1,5 +1,5 @@
 """A certain car component or part that has maintenance logs."""
-
+import pathlib
 import uuid
 from dataclasses import dataclass, field
 
@@ -18,6 +18,7 @@ class CarComponent:
 
     def __post_init__(self):
         self.search_tags.add(self.name)
+        self.path = pathlib.Path(self.path)
 
     def create_entry(self, entry_data: dict) -> str:
         """Creates a new entry adding it to the list and returns its unique id."""

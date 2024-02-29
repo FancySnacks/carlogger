@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pathlib
+
 from dataclasses import dataclass, field
 
 from carlogger.car_component import CarComponent
@@ -21,6 +23,9 @@ class ComponentCollection:
     name: str
     children: list[ComponentCollection | CarComponent] = field(default_factory=list)
     path: str = ""
+
+    def __post_init__(self):
+        self.path = pathlib.Path(self.path)
 
     def get_all_components(self,  list_to_search: list, buffer_list: list = None) -> list[CarComponent]:
         """Returns all CarComponent items from all children collections."""
