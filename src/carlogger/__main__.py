@@ -22,15 +22,22 @@ def main(argv: list[str] = None) -> int:
                       weight=1700,
                       name='Daily')
 
+    new_entry = {"desc": "Engine Checkup",
+                 "date": "09-03-1964",
+                 "mileage": 1404,
+                 "category": "check",
+                 "tags": [],
+                 }
+
     data_manager = JSONFiledataManager()
     directory_manager = DirectoryManager(data_manager)
     cars = directory_manager.load_all_car_dir()
 
     app = AppSession(directory_manager)
     app.cars = cars
+
     print(app.cars)
 
-    app.add_new_car(new_car.to_json())
     #app.remove_car("Daily")
 
     # create a new app session

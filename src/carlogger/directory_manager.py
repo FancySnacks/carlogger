@@ -7,6 +7,7 @@ from carlogger.car import Car
 from carlogger.filedata_manager import FiledataManager
 from carlogger.component_collection import ComponentCollection
 from carlogger.car_component import CarComponent
+from carlogger.car_info import CarInfo
 from carlogger.const import CARS_PATH
 
 
@@ -16,9 +17,12 @@ class DirectoryManager:
 
     def create_car_directory(self, car: Car):
         path = car.path
-        data_path = car.path.joinpath(f"{car.car_info.name}.{self.data_manager.suffix}")
+        data_path = self.create_car_info_path(car)
         self._create_car_dir(path)
         self.data_manager.save_file(car.car_info, data_path)
+
+    def create_car_info_path(self, car: Car):
+        return car.path.joinpath(f"{car.car_info.name}.{self.data_manager.suffix}")
 
     def _create_car_dir(self, path):
         """Create a new car save directory if it doesn't exist."""
@@ -38,6 +42,19 @@ class DirectoryManager:
         except OSError:
             return
 
+    def update_car_directory(self, car: Car):
+        self.data_manager.save_file(car.car_info, self.create_car_info_path(car))
+        self.update_collections_files(car.collections)
+
+    def update_collections_files(self, comp_collections: list[ComponentCollection]):
+        for coll in comp_collections:
+            self.data_manager.save_file(coll, coll.get_target_path(self.data_manager.suffix))
+            self.update_components_files(coll.children)
+
+    def update_components_files(self, comp_list: list[CarComponent]):
+        for comp in comp_list:
+            self.data_manager.save_file(comp, comp.get_target_path(self.data_manager.suffix))
+
     def load_all_car_dir(self) -> list[Car]:
         """Load all saved cars inside 'save' folder and return them as list of objects."""
         cars: list[Car] = []
@@ -45,7 +62,7 @@ class DirectoryManager:
 
         for directory in car_dirs:
             path = CARS_PATH.joinpath(directory)
-            car_info = self.data_manager.load_file(self._create_car_info_path(path))
+            car_info = CarInfo(**self.data_manager.load_file(self._create_car_info_path(path)))
 
             collections = self.load_car_collections_from_path(path)
 
@@ -75,11 +92,11 @@ class DirectoryManager:
 
     def load_car_components_from_path(self, collection: ComponentCollection, path) -> list[CarComponent]:
         coms = []
-        com_path = path.joinpath("components")
 
         for child in collection.children:
             comp_data = self.data_manager.load_file(child['path'])
-            coms.append(CarComponent(**comp_data))
+            c = CarComponent(comp_data['name'], collection.path.joinpath('components'))
+            coms.append(c)
 
         return coms
 

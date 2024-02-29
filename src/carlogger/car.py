@@ -4,15 +4,13 @@ from __future__ import annotations
 
 from functools import lru_cache
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING
 
 from carlogger.util import format_date_string_to_tuple, create_car_dir_path
 
-if TYPE_CHECKING:
-    from pathlib import Path
-    from carlogger.car_info import CarInfo
-    from carlogger.component_collection import ComponentCollection
-    from carlogger.log_entry import LogEntry
+from pathlib import Path
+from carlogger.car_info import CarInfo
+from carlogger.component_collection import ComponentCollection
+from carlogger.log_entry import LogEntry
 
 
 @dataclass
@@ -35,6 +33,13 @@ class Car:
         [entries_joined.extend(entry_list) for entry_list in entries]
 
         return sorted(entries_joined, key=lambda entry: format_date_string_to_tuple(entry.date))
+
+    def create_collection(self, name: str) -> ComponentCollection:
+        """Create new collection, add it to the list and return object reference."""
+        new_collection = ComponentCollection(name, path=self.path.joinpath("collections"))
+        self.collections.append(new_collection)
+
+        return new_collection
 
     def _create_path(self):
         self.path = create_car_dir_path(self.car_info.to_json())

@@ -13,6 +13,7 @@ class CarInfo:
     length: int
     weight: int
     name: str = ""
+    path: str = ""
 
     def __post_init__(self):
         if self.name == "":
@@ -23,4 +24,5 @@ class CarInfo:
 
     def to_json(self) -> dict:
         """Return a json-serializable dictionary of the class."""
+        self.path = str(self.path)
         return vars(self)

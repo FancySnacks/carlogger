@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from carlogger.car import Car
 from carlogger.car_component import CarComponent
 from carlogger.log_entry import LogEntry
 
@@ -53,6 +52,13 @@ class ComponentCollection:
                 continue
 
         return buffer_list
+
+    def create_component(self, name: str) -> CarComponent:
+        """Create new car component, add it to the list and return object reference."""
+        new_component = CarComponent(name, path=self.path.parent.joinpath('components'))
+        self.children.append(new_component)
+
+        return new_component
     
     def to_json(self) -> dict:
         d = {'name': self.name,
@@ -62,8 +68,8 @@ class ComponentCollection:
         return d
 
     def _create_child_reference(self, obj: CarComponent | ComponentCollection, extension: str) -> dict:
-        return {'name': obj.name, 'path': obj.get_target_path(extension)}
+        return {'name': obj.name, 'path': str(obj.get_target_path(extension))}
 
     def get_target_path(self, extension: str) -> str:
         """Extension without the dot"""
-        return self.path.join(f"{self.name.replace(' ', '_')}.{extension}")
+        return self.path.joinpath(f"{self.name.replace(' ', '_')}.{extension}")

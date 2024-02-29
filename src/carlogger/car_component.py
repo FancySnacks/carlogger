@@ -71,15 +71,15 @@ class CarComponent:
     def to_json(self) -> dict:
         """Returns object properties as JSON-serializable dictionary."""
         d = {'name': self.name,
-             'entries': [entry.to_json() for entry in self.log_entries],
-             'search_tags': list(self.search_tags)
+             'log_entries': [entry.to_json() for entry in self.log_entries],
+             'search_tags': list(self.search_tags),
              }
 
         return d
 
     def get_target_path(self, extension: str) -> str:
         """Extension without the dot"""
-        return self.path.join(f"{self.name.replace(' ', '_')}.{extension}")
+        return self.path.joinpath(f"{self.name.replace(' ', '_')}.{extension}")
 
     def _add_search_tags_from_entry(self, entry: LogEntry):
         string_tags = entry.desc, *entry.tags, entry.component.name, entry.category, entry.date
