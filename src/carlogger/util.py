@@ -1,5 +1,6 @@
 """General utility functions"""
 
+import os
 import time
 
 from pathlib import Path
@@ -13,6 +14,12 @@ def create_car_dir_path(car_info: dict) -> Path:
     name = car_info['name'].replace(" ", "_")
     path = CARS_PATH.joinpath(f"{name}")
     return path
+
+
+def get_car_dirs() -> list[str]:
+    car_dirs = filter(lambda x: os.path.isdir(CARS_PATH.joinpath(x)),
+                      os.listdir(CARS_PATH))
+    return list(car_dirs)
 
 
 # ===== DATE ===== #

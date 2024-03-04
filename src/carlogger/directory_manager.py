@@ -9,6 +9,7 @@ from carlogger.component_collection import ComponentCollection
 from carlogger.car_component import CarComponent
 from carlogger.car_info import CarInfo
 from carlogger.const import CARS_PATH
+from carlogger.util import get_car_dirs
 
 
 class DirectoryManager:
@@ -55,10 +56,26 @@ class DirectoryManager:
         for comp in comp_list:
             self.data_manager.save_file(comp, comp.get_target_path(self.data_manager.suffix))
 
+    def load_car_dir(self, car_name: str):
+        """Load target car inside 'save' folder via name."""
+        car_dirs = get_car_dirs()
+
+        if car_name in car_dirs:
+            path = CARS_PATH.joinpath(car_name)
+            car_info = CarInfo(**self.data_manager.load_file(self._create_car_info_path(path)))
+
+            collections = self.load_car_collections_from_path(path)
+
+            new_car = Car(car_info, collections=collections, path=path)
+
+            return new_car
+
+        raise NotADirectoryError(f"'{car_name}' directory not found in save folder")
+
     def load_all_car_dir(self) -> list[Car]:
         """Load all saved cars inside 'save' folder and return them as list of objects."""
         cars: list[Car] = []
-        car_dirs = list(filter(lambda x: os.path.isdir(CARS_PATH.joinpath(x)), os.listdir(CARS_PATH)))
+        car_dirs = get_car_dirs()
 
         for directory in car_dirs:
             path = CARS_PATH.joinpath(directory)

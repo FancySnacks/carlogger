@@ -11,30 +11,38 @@ from carlogger.car_component import CarComponent
 
 def main(argv: list[str] = None) -> int:
     parser = ArgParser()
+    parser.setup_args()
     parsed_args: dict = parser.parse_args(argv)
 
-    new_car = CarInfo(manufacturer='Seat',
-                      model='Leon 1',
-                      year=2003,
-                      body='hatchback',
-                      length=4140,
-                      mileage=205000,
-                      weight=1700,
-                      name='Daily')
-
-    new_entry = {"desc": "Engine Checkup",
-                 "date": "09-03-1964",
-                 "mileage": 1404,
-                 "category": "check",
-                 "tags": [],
-                 }
+    print(parsed_args)
 
     data_manager = JSONFiledataManager()
     directory_manager = DirectoryManager(data_manager)
-    cars = directory_manager.load_all_car_dir()
+
+    if car := parsed_args.get('car'):
+        loaded_car = directory_manager.load_car_dir(car)
+        print(loaded_car)
+
+    # new_car = CarInfo(manufacturer='Seat',
+    #                   model='Leon 1',
+    #                   year=2003,
+    #                   body='hatchback',
+    #                   length=4140,
+    #                   mileage=205000,
+    #                   weight=1700,
+    #                   name='Daily')
+    #
+    # new_entry = {"desc": "Engine Checkup",
+    #              "date": "09-03-1964",
+    #              "mileage": 1404,
+    #              "category": "check",
+    #              "tags": [],
+    #              }
+    #
+    # cars = directory_manager.load_all_car_dir()
 
     app = AppSession(directory_manager)
-    app.cars = cars
+    # app.cars = cars
 
     print(app.cars)
 
