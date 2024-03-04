@@ -1,6 +1,10 @@
 # Loose JSON files
 *.json
 
+# tox
+.tox
+
+# Misc Project Files
 info.md
 .pushkey*
 
