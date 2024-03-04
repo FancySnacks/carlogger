@@ -14,14 +14,13 @@ def main(argv: list[str] = None) -> int:
     parser.setup_args()
     parsed_args: dict = parser.parse_args(argv)
 
-    print(parsed_args)
-
     data_manager = JSONFiledataManager()
     directory_manager = DirectoryManager(data_manager)
 
     if car := parsed_args.get('car'):
         loaded_car = directory_manager.load_car_dir(car)
         print(loaded_car)
+
 
     # new_car = CarInfo(manufacturer='Seat',
     #                   model='Leon 1',
@@ -44,7 +43,7 @@ def main(argv: list[str] = None) -> int:
     app = AppSession(directory_manager)
     # app.cars = cars
 
-    print(app.cars)
+    # print(app.cars)
 
     #app.remove_car("Daily")
 

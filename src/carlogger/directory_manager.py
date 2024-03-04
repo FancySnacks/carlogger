@@ -113,9 +113,16 @@ class DirectoryManager:
         for child in collection.children:
             comp_data = self.data_manager.load_file(child['path'])
             c = CarComponent(comp_data['name'], collection.path.joinpath('components'))
+            self._add_entries_to_component(comp_data, c)
+
             coms.append(c)
 
         return coms
+
+    def _add_entries_to_component(self, comp_data: dict, component_ref: CarComponent):
+        for entry in comp_data.get('log_entries'):
+            component_ref.create_entry(entry)
+
 
     def _create_car_info_path(self, dir_path):
         a = dir_path.joinpath(f"{dir_path.name}.{self.data_manager.suffix}")
