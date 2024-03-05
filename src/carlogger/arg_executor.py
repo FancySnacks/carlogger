@@ -13,12 +13,17 @@ class ArgExecutor:
         self.app = app_session
         self.args = parsed_args
         self.arg_func_map = {'car': self.load_car_dir,
-                             'collection': self.print_collections,
-                             'component': self.print_components}
+                             'collection': self.get_collections,
+                             'component': self.get_components}
 
         self.cached_car: Car = ...
         self.cached_coll: list[ComponentCollection] = ...
         self.cached_comp: list[CarComponent] = ...
+
+        self.verbosity_level = 0
+        self.verbosity_map = {1: self.print_car_info,
+                              2: self.print_collections,
+                              3: self.print_components}
 
     def evaluate_args(self):
         args = list(filter(self._filter_empty_keys, self.args.keys()))
@@ -26,9 +31,15 @@ class ArgExecutor:
         try:
             for arg in args:
                 self.arg_func_map.get(arg)()
+                self.verbosity_level += 1
         except KeyError:
             print(f"Invalid console argument:")
             raise SystemExit(1)
+
+        self.print_info_based_on_verbosity()
+
+    def print_info_based_on_verbosity(self):
+        self.verbosity_map.get(self.verbosity_level)()
 
     def load_car_dir(self):
         if car := self.args.get('car'):
@@ -36,7 +47,9 @@ class ArgExecutor:
             self.app.cars.append(loaded_car)
 
             self.cached_car = loaded_car
-            #print(loaded_car)
+
+    def print_car_info(self):
+        print(self.cached_car.car_info)
 
     def get_collections(self):
         collections: list[str] = self.args.get('collection')
@@ -60,9 +73,7 @@ class ArgExecutor:
         return loaded_collections
 
     def print_collections(self):
-        collections = self.get_collections()
-
-        for coll in collections:
+        for coll in self.cached_coll:
             print(coll)
 
     def get_components(self):
@@ -94,9 +105,7 @@ class ArgExecutor:
         return loaded_comp
 
     def print_components(self):
-        components = self.get_components()
-
-        for comp in components:
+        for comp in self.cached_comp:
             print(comp)
 
     def _filter_empty_keys(self, key: str) -> bool:
