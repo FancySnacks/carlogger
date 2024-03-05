@@ -12,8 +12,6 @@ class ArgParser:
                                               formatter_class=argparse.RawDescriptionHelpFormatter)
         self.subparsers = self.parser.add_subparsers(help="Subcommands")
 
-
-
     def setup_args(self):
         # --gui argument
         # argument for creating collections
@@ -28,6 +26,23 @@ class ArgParser:
                                         type=str,
                                         help="Return car info via name.",
                                         required=True)
+
+        self.return_parser.add_argument('--collection',
+                                        type=str,
+                                        help="Return collection via name.",
+                                        nargs='*',
+                                        required=False)
+
+        self.return_parser.add_argument('--component',
+                                        type=str,
+                                        help="Return component via name.",
+                                        nargs='*',
+                                        required=False)
+
+        self.return_parser.add_argument('--entry',
+                                        type=str,
+                                        help="Return entry via name.",
+                                        required=False)
 
         # ==== Creating Objects and Entries ==== #
 

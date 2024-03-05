@@ -64,6 +64,12 @@ class ComponentCollection:
         self.children.append(new_component)
 
         return new_component
+
+    def get_component_by_name(self, name: str) -> CarComponent:
+        """Find and return car component of this collection by name."""
+        for child in self.children:
+            if child.name == name and type(child) == CarComponent:
+                return child
     
     def to_json(self) -> dict:
         d = {'name': self.name,

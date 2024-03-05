@@ -4,12 +4,12 @@ from __future__ import annotations
 
 from functools import lru_cache
 from dataclasses import dataclass, field
+from pathlib import Path
 
 from carlogger.util import format_date_string_to_tuple, create_car_dir_path
-
-from pathlib import Path
 from carlogger.car_info import CarInfo
 from carlogger.component_collection import ComponentCollection
+from carlogger.car_component import CarComponent
 from carlogger.log_entry import LogEntry
 
 
@@ -40,6 +40,23 @@ class Car:
         self.collections.append(new_collection)
 
         return new_collection
+
+    def get_collection_by_name(self, name: str) -> ComponentCollection | None:
+        """Find and return collection by name."""
+        for collection in self.collections:
+            if collection.name == name:
+                return collection
+
+        return None
+
+    def get_component_by_name(self, name: str) -> CarComponent | None:
+        """Find and return component by name looping through all collections."""
+        for collection in self.collections:
+            for child in collection.children:
+                if child.name == name:
+                    return child
+
+        return None
 
     def _create_path(self):
         self.path = create_car_dir_path(self.car_info.to_json())

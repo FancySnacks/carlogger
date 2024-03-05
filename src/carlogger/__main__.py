@@ -2,6 +2,7 @@
 
 from carlogger.session import AppSession
 from carlogger.argparser import ArgParser
+from carlogger.arg_executor import ArgExecutor
 from carlogger.directory_manager import DirectoryManager
 from carlogger.filedata_manager import JSONFiledataManager
 from carlogger.car_info import CarInfo
@@ -16,11 +17,10 @@ def main(argv: list[str] = None) -> int:
 
     data_manager = JSONFiledataManager()
     directory_manager = DirectoryManager(data_manager)
+    app = AppSession(directory_manager)
 
-    if car := parsed_args.get('car'):
-        loaded_car = directory_manager.load_car_dir(car)
-        print(loaded_car)
-
+    arg_executor = ArgExecutor(parsed_args, app)
+    arg_executor.evaluate_args()
 
     # new_car = CarInfo(manufacturer='Seat',
     #                   model='Leon 1',
@@ -40,7 +40,6 @@ def main(argv: list[str] = None) -> int:
     #
     # cars = directory_manager.load_all_car_dir()
 
-    app = AppSession(directory_manager)
     # app.cars = cars
 
     # print(app.cars)
