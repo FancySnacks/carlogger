@@ -84,3 +84,12 @@ class ComponentCollection:
     def get_target_path(self, extension: str) -> str:
         """Extension without the dot"""
         return self.path.joinpath(f"{self.name.replace(' ', '_')}.{extension}")
+
+    def get_formatted_info(self) -> str:
+        """Return well-formatted string representing data of this class."""
+        result = f"{self.name} ({len(self.children)}): \n"
+
+        for element in self.children:
+            result += f"{element.name}\n"
+
+        return result

@@ -82,6 +82,15 @@ class CarComponent:
         """Extension without the dot"""
         return self.path.joinpath(f"{self.name.replace(' ', '_')}.{extension}")
 
+    def get_formatted_info(self) -> str:
+        """Return well-formatted string representing data of this class."""
+        result = f"{self.name} ({len(self.log_entries)}): \n"
+
+        for entry in self.log_entries:
+            result += f"{str(entry)}\n"
+
+        return result
+
     def _add_search_tags_from_entry(self, entry: LogEntry):
         string_tags = entry.desc, *entry.tags, entry.component.name, entry.category, entry.date
 

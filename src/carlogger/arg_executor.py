@@ -20,26 +20,27 @@ class ArgExecutor:
         self.cached_coll: list[ComponentCollection] = ...
         self.cached_comp: list[CarComponent] = ...
 
-        self.verbosity_level = 0
-        self.verbosity_map = {1: self.print_car_info,
-                              2: self.print_collections,
-                              3: self.print_components}
+        self.verbosity_map = {"car": self.print_car_info,
+                              "collection": self.print_collections,
+                              "component": self.print_components}
 
     def evaluate_args(self):
+        verbosity = []
+
         args = list(filter(self._filter_empty_keys, self.args.keys()))
 
         try:
             for arg in args:
                 self.arg_func_map.get(arg)()
-                self.verbosity_level += 1
+                verbosity.append(arg)
         except KeyError:
             print(f"Invalid console argument:")
             raise SystemExit(1)
 
-        self.print_info_based_on_verbosity()
+        self.print_info_based_on_verbosity(verbosity)
 
-    def print_info_based_on_verbosity(self):
-        self.verbosity_map.get(self.verbosity_level)()
+    def print_info_based_on_verbosity(self, verbosity: list[str]):
+        self.verbosity_map.get(verbosity[-1])()
 
     def load_car_dir(self):
         if car := self.args.get('car'):
@@ -49,7 +50,7 @@ class ArgExecutor:
             self.cached_car = loaded_car
 
     def print_car_info(self):
-        print(self.cached_car.car_info)
+        print(self.cached_car.get_formatted_info())
 
     def get_collections(self):
         collections: list[str] = self.args.get('collection')
@@ -74,7 +75,7 @@ class ArgExecutor:
 
     def print_collections(self):
         for coll in self.cached_coll:
-            print(coll)
+            print(coll.get_formatted_info())
 
     def get_components(self):
         components = self.args.get('component')
@@ -106,7 +107,7 @@ class ArgExecutor:
 
     def print_components(self):
         for comp in self.cached_comp:
-            print(comp)
+            print(comp.get_formatted_info())
 
     def _filter_empty_keys(self, key: str) -> bool:
         return self.args.get(key) is not None

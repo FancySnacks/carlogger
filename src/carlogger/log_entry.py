@@ -43,4 +43,4 @@ class LogEntry:
         return d
 
     def __repr__(self):
-        return f"({self.date}) [{self.desc}] [{self.mileage}] [{self.category}] [{self.tags}] [{self.id}]"
+        return f"[{self.date}] {self.desc} [Mileage: {self.mileage}] [Type: {self.category}] [{self.tags}] [{self.id}]"

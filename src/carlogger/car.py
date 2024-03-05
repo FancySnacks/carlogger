@@ -58,5 +58,16 @@ class Car:
 
         return None
 
+    def get_formatted_info(self) -> str:
+        """Return well-formatted string representing data of this class."""
+        result = ''
+        info = vars(self.car_info)
+        info.pop('path')
+
+        for key, val in info.items():
+            result += f"{key}: {val} \n"
+
+        return result
+
     def _create_path(self):
         self.path = create_car_dir_path(self.car_info.to_json())
