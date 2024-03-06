@@ -42,6 +42,7 @@ class ArgParser:
         self.return_parser.add_argument('--entry',
                                         type=str,
                                         help="Return entry via name.",
+                                        nargs='*',
                                         required=False)
 
         # ==== Creating Objects and Entries ==== #

@@ -29,6 +29,11 @@ class LogEntry:
     def to_json(self) -> dict:
         return self.__dict__()
 
+    def get_formatted_info(self) -> str:
+        """Return well-formatted string representing data of this class."""
+        return f"[{self.date}] {self.desc} [Mileage: {self.mileage}] " \
+               f"[Type: {self.category}] [{self.tags}] [{self.id}]"
+
     def __dict__(self) -> dict:
         d = {
             'desc': self.desc,
@@ -37,10 +42,15 @@ class LogEntry:
             'category': self.category.name,
             'tags': self.tags,
             'component': self.component.name,
-            'id': self._id
+            'id': self.id
         }
 
         return d
 
-    def __repr__(self):
-        return f"[{self.date}] {self.desc} [Mileage: {self.mileage}] [Type: {self.category}] [{self.tags}] [{self.id}]"
+    def __hash__(self):
+        return hash(self.id)
+
+    def __eq__(self, other):
+        if isinstance(other, LogEntry):
+            return self.id == other.id
+        return NotImplemented

@@ -1,6 +1,8 @@
 """A certain car component or part that has maintenance logs."""
+
 import pathlib
 import uuid
+
 from dataclasses import dataclass, field
 
 from carlogger.log_entry import LogEntry
@@ -30,6 +32,22 @@ class CarComponent:
                              tags=entry_data['tags'],
                              component=self,
                              _id=str(uuid.uuid1()))
+        self.log_entries.append(new_entry)
+
+        self._add_search_tags_from_entry(new_entry)
+
+        return new_entry.id
+
+    def create_entry_from_file(self, entry_data: dict) -> str:
+        """Creates a new entry adding it to the list without creating new id."""
+
+        new_entry = LogEntry(desc=entry_data['desc'],
+                             date=entry_data['date'],
+                             mileage=entry_data['mileage'],
+                             category=EntryCategory(entry_data['category']),
+                             tags=entry_data['tags'],
+                             component=self,
+                             _id=entry_data['id'])
         self.log_entries.append(new_entry)
 
         self._add_search_tags_from_entry(new_entry)
@@ -67,7 +85,19 @@ class CarComponent:
             else:
                 i += 1
 
-        raise ValueError("No entry with given id has been found")
+        print("No entry with given id has been found")
+
+    def get_entry_by_date(self, entry_id: str) -> LogEntry | None:
+        """Return log entry by its unique id hash."""
+        i = 0
+
+        while i < len(self.log_entries):
+            if self.log_entries[i].id == entry_id:
+                return self.log_entries[i]
+            else:
+                i += 1
+
+        print("No entry with given id has been found")
 
     def to_json(self) -> dict:
         """Returns object properties as JSON-serializable dictionary."""
@@ -87,7 +117,7 @@ class CarComponent:
         result = f"{self.name} ({len(self.log_entries)}): \n"
 
         for entry in self.log_entries:
-            result += f"{str(entry)}\n"
+            result += f"{entry.get_formatted_info()}\n"
 
         return result
 

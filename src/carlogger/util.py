@@ -2,6 +2,7 @@
 
 import os
 import time
+import re
 
 from pathlib import Path
 
@@ -38,3 +39,10 @@ def format_tuple_to_date_string(date: tuple[int, int, int]) -> str:
 def format_date_string_to_tuple(date: str) -> tuple[int]:
     """Format time string to a three int tuple."""
     return tuple([int(x) for x in date.split('-')])
+
+
+def is_date(date: str) -> bool:
+    """NOTE: this is a soft check, it only checks whether passed string is a date of 'xx-xx-xxxx' format,
+    it does NOT check for validity of day, month and year numbers!"""
+    regex = re.fullmatch(r'^(0[1-9]|[12]\d|3[01])-(0[1-9]|1[0-2])-(\d{4})$', date)
+    return regex is not None

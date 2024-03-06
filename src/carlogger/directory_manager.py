@@ -121,7 +121,7 @@ class DirectoryManager:
 
     def _add_entries_to_component(self, comp_data: dict, component_ref: CarComponent):
         for entry in comp_data.get('log_entries'):
-            component_ref.create_entry(entry)
+            component_ref.create_entry_from_file(entry)
 
 
     def _create_car_info_path(self, dir_path):

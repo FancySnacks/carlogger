@@ -1,10 +1,14 @@
 """Executes parsed CLI arguments"""
 
+import uuid
 
 from carlogger.car import Car
 from carlogger.component_collection import ComponentCollection
 from carlogger.car_component import CarComponent
+from carlogger.log_entry import LogEntry
+from carlogger.entry_category import EntryCategory
 from carlogger.session import AppSession
+from carlogger.util import is_date
 
 
 class ArgExecutor:
@@ -14,35 +18,39 @@ class ArgExecutor:
         self.args = parsed_args
         self.arg_func_map = {'car': self.load_car_dir,
                              'collection': self.get_collections,
-                             'component': self.get_components}
+                             'component': self.get_components,
+                             'entry': self.get_entries}
 
         self.cached_car: Car = ...
         self.cached_coll: list[ComponentCollection] = ...
         self.cached_comp: list[CarComponent] = ...
+        self.cached_entries: list[LogEntry] = ...
 
         self.verbosity_map = {"car": self.print_car_info,
                               "collection": self.print_collections,
-                              "component": self.print_components}
+                              "component": self.print_components,
+                              "entry": self.print_entries}
 
     def evaluate_args(self):
-        verbosity = []
+        executed_args = []
 
         args = list(filter(self._filter_empty_keys, self.args.keys()))
 
         try:
             for arg in args:
                 self.arg_func_map.get(arg)()
-                verbosity.append(arg)
+                executed_args.append(arg)
         except KeyError:
             print(f"Invalid console argument:")
             raise SystemExit(1)
 
-        self.print_info_based_on_verbosity(verbosity)
+        self.print_info_based_on_verbosity(executed_args)
 
     def print_info_based_on_verbosity(self, verbosity: list[str]):
         self.verbosity_map.get(verbosity[-1])()
 
     def load_car_dir(self):
+        """Load and cache car directory for the current session."""
         if car := self.args.get('car'):
             loaded_car = self.app.directory_manager.load_car_dir(car)
             self.app.cars.append(loaded_car)
@@ -52,9 +60,10 @@ class ArgExecutor:
     def print_car_info(self):
         print(self.cached_car.get_formatted_info())
 
-    def get_collections(self):
+    def get_collections(self) -> list[ComponentCollection] | None:
+        """Return list of component collections."""
         collections: list[str] = self.args.get('collection')
-        loaded_collections = []
+        loaded_collections: list[ComponentCollection] = []
 
         if not collections:
             return
@@ -77,9 +86,10 @@ class ArgExecutor:
         for coll in self.cached_coll:
             print(coll.get_formatted_info())
 
-    def get_components(self):
-        components = self.args.get('component')
-        loaded_comp = []
+    def get_components(self) -> list[CarComponent] | None:
+        """Return list of car components."""
+        components: list[str] = self.args.get('component')
+        loaded_comp: list[CarComponent] = []
 
         if not components:
             return
@@ -104,6 +114,64 @@ class ArgExecutor:
         self._get_element_diff('Car component', components, loaded_comp)
 
         return loaded_comp
+
+    def get_entries(self) -> list[LogEntry] | None:
+        """Return list of log entries."""
+        entries: list[str] = list(set(self.args.get('entry')))
+        loaded_entries: list[LogEntry] = []
+        filter_keys = [self.get_entry_filter_key(key) for key in entries]
+
+        if not entries:
+            return
+
+        if self.cached_car:
+            all_car_entries = self.cached_car.get_all_entry_logs()
+
+            for entry in all_car_entries:
+                for key in filter_keys:
+                    if entry.to_json().get(key) in entries:
+                        loaded_entries.append(entry)
+        elif self.cached_coll:
+            # Get all entry logs in all cached collections and filter through
+            all_coll_entries = [coll.get_all_log_entries(coll.children) for coll in self.cached_coll]
+            all_entries = []
+            [all_entries.extend(entry_list) for entry_list in all_coll_entries]
+
+            for entry in all_entries:
+                for key in filter_keys:
+                    if entry.to_json().get(key) in entries:
+                        loaded_entries.append(entry)
+        elif self.cached_comp:
+            # Get all entry logs in all cached components and filter through
+            all_comp_entries = [comp.log_entries for comp in self.cached_comp]
+            all_entries = []
+            [all_entries.extend(entry_list) for entry_list in all_comp_entries]
+
+            for entry in all_entries:
+                for key in filter_keys:
+                    if entry.to_json().get(key) in entries:
+                        loaded_entries.append(entry)
+
+        loaded_entries = list(set(loaded_entries))
+        self.cached_entries = loaded_entries
+
+        return loaded_entries
+
+    def print_entries(self):
+        for entry in self.cached_entries:
+            print(entry.get_formatted_info())
+
+    def get_entry_filter_key(self, passed_arg: str) -> str:
+        if type(passed_arg) == uuid.UUID:
+            return 'id'
+
+        if is_date(passed_arg):
+            return 'date'
+
+        if passed_arg in [member for member in EntryCategory]:
+            return 'category'
+
+        return 'desc'
 
     def print_components(self):
         for comp in self.cached_comp:
