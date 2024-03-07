@@ -21,11 +21,6 @@ class ArgExecutor(ABC):
         return
 
 
-class FilterArgExecutor(ArgExecutor):
-    def evaluate_args(self):
-        return
-
-
 class ReadArgExecutor(ArgExecutor):
     """Contains mapped dictionary of functions to execute on program start based on passed console arguments."""
     def __init__(self, parsed_args: dict, app_session: AppSession):

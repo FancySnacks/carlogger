@@ -21,7 +21,9 @@ class ArgParser:
         # ==== Returning Values ==== #
 
         self.return_parser = self.subparsers.add_parser('read',
-                                                        help="Return car info, collection/component list  or log entries.")
+                                                        help="Return car info, collection/component list  or "
+                                                             "log entries.",
+                                                        formatter_class=argparse.RawTextHelpFormatter)
         self.return_parser.add_argument('--car',
                                         type=str,
                                         help="Return car info via name.",
@@ -41,8 +43,23 @@ class ArgParser:
 
         self.return_parser.add_argument('--entry',
                                         type=str,
-                                        help="Return entry via name.",
+                                        help="Return entry via name.\n"
+                                             "Accepts multiple string arguments as filters:\n"
+                                             "'*' - (default) show all entries in a given relation\n"
+                                             "'entry id' - return entry of this id, trumps all other filters\n"
+                                             "'category' - returns entries of this category"
+                                             "['check', 'part swap', 'repair', 'fluid change', 'fluid_add', 'other']\n"
+                                             "'<mileage' - return entries assigned to a lesser mileage\n"
+                                             "'>mileage' - return entries assigned to a greater mileage\n"
+                                             "'DD-MM-YYYY' - show entries made on specific date\n"
+                                             "'<DD-MM-YYYY' - show entries younger than specified date\n"
+                                             "'>DD-MM-YYYY' - show entries older than specified date\n"
+                                             "'DD-MM-YYYY-DD-MM-YYYY' - show entries created in this date range\n"
+                                             "'[-]n' - show 'n' amount of entries from youngest to oldest, '-' "
+                                             "before integer will show oldest to youngest instead\n",
                                         nargs='*',
+                                        default='*',
+                                        metavar='filter options',
                                         required=False)
 
         # ==== Creating Objects and Entries ==== #
