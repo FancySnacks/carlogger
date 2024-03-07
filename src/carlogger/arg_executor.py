@@ -2,6 +2,8 @@
 
 import uuid
 
+from abc import abstractmethod, ABC
+
 from carlogger.car import Car
 from carlogger.component_collection import ComponentCollection
 from carlogger.car_component import CarComponent
@@ -11,7 +13,20 @@ from carlogger.session import AppSession
 from carlogger.util import is_date
 
 
-class ArgExecutor:
+class ArgExecutor(ABC):
+    """Abstract ReadArgExecutor class for executing functions related to console args."""
+    @abstractmethod
+    def evaluate_args(self):
+        """Execute mapped functions based on passed args."""
+        return
+
+
+class FilterArgExecutor(ArgExecutor):
+    def evaluate_args(self):
+        return
+
+
+class ReadArgExecutor(ArgExecutor):
     """Contains mapped dictionary of functions to execute on program start based on passed console arguments."""
     def __init__(self, parsed_args: dict, app_session: AppSession):
         self.app = app_session
@@ -32,6 +47,7 @@ class ArgExecutor:
                               "entry": self.print_entries}
 
     def evaluate_args(self):
+        """Evaluate args list property by calling the matching functions."""
         executed_args = []
 
         args = list(filter(self._filter_empty_keys, self.args.keys()))
@@ -46,22 +62,25 @@ class ArgExecutor:
 
         self.print_info_based_on_verbosity(executed_args)
 
-    def print_info_based_on_verbosity(self, verbosity: list[str]):
-        self.verbosity_map.get(verbosity[-1])()
+    def print_info_based_on_verbosity(self, executed_args: list[str]):
+        """Print console output based on passed args. Only the highest priority argument result will be printed out.\n
+        Priority: Entries -> Components -> Collections -> Car Info\n
+        'executed_args' is simply a list of correctly executed args, last item being chosen for evaluation"""
+        self.verbosity_map.get(executed_args[-1])()
 
     def load_car_dir(self):
         """Load and cache car directory for the current session."""
         if car := self.args.get('car'):
             loaded_car = self.app.directory_manager.load_car_dir(car)
             self.app.cars.append(loaded_car)
-
             self.cached_car = loaded_car
 
     def print_car_info(self):
+        """Print car info of the loaded/cached car."""
         print(self.cached_car.get_formatted_info())
 
     def get_collections(self) -> list[ComponentCollection] | None:
-        """Return list of component collections."""
+        """Return list of component collections of cached car."""
         collections: list[str] = self.args.get('collection')
         loaded_collections: list[ComponentCollection] = []
 
@@ -83,11 +102,12 @@ class ArgExecutor:
         return loaded_collections
 
     def print_collections(self):
+        """Print desired collections."""
         for coll in self.cached_coll:
             print(coll.get_formatted_info())
 
     def get_components(self) -> list[CarComponent] | None:
-        """Return list of car components."""
+        """Return list of components of cached car."""
         components: list[str] = self.args.get('component')
         loaded_comp: list[CarComponent] = []
 
@@ -114,9 +134,14 @@ class ArgExecutor:
         self._get_element_diff('Car component', components, loaded_comp)
 
         return loaded_comp
+    
+    def print_components(self):
+        """Print desired components from cached car."""
+        for comp in self.cached_comp:
+            print(comp.get_formatted_info())
 
     def get_entries(self) -> list[LogEntry] | None:
-        """Return list of log entries."""
+        """Return list of log entries of cached car."""
         entries: list[str] = list(set(self.args.get('entry')))
         loaded_entries: list[LogEntry] = []
         filter_keys = [self.get_entry_filter_key(key) for key in entries]
@@ -158,10 +183,12 @@ class ArgExecutor:
         return loaded_entries
 
     def print_entries(self):
+        """Print desired entries."""
         for entry in self.cached_entries:
             print(entry.get_formatted_info())
 
     def get_entry_filter_key(self, passed_arg: str) -> str:
+        """Get type of filter for entries based on passed arg."""
         if type(passed_arg) == uuid.UUID:
             return 'id'
 
@@ -172,10 +199,6 @@ class ArgExecutor:
             return 'category'
 
         return 'desc'
-
-    def print_components(self):
-        for comp in self.cached_comp:
-            print(comp.get_formatted_info())
 
     def _filter_empty_keys(self, key: str) -> bool:
         return self.args.get(key) is not None

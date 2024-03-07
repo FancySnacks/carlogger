@@ -2,7 +2,7 @@
 
 from carlogger.session import AppSession
 from carlogger.argparser import ArgParser
-from carlogger.arg_executor import ArgExecutor
+from carlogger.arg_executor import ReadArgExecutor
 from carlogger.directory_manager import DirectoryManager
 from carlogger.filedata_manager import JSONFiledataManager
 from carlogger.car_info import CarInfo
@@ -19,7 +19,7 @@ def main(argv: list[str] = None) -> int:
     directory_manager = DirectoryManager(data_manager)
     app = AppSession(directory_manager)
 
-    arg_executor = ArgExecutor(parsed_args, app)
+    arg_executor = ReadArgExecutor(parsed_args, app)
     arg_executor.evaluate_args()
 
     # new_car = CarInfo(manufacturer='Seat',
