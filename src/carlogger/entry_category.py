@@ -18,3 +18,7 @@ class EntryCategory(StrEnum):
     fluid_change = auto()
     fluid_add = auto()
     other = auto()
+
+    @classmethod
+    def get_categories(cls) -> list[str]:
+        return [member.value for member in cls]

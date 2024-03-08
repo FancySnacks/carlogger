@@ -8,9 +8,8 @@ from carlogger.car import Car
 from carlogger.component_collection import ComponentCollection
 from carlogger.car_component import CarComponent
 from carlogger.log_entry import LogEntry
-from carlogger.entry_category import EntryCategory
+from carlogger.entryfilter import EntryFilter
 from carlogger.session import AppSession
-from carlogger.util import is_date
 
 
 class ArgExecutor(ABC):
@@ -139,38 +138,45 @@ class ReadArgExecutor(ArgExecutor):
         """Return list of log entries of cached car."""
         entries: list[str] = list(set(self.args.get('entry')))
         loaded_entries: list[LogEntry] = []
-        filter_keys = [self.get_entry_filter_key(key) for key in entries]
+
+        entry_filter = EntryFilter()
+        filter_keys = [entry_filter.arg_to_filter_func(key) for key in entries]
+        print(filter_keys)
 
         if not entries:
             return
 
         if self.cached_car:
             all_car_entries = self.cached_car.get_all_entry_logs()
+            filtered_entries = []
+            [filtered_entries.extend(list(filter(fn, all_car_entries))) for fn in filter_keys]
 
-            for entry in all_car_entries:
-                for key in filter_keys:
-                    if entry.to_json().get(key) in entries:
-                        loaded_entries.append(entry)
+            for entry in filtered_entries:
+                loaded_entries.append(entry)
+
         elif self.cached_coll:
             # Get all entry logs in all cached collections and filter through
             all_coll_entries = [coll.get_all_log_entries(coll.children) for coll in self.cached_coll]
             all_entries = []
             [all_entries.extend(entry_list) for entry_list in all_coll_entries]
 
-            for entry in all_entries:
-                for key in filter_keys:
-                    if entry.to_json().get(key) in entries:
-                        loaded_entries.append(entry)
+            filtered_entries = []
+            [filtered_entries.extend(list(filter(fn, all_entries))) for fn in filter_keys]
+
+            for entry in filtered_entries:
+                loaded_entries.append(entry)
+
         elif self.cached_comp:
             # Get all entry logs in all cached components and filter through
             all_comp_entries = [comp.log_entries for comp in self.cached_comp]
             all_entries = []
             [all_entries.extend(entry_list) for entry_list in all_comp_entries]
 
-            for entry in all_entries:
-                for key in filter_keys:
-                    if entry.to_json().get(key) in entries:
-                        loaded_entries.append(entry)
+            filtered_entries = []
+            [filtered_entries.extend(list(filter(fn, all_entries))) for fn in filter_keys]
+
+            for entry in filtered_entries:
+                loaded_entries.append(entry)
 
         loaded_entries = list(set(loaded_entries))
         self.cached_entries = loaded_entries
@@ -181,19 +187,6 @@ class ReadArgExecutor(ArgExecutor):
         """Print desired entries."""
         for entry in self.cached_entries:
             print(entry.get_formatted_info())
-
-    def get_entry_filter_key(self, passed_arg: str) -> str:
-        """Get type of filter for entries based on passed arg."""
-        if type(passed_arg) == uuid.UUID:
-            return 'id'
-
-        if is_date(passed_arg):
-            return 'date'
-
-        if passed_arg in [member for member in EntryCategory]:
-            return 'category'
-
-        return 'desc'
 
     def _filter_empty_keys(self, key: str) -> bool:
         return self.args.get(key) is not None
