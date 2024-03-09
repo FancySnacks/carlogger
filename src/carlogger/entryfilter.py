@@ -95,3 +95,22 @@ class EntryFilter:
 
     def filter_by_lt_mileage(self, entry: LogEntry) -> bool:
         return entry.mileage < int(self.filter_key[1::])
+
+    def get_filter_methods(self, filter_args: list[str]) -> list[Callable]:
+        """Return a list of filter functions based on passed arguments."""
+        if 'id' in filter_args:
+            return [lambda entry: True]
+
+        if '*' in filter_args:
+            return [self.filter_by_id]
+
+        return [self.arg_to_filter_func(arg) for arg in filter_args]
+
+    def remove_conflicting_filters(self, filter_funcs: list[Callable]) -> list[Callable]:
+        pass
+
+    def apply_filters_to_entry_list(self, entry_list: list[LogEntry], filters: list[Callable]) -> list[LogEntry]:
+        """Apply list of filter functions to a list of entries. Returns filtered list of entries."""
+        filtered_entries = []
+        [filtered_entries.extend(list(filter(fn, entry_list))) for fn in filters]
+        return filtered_entries

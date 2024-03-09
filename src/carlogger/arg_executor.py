@@ -140,7 +140,7 @@ class ReadArgExecutor(ArgExecutor):
         loaded_entries: list[LogEntry] = []
 
         entry_filter = EntryFilter()
-        filter_keys = [entry_filter.arg_to_filter_func(key) for key in entries]
+        filter_keys = entry_filter.get_filter_methods(entries)
         print(filter_keys)
 
         if not entries:
@@ -148,8 +148,7 @@ class ReadArgExecutor(ArgExecutor):
 
         if self.cached_car:
             all_car_entries = self.cached_car.get_all_entry_logs()
-            filtered_entries = []
-            [filtered_entries.extend(list(filter(fn, all_car_entries))) for fn in filter_keys]
+            filtered_entries = entry_filter.apply_filters_to_entry_list(all_car_entries, filter_keys)
 
             for entry in filtered_entries:
                 loaded_entries.append(entry)
@@ -160,8 +159,7 @@ class ReadArgExecutor(ArgExecutor):
             all_entries = []
             [all_entries.extend(entry_list) for entry_list in all_coll_entries]
 
-            filtered_entries = []
-            [filtered_entries.extend(list(filter(fn, all_entries))) for fn in filter_keys]
+            filtered_entries = entry_filter.apply_filters_to_entry_list(all_entries, filter_keys)
 
             for entry in filtered_entries:
                 loaded_entries.append(entry)
@@ -172,8 +170,7 @@ class ReadArgExecutor(ArgExecutor):
             all_entries = []
             [all_entries.extend(entry_list) for entry_list in all_comp_entries]
 
-            filtered_entries = []
-            [filtered_entries.extend(list(filter(fn, all_entries))) for fn in filter_keys]
+            filtered_entries = entry_filter.apply_filters_to_entry_list(all_entries, filter_keys)
 
             for entry in filtered_entries:
                 loaded_entries.append(entry)
