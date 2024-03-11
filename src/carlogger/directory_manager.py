@@ -97,7 +97,7 @@ class DirectoryManager:
         for coll in os.listdir(collections_path):
             collection_data = self.data_manager.load_file(collections_path.joinpath(coll))
             new_collection = ComponentCollection(**collection_data, path=collections_path)
-            components = self.load_car_components_from_path(new_collection, path)
+            components = self.load_car_components_from_path(new_collection)
             new_collection.children.clear()
             
             for comp in components:
@@ -107,7 +107,7 @@ class DirectoryManager:
 
         return collections
 
-    def load_car_components_from_path(self, collection: ComponentCollection, path) -> list[CarComponent]:
+    def load_car_components_from_path(self, collection: ComponentCollection) -> list[CarComponent]:
         coms = []
 
         for child in collection.children:
@@ -116,7 +116,6 @@ class DirectoryManager:
             self._add_entries_to_component(comp_data, c)
 
             coms.append(c)
-
         return coms
 
     def _add_entries_to_component(self, comp_data: dict, component_ref: CarComponent):

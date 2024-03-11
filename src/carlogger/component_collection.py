@@ -55,7 +55,6 @@ class ComponentCollection:
                 self.get_all_log_entries(c.children, buffer_list)
             else:
                 continue
-
         return buffer_list
 
     def create_component(self, name: str) -> CarComponent:

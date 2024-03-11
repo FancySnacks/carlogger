@@ -45,7 +45,8 @@ class ArgParser:
                                         type=str,
                                         help="Return entry via name.\n"
                                              "Accepts multiple string arguments as filters:\n"
-                                             "'*' - (default) show all entries in a given relation\n"
+                                             "By default if no arg is present shows all entries in a given relation\n"
+                                             "'*' - (default) shows all entries\n"
                                              "'entry id' - return entry of this id, trumps all other filters\n"
                                              "'category' - returns entries of this category"
                                              "['check', 'part swap', 'repair', 'fluid change', 'fluid_add', 'other']\n"
@@ -58,7 +59,7 @@ class ArgParser:
                                              "'[-]n' - show 'n' amount of entries from youngest to oldest, '-' "
                                              "before integer will show oldest to youngest instead\n",
                                         nargs='*',
-                                        default='*',
+                                        default=['*'],
                                         metavar='filter options',
                                         required=False)
 
