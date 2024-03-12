@@ -80,14 +80,20 @@ class EntryFilter:
         return filtered_entries
 
     def _create_count_filter(self, args: list[str]) -> list[str]:
-        cpattern = re.compile(r'^-*\d+$')
-        matches = [arg for arg in args if re.search(cpattern, arg)]
+        matches = self.count_flag_exists_in_arg_list(args)
 
         if matches:
             self.count_filter = CountFilter(int(matches[0]))
             args.remove(matches[0])
 
         return args
+
+    @staticmethod
+    def count_flag_exists_in_arg_list(args: list[str]) -> list[str]:
+        cpattern = re.compile(r'^-*\d+$')
+        matches = [arg for arg in args if re.search(cpattern, arg)]
+
+        return matches
 
     def _create_filter_group_from_args(self, args: list[str]):
         """Turn command line arguments into list of filters."""

@@ -141,8 +141,7 @@ class ReadArgExecutor(ArgExecutor):
 
         entry_filter = EntryFilter()
 
-        if not entries:
-            entries.append('*')
+        entries = self._clamp_cli_entries(entries)
 
         if self.cached_car:
             all_car_entries = self.cached_car.get_all_entry_logs()
@@ -183,6 +182,18 @@ class ReadArgExecutor(ArgExecutor):
         """Print desired entries."""
         for entry in self.cached_entries:
             print(entry.get_formatted_info())
+
+    def _clamp_cli_entries(self, entries: list[str]) -> list[str]:
+        if not entries:
+            entries.append('*')
+            return entries
+
+        if len(entries) == 1:
+            match = EntryFilter.count_flag_exists_in_arg_list(entries)
+            if len(match) > 0:
+               return ['*', match[0]]
+
+        return entries
 
     def _filter_empty_keys(self, key: str) -> bool:
         return self.args.get(key) is not None
