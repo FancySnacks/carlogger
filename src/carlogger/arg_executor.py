@@ -1,7 +1,5 @@
 """Executes parsed CLI arguments"""
 
-import uuid
-
 from abc import abstractmethod, ABC
 
 from carlogger.car import Car
