@@ -1,6 +1,9 @@
 import pytest
+import pathlib
 
+from carlogger.car import Car
 from carlogger.car_component import CarComponent
+from carlogger.car_info import CarInfo
 from carlogger.component_collection import ComponentCollection
 from carlogger.entry_category import EntryCategory
 from carlogger.directory_manager import DirectoryManager
@@ -60,6 +63,18 @@ def mock_component_collection() -> ComponentCollection:
     return engine_c
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
+def mock_car_directory(tmp_path, directory_manager, mock_car_info) -> dict[str, pathlib.Path]:
+    car_info = CarInfo(**mock_car_info)
+    path = tmp_path.joinpath(car_info.name)
+    car_to_add = Car(car_info, path=path)
+
+    directory_manager.create_car_directory(car_to_add)
+
+    return {'car_dir': path,
+            'info_path': path.joinpath(car_to_add.car_info.path)}
+
+
+@pytest.fixture
 def directory_manager() -> DirectoryManager:
     return DirectoryManager(JSONFiledataManager())

@@ -4,6 +4,7 @@ import argparse
 
 
 class ArgParser:
+    """Handles console arguments and executes related functions."""
     def __init__(self):
         self.parser = argparse.ArgumentParser(prog="Car Logger",
                                               usage="carlogger [-args]",
@@ -19,6 +20,11 @@ class ArgParser:
         # argument for creating entries
 
         # ==== Returning Values ==== #
+
+        self.parser.add_argument('--gui',
+                                 action='store_true',
+                                 help="Open graphical user interface for the app.")
+
 
         self.return_parser = self.subparsers.add_parser('read',
                                                         help="Return car info, collection/component list  or "
