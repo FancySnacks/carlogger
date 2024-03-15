@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from carlogger.session import AppSession
 
 from carlogger.car import Car
+from carlogger.car_info import CarInfo
 from carlogger.component_collection import ComponentCollection
 from carlogger.car_component import CarComponent
 from carlogger.log_entry import LogEntry
@@ -35,7 +36,9 @@ class AddArgExecutor(ArgExecutor):
 
     def evaluate_args(self):
         """Execute mapped functions based on passed args."""
-        return
+        # remove args that are not related to this executor and subparser
+        vals = {key: value for (key, value) in self.parsed_args.items() if self.parsed_args.get(key)}
+        self.app_session.add_new_car(vals)
 
 
 class ReadArgExecutor(ArgExecutor):
