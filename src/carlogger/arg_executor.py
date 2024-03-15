@@ -9,7 +9,6 @@ if TYPE_CHECKING:
     from carlogger.session import AppSession
 
 from carlogger.car import Car
-from carlogger.car_info import CarInfo
 from carlogger.component_collection import ComponentCollection
 from carlogger.car_component import CarComponent
 from carlogger.log_entry import LogEntry
