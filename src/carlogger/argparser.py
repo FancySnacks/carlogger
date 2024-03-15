@@ -2,6 +2,8 @@
 
 import argparse
 
+from abc import abstractmethod, ABC
+
 
 class ArgParser:
     """Handles console arguments and executes related functions."""
@@ -12,6 +14,8 @@ class ArgParser:
                                               epilog="epilog",
                                               formatter_class=argparse.RawDescriptionHelpFormatter)
         self.subparsers = self.parser.add_subparsers(help="Subcommands")
+
+        self.subparser_obj: list[Subparser] = []
 
         self.parsed_args: dict = {}
 
@@ -27,11 +31,40 @@ class ArgParser:
                                  action='store_true',
                                  help="Open graphical user interface for the app.")
 
+    def add_subparser(self, subparser):
+        self.subparser_obj.append(subparser)
+        subparser.create_subparser()
 
-        self.return_parser = self.subparsers.add_parser('read',
-                                                        help="Return car info, collection/component list  or "
-                                                             "log entries.",
-                                                        formatter_class=argparse.RawTextHelpFormatter)
+    def parse_args(self, args: list[str]) -> dict:
+        self.parsed_args = self.parser.parse_args(args).__dict__
+        return self.parsed_args
+
+    def get_subparser_type(self, argv: list[str]) -> str:
+        if 'add' in argv:
+            return 'add'
+        if 'read' in argv:
+            return 'read'
+
+
+class Subparser(ABC):
+    @abstractmethod
+    def __init__(self, parser_parent: ArgParser):
+        self.parser_parent = parser_parent
+
+    @abstractmethod
+    def create_subparser(self):
+        pass
+
+
+class ReadSubparser(Subparser):
+    def __init__(self, parser_parent: ArgParser):
+        self.parser_parent = parser_parent
+
+    def create_subparser(self):
+        self.return_parser = self.parser_parent.subparsers.add_parser('read',
+                                                                      help="Return car info, collection/component list  or "
+                                                                           "log entries.",
+                                                                      formatter_class=argparse.RawTextHelpFormatter)
         self.return_parser.add_argument('--car',
                                         type=str,
                                         help="Return car info via name.",
@@ -70,24 +103,50 @@ class ArgParser:
                                         metavar='filter options',
                                         required=False)
 
-        # ==== Creating Objects and Entries ==== #
 
-        self.add_parser = self.subparsers.add_parser('add',
-                                                     help="Add new car, collection, component or log entry.")
+class AddSubparser(Subparser):
+    def __init__(self, parser_parent: ArgParser):
+        self.parser_parent = parser_parent
 
-        self.add_parser.add_argument('--item',
-                                     type=str,
-                                     choices=['car', 'collection', 'component', 'entry'],
-                                     help="Return component via name.",
-                                     nargs='*',
-                                     required=False)
+    def create_subparser(self):
+        self.add_parser = self.parser_parent.subparsers.add_parser('add',
+                                                                   help="Add new car, collection, component or log entry.",
+                                                                   formatter_class=argparse.RawTextHelpFormatter)
 
-    def parse_args(self, args: list[str]) -> dict:
-        self.parsed_args = self.parser.parse_args(args).__dict__
-        return self.parsed_args
+        self.add_subparsers = self.add_parser.add_subparsers(help="Subcommands")
 
-    def get_subparser_type(self, parsed_args: dict) -> str:
-        if 'item' in parsed_args.keys():
-            return 'add'
-        else:
-            return 'read'
+        self.add_car_parser = self.add_subparsers.add_parser('car')
+
+        # ===== Add Car ===== #
+
+        self.add_car_parser.add_argument('--name',
+                                         type=str,
+                                         required=True)
+
+        self.add_car_parser.add_argument('--manufacturer',
+                                         type=str,
+                                         required=True)
+
+        self.add_car_parser.add_argument('--model',
+                                         type=str,
+                                         required=True)
+
+        self.add_car_parser.add_argument('--year',
+                                         type=int,
+                                         required=True)
+
+        self.add_car_parser.add_argument('--mileage',
+                                         type=int,
+                                         required=True)
+
+        self.add_car_parser.add_argument('--body',
+                                         type=str,
+                                         required=True)
+
+        self.add_car_parser.add_argument('--length',
+                                         type=int,
+                                         required=True)
+
+        self.add_car_parser.add_argument('--weight',
+                                         type=int,
+                                         required=True)

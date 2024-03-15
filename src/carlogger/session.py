@@ -23,6 +23,8 @@ class AppSession:
                 self.arg_executor = ReadArgExecutor(parsed_args, self)
             case 'add':
                 self.arg_executor = AddArgExecutor(parsed_args, self)
+            case _:
+                self.arg_executor = AddArgExecutor(parsed_args, self)
 
         self.arg_executor.evaluate_args()
 
