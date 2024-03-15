@@ -3,7 +3,7 @@
 from carlogger.directory_manager import DirectoryManager
 from carlogger.car import Car
 from carlogger.car_info import CarInfo
-from carlogger.util import create_car_dir_path
+from carlogger.arg_executor import ArgExecutor, AddArgExecutor, ReadArgExecutor
 
 
 class AppSession:
@@ -13,6 +13,18 @@ class AppSession:
 
         self.cars: list[Car] = []
         self.selected_car: Car = ...
+
+        self.arg_executor: ArgExecutor = ...
+
+    def execute_console_args(self, subparser_type: str, parsed_args: dict):
+        """Create ArgExecutor object based on subparser in use and execute console arguments."""
+        match subparser_type:
+            case 'read':
+                self.arg_executor = ReadArgExecutor(parsed_args, self)
+            case 'add':
+                self.arg_executor = AddArgExecutor(parsed_args, self)
+
+        self.arg_executor.evaluate_args()
 
     def add_new_car(self, car_info: dict):
         """Create a new car directory."""

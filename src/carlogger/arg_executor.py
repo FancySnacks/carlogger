@@ -1,25 +1,45 @@
 """Executes parsed CLI arguments"""
 
+from __future__ import annotations
+
 from abc import abstractmethod, ABC
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from carlogger.session import AppSession
 
 from carlogger.car import Car
 from carlogger.component_collection import ComponentCollection
 from carlogger.car_component import CarComponent
 from carlogger.log_entry import LogEntry
 from carlogger.entryfilter import EntryFilter
-from carlogger.session import AppSession
 
 
 class ArgExecutor(ABC):
     """Abstract ReadArgExecutor class for executing functions related to console args."""
+    @abstractmethod
+    def __init__(self, parsed_args: dict, app_session: AppSession):
+        return
+
     @abstractmethod
     def evaluate_args(self):
         """Execute mapped functions based on passed args."""
         return
 
 
+class AddArgExecutor(ArgExecutor):
+    """Handles 'add' subparser for adding new cars, collections and entry logs."""
+    def __init__(self, parsed_args: dict, app_session: AppSession):
+        self.parsed_args = parsed_args
+        self.app_session = app_session
+
+    def evaluate_args(self):
+        """Execute mapped functions based on passed args."""
+        return
+
+
 class ReadArgExecutor(ArgExecutor):
-    """Contains mapped dictionary of functions to execute on program start based on passed console arguments."""
+    """Handles 'read' subparser for printing out car info, collections and entries into console."""
     def __init__(self, parsed_args: dict, app_session: AppSession):
         self.app = app_session
         self.args = parsed_args
@@ -46,8 +66,9 @@ class ReadArgExecutor(ArgExecutor):
 
         try:
             for arg in args:
-                self.arg_func_map.get(arg)()
-                executed_args.append(arg)
+                if func := self.arg_func_map.get(arg):
+                    func()
+                    executed_args.append(arg)
         except KeyError:
             print(f"Invalid console argument:")
             raise SystemExit(1)

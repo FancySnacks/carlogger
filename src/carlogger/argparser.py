@@ -13,6 +13,8 @@ class ArgParser:
                                               formatter_class=argparse.RawDescriptionHelpFormatter)
         self.subparsers = self.parser.add_subparsers(help="Subcommands")
 
+        self.parsed_args: dict = {}
+
     def setup_args(self):
         # --gui argument
         # argument for creating collections
@@ -65,7 +67,6 @@ class ArgParser:
                                              "'[-]n' - show 'n' amount of entries from youngest to oldest, '-' "
                                              "before integer will show oldest to youngest instead\n",
                                         nargs='*',
-                                        default=['*'],
                                         metavar='filter options',
                                         required=False)
 
@@ -74,5 +75,19 @@ class ArgParser:
         self.add_parser = self.subparsers.add_parser('add',
                                                      help="Add new car, collection, component or log entry.")
 
+        self.add_parser.add_argument('--item',
+                                     type=str,
+                                     choices=['car', 'collection', 'component', 'entry'],
+                                     help="Return component via name.",
+                                     nargs='*',
+                                     required=False)
+
     def parse_args(self, args: list[str]) -> dict:
-        return self.parser.parse_args(args).__dict__
+        self.parsed_args = self.parser.parse_args(args).__dict__
+        return self.parsed_args
+
+    def get_subparser_type(self, parsed_args: dict) -> str:
+        if 'item' in parsed_args.keys():
+            return 'add'
+        else:
+            return 'read'

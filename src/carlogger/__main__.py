@@ -19,8 +19,10 @@ def main(argv: list[str] = None) -> int:
     directory_manager = DirectoryManager(data_manager)
     app = AppSession(directory_manager)
 
-    arg_executor = ReadArgExecutor(parsed_args, app)
-    arg_executor.evaluate_args()
+    app.execute_console_args(parser.get_subparser_type(parsed_args), parsed_args)
+
+    print(parsed_args)
+    # app.execute_console_args(parsed_args)
 
     # new_car = CarInfo(manufacturer='Seat',
     #                   model='Leon 1',
