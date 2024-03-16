@@ -117,7 +117,7 @@ class DirectoryManager:
 
         for child in collection.children:
             comp_data = self.data_manager.load_file(child['path'])
-            c = CarComponent(comp_data['name'], collection.path.joinpath('components'))
+            c = CarComponent(comp_data['name'], collection.path.parent.joinpath('components'))
             self._add_entries_to_component(comp_data, c)
 
             coms.append(c)

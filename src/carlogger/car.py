@@ -36,17 +36,17 @@ class Car:
 
     def create_collection(self, name: str) -> ComponentCollection:
         """Create new collection, add it to the list and return object reference."""
-        self._check_for_collection_duplicates(name)
+        self._check_for_collection_duplicates(name=name)
 
         new_collection = ComponentCollection(name, path=self.path.joinpath("collections"))
         self.collections.append(new_collection)
-        print(ADD_COLLECTION_SUCCESS)
+        print(ADD_COLLECTION_SUCCESS.format(name=name))
 
         return new_collection
 
     def _check_for_collection_duplicates(self, name):
         if name in [coll.name for coll in self.collections]:
-            raise ValueError(ADD_COLLECTION_FAILURE)
+            raise ValueError(ADD_COLLECTION_FAILURE.format(name=name, car=self.car_info.name))
 
     def get_collection_by_name(self, name: str) -> ComponentCollection | None:
         """Find and return collection by name."""
@@ -54,7 +54,7 @@ class Car:
             if collection.name == name:
                 return collection
 
-        return None
+        raise ValueError(f"ERROR: Collection '{name}' was not found in '{self.car_info.name}' car!")
 
     def get_component_by_name(self, name: str) -> CarComponent | None:
         """Find and return component by name looping through all collections."""

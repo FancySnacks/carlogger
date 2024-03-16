@@ -5,8 +5,10 @@ import uuid
 
 from dataclasses import dataclass, field
 
+from carlogger.const import ADD_ENTRY_SUCCESS
 from carlogger.log_entry import LogEntry
 from carlogger.entry_category import EntryCategory
+from carlogger.util import format_date_string_to_tuple
 
 
 @dataclass
@@ -26,7 +28,7 @@ class CarComponent:
         """Creates a new entry adding it to the list and returns its unique id."""
 
         new_entry = LogEntry(desc=entry_data['desc'],
-                             date=entry_data['date'],
+                             date=format_date_string_to_tuple(entry_data['date']),
                              mileage=entry_data['mileage'],
                              category=EntryCategory(entry_data['category']),
                              tags=entry_data['tags'],
@@ -34,6 +36,7 @@ class CarComponent:
                              _id=str(uuid.uuid1()))
         self.log_entries.append(new_entry)
 
+        print(ADD_ENTRY_SUCCESS.format(id=new_entry.id))
         self._add_search_tags_from_entry(new_entry)
 
         return new_entry.id

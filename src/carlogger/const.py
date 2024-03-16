@@ -17,4 +17,6 @@ ADD_COLLECTION_FAILURE = "ERROR: '{name}' was not created as collection with exa
 
 ADD_COMPONENT_SUCCESS = "SUCCESS: '{name}' component was successfully created"
 ADD_COMPONENT_FAILURE = "ERROR: '{name}' was not created as component with exact name already exists " \
-                        "in '{car}/{collection}'"
+                        "in '{collection}'"
+
+ADD_ENTRY_SUCCESS = "SUCCESS: Entry of ID: '{id}' was successfully created"

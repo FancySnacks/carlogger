@@ -7,6 +7,8 @@ import dataclasses
 from abc import abstractmethod, ABC
 from typing import TYPE_CHECKING
 
+from carlogger.car_info import CarInfo
+
 if TYPE_CHECKING:
     from carlogger.session import AppSession
 
@@ -48,7 +50,7 @@ class AddArgExecutor(ArgExecutor):
 
     def add_new_car(self):
         """Create a new car directory based on passed argument values."""
-        valid_car_keys = [field.name for field in dataclasses.fields(Car)]
+        valid_car_keys = [field.name for field in dataclasses.fields(CarInfo)]
         vals = {key: value for (key, value) in self.parsed_args.items() if key in valid_car_keys}
         self.app_session.add_new_car(vals)
 
@@ -67,6 +69,14 @@ class AddArgExecutor(ArgExecutor):
 
     def add_new_entry(self):
         """Create a new car component belonging to a specified car, collection and component."""
+        car_name = self.parsed_args['car']
+        coll_name = self.parsed_args['collection']
+        comp_name = self.parsed_args['component']
+
+        valid_entry_keys = [field.name for field in dataclasses.fields(LogEntry)]
+        entry_data = {key: value for (key, value) in self.parsed_args.items() if key in valid_entry_keys}
+
+        self.app_session.add_new_entry(car_name, coll_name, comp_name, entry_data)
 
     def _recognize_context(self) -> str:
         """What do we wish to create; car, collection, component or log entry?"""

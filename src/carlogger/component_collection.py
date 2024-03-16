@@ -61,22 +61,25 @@ class ComponentCollection:
     def create_component(self, name: str) -> CarComponent:
         """Create new car component, add it to the list and return object reference."""
         self._check_for_component_duplicates(name)
+        print(self.path.parent.joinpath('components'))
         new_component = CarComponent(name, path=self.path.parent.joinpath('components'))
         self.children.append(new_component)
 
-        print(ADD_COMPONENT_SUCCESS)
+        print(ADD_COMPONENT_SUCCESS.format(name=name))
 
         return new_component
 
     def _check_for_component_duplicates(self, name: str):
         if name in [ch.name for ch in self.children]:
-            raise ValueError(ADD_COMPONENT_FAILURE)
+            raise ValueError(ADD_COMPONENT_FAILURE.format(name=name, collection=self.name))
 
     def get_component_by_name(self, name: str) -> CarComponent:
         """Find and return car component of this collection by name."""
         for child in self.children:
             if child.name == name and type(child) == CarComponent:
                 return child
+
+        raise ValueError(f"ERROR: Component '{name}' was not found in '{self.name}' collection!")
     
     def to_json(self) -> dict:
         d = {'name': self.name,

@@ -2,6 +2,7 @@
 
 import argparse
 
+from datetime import datetime
 from abc import abstractmethod, ABC
 
 
@@ -180,3 +181,41 @@ class AddSubparser(Subparser):
         self.add_component_parser.add_argument('--collection',
                                                type=str,
                                                required=True)
+
+        # ===== Add Entry ===== #
+
+        self.add_entry_parser = self.add_subparsers.add_parser('entry')
+
+        self.add_entry_parser.add_argument('--car',
+                                           type=str,
+                                           required=True)
+
+        self.add_entry_parser.add_argument('--collection',
+                                           type=str,
+                                           required=True)
+
+        self.add_entry_parser.add_argument('--component',
+                                           type=str,
+                                           required=True)
+
+        self.add_entry_parser.add_argument('--desc',
+                                           type=str,
+                                           required=True)
+
+        self.add_entry_parser.add_argument('--date',
+                                           type=str,
+                                           default=datetime.today().date().strftime("%d-%m-%Y"))
+
+        self.add_entry_parser.add_argument('--mileage',
+                                           type=int,
+                                           required=True)
+
+        self.add_entry_parser.add_argument('--category',
+                                           type=str,
+                                           choices=['check', 'swap', 'repair', 'fluid_change', 'fluid_add', 'other'],
+                                           required=True)
+
+        self.add_entry_parser.add_argument('--tags',
+                                           type=str,
+                                           nargs='*',
+                                           default=[])
