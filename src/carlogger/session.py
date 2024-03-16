@@ -28,7 +28,7 @@ class AppSession:
 
         self.arg_executor.evaluate_args()
 
-    def add_new_car(self, car_info: dict):
+    def add_new_car(self, car_info: dict) -> Car:
         """Create a new car directory."""
         car_info = CarInfo(**car_info)
         new_car = Car(car_info)
@@ -38,6 +38,8 @@ class AppSession:
         self.directory_manager.create_car_directory(new_car)
 
         self.selected_car = self.cars[0]
+
+        return new_car
 
     def remove_car(self, car_name: str):
         """Delete car directory by name."""

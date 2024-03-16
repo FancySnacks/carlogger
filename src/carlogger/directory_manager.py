@@ -8,7 +8,7 @@ from carlogger.filedata_manager import FiledataManager
 from carlogger.component_collection import ComponentCollection
 from carlogger.car_component import CarComponent
 from carlogger.car_info import CarInfo
-from carlogger.const import CARS_PATH
+from carlogger.const import CARS_PATH, ADD_CAR_SUCCESS, ADD_CAR_FAILURE
 from carlogger.util import get_car_dirs
 
 
@@ -32,8 +32,10 @@ class DirectoryManager:
             os.mkdir(path.joinpath("collections"))
             os.mkdir(path.joinpath("components"))
         except FileExistsError:
-            print(f"\nERROR: '{path.name}' was not created as directory with exact name already exists at: '{path}'")
+            print(ADD_CAR_FAILURE.format(name=path.name, path=path))
             return
+        else:
+            print(ADD_CAR_SUCCESS.format(name=path.name, path=path))
 
     def remove_car_directory(self, car: Car):
         """Delete a car directory along with all its data files from 'save' directory if it exists."""
