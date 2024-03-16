@@ -29,6 +29,8 @@ class ArgExecutor(ABC):
 
 class AddArgExecutor(ArgExecutor):
     """Handles 'add' subparser for adding new cars, collections and entry logs."""
+    valid_keys = ['name', 'manufacturer', 'model', 'year', 'mileage', 'body', 'length', 'weight']
+
     def __init__(self, parsed_args: dict, app_session: AppSession):
         self.parsed_args = parsed_args
         self.app_session = app_session
@@ -36,7 +38,7 @@ class AddArgExecutor(ArgExecutor):
     def evaluate_args(self):
         """Execute mapped functions based on passed args."""
         # remove args that are not related to this executor and subparser
-        vals = {key: value for (key, value) in self.parsed_args.items() if self.parsed_args.get(key)}
+        vals = {key: value for (key, value) in self.parsed_args.items() if key in self.valid_keys}
         self.app_session.add_new_car(vals)
 
 
