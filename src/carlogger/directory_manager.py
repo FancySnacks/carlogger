@@ -32,6 +32,7 @@ class DirectoryManager:
             os.mkdir(path.joinpath("collections"))
             os.mkdir(path.joinpath("components"))
         except FileExistsError:
+            print(f"\nERROR: '{path.name}' was not created as directory with exact name already exists at: '{path}'")
             return
 
     def remove_car_directory(self, car: Car):
