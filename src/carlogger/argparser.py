@@ -164,3 +164,19 @@ class AddSubparser(Subparser):
         self.add_collection_parser.add_argument('--car',
                                                 type=str,
                                                 required=True)
+
+        # ===== Add Component ===== #
+
+        self.add_component_parser = self.add_subparsers.add_parser('component')
+
+        self.add_component_parser.add_argument('--name',
+                                               type=str,
+                                               required=True)
+
+        self.add_component_parser.add_argument('--car',
+                                               type=str,
+                                               required=True)
+
+        self.add_component_parser.add_argument('--collection',
+                                               type=str,
+                                               required=True)

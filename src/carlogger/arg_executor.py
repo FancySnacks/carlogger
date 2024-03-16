@@ -54,12 +54,16 @@ class AddArgExecutor(ArgExecutor):
 
     def add_new_collection(self):
         """Create a new car collection belonging to specified car."""
-        coll_name = self.parsed_args['name']
         car_name = self.parsed_args['car']
+        coll_name = self.parsed_args['name']
         self.app_session.add_new_collection(car_name, coll_name)
 
     def add_new_component(self):
         """Create a new car component belonging to a specified collection and car."""
+        car_name = self.parsed_args['car']
+        coll_name = self.parsed_args['collection']
+        comp_name = self.parsed_args['name']
+        self.app_session.add_new_component(car_name, coll_name, comp_name)
 
     def add_new_entry(self):
         """Create a new car component belonging to a specified car, collection and component."""

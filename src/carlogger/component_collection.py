@@ -7,6 +7,7 @@ import pathlib
 from dataclasses import dataclass, field
 
 from carlogger.car_component import CarComponent
+from carlogger.const import ADD_COMPONENT_SUCCESS, ADD_COMPONENT_FAILURE
 from carlogger.log_entry import LogEntry
 
 
@@ -59,10 +60,17 @@ class ComponentCollection:
 
     def create_component(self, name: str) -> CarComponent:
         """Create new car component, add it to the list and return object reference."""
+        self._check_for_component_duplicates(name)
         new_component = CarComponent(name, path=self.path.parent.joinpath('components'))
         self.children.append(new_component)
 
+        print(ADD_COMPONENT_SUCCESS)
+
         return new_component
+
+    def _check_for_component_duplicates(self, name: str):
+        if name in [ch.name for ch in self.children]:
+            raise ValueError(ADD_COMPONENT_FAILURE)
 
     def get_component_by_name(self, name: str) -> CarComponent:
         """Find and return car component of this collection by name."""
