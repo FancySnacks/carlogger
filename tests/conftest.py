@@ -47,6 +47,12 @@ def mock_component(mock_log_entry) -> CarComponent:
 
 
 @pytest.fixture(scope="session")
+def mock_component_clean(mock_log_entry) -> CarComponent:
+    comp = CarComponent("TestComponent")
+    return comp
+
+
+@pytest.fixture(scope="session")
 def mock_component_collection() -> ComponentCollection:
     sp = CarComponent("Spark Plug")
     v = CarComponent("Valves")
