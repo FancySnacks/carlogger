@@ -8,7 +8,7 @@ from carlogger.filedata_manager import FiledataManager
 from carlogger.component_collection import ComponentCollection
 from carlogger.car_component import CarComponent
 from carlogger.car_info import CarInfo
-from carlogger.const import CARS_PATH, ADD_CAR_SUCCESS, ADD_CAR_FAILURE
+from carlogger.const import CARS_PATH, ADD_CAR_SUCCESS, ADD_CAR_FAILURE, REMOVE_CAR_SUCCESS, REMOVE_CAR_FAILURE
 from carlogger.util import get_car_dirs
 
 
@@ -43,7 +43,9 @@ class DirectoryManager:
 
         try:
             shutil.rmtree(path)
+            print(REMOVE_CAR_SUCCESS.format(car.car_info.name))
         except OSError:
+            print(REMOVE_CAR_FAILURE.format(car.car_info.name))
             return
 
     def update_car_directory(self, car: Car):
