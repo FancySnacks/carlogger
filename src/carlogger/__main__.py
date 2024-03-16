@@ -33,7 +33,7 @@ def main(argv: list[str] = None) -> int:
     directory_manager = DirectoryManager(data_manager)
     app = AppSession(directory_manager)
 
-    app.execute_console_args(parser.get_subparser_type(raw_args), parsed_args)
+    app.execute_console_args(parser.get_subparser_type(raw_args), parsed_args, raw_args)
 
     print(parsed_args)
     # app.execute_console_args(parsed_args)

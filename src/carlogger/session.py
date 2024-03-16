@@ -16,15 +16,15 @@ class AppSession:
 
         self.arg_executor: ArgExecutor = ...
 
-    def execute_console_args(self, subparser_type: str, parsed_args: dict):
+    def execute_console_args(self, subparser_type: str, parsed_args: dict, raw_args: list[str]):
         """Create ArgExecutor object based on subparser in use and execute console arguments."""
         match subparser_type:
             case 'read':
                 self.arg_executor = ReadArgExecutor(parsed_args, self)
             case 'add':
-                self.arg_executor = AddArgExecutor(parsed_args, self)
+                self.arg_executor = AddArgExecutor(parsed_args, self, raw_args)
             case _:
-                self.arg_executor = AddArgExecutor(parsed_args, self)
+                self.arg_executor = AddArgExecutor(parsed_args, self, raw_args)
 
         self.arg_executor.evaluate_args()
 
@@ -48,8 +48,26 @@ class AppSession:
         self.cars.remove(car_to_remove)
 
     def save_car(self, car_name: str):
+        """Update car directory."""
         car = self.find_car_by_name(car_name)
         self.directory_manager.update_car_directory(car)
 
+    def add_new_collection(self, car_name: str, collection_name: str):
+        """Add new collection to specified car and update save directory."""
+        car = self.find_car_by_name(car_name)
+        car.create_collection(collection_name)
+        self.directory_manager.update_car_directory(car)
+
     def find_car_by_name(self, car_name: str) -> Car:
-        return list(filter(lambda x: x.car_info.name == car_name, self.cars))[0]
+        """Find car by name. If it's not found, attempt loading the car from save directory and check again."""
+        try:
+            return list(filter(lambda x: x.car_info.name == car_name, self.cars))[0]
+        except IndexError:
+            return self.load_car_dir(car_name)
+
+    def load_car_dir(self, car_name: str) -> Car:
+        """Load a singular car directory and add it to the list.\n
+        Loads directory only if the specified car wasn't requested prior, else find the car instance and return it"""
+        car = self.directory_manager.load_car_dir(car_name)
+        self.cars.append(car)
+        return car

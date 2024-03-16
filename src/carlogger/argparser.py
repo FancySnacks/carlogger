@@ -42,6 +42,7 @@ class ArgParser:
     def get_subparser_type(self, argv: list[str]) -> str:
         if 'add' in argv:
             return 'add'
+
         if 'read' in argv:
             return 'read'
 
@@ -115,9 +116,10 @@ class AddSubparser(Subparser):
 
         self.add_subparsers = self.add_parser.add_subparsers(help="Subcommands")
 
+        # ===== Add Car ===== #
+
         self.add_car_parser = self.add_subparsers.add_parser('car')
 
-        # ===== Add Car ===== #
 
         self.add_car_parser.add_argument('--name',
                                          type=str,
@@ -150,3 +152,15 @@ class AddSubparser(Subparser):
         self.add_car_parser.add_argument('--weight',
                                          type=int,
                                          required=True)
+
+        # ===== Add Collection ===== #
+
+        self.add_collection_parser = self.add_subparsers.add_parser('collection')
+
+        self.add_collection_parser.add_argument('--name',
+                                                type=str,
+                                                required=True)
+
+        self.add_collection_parser.add_argument('--car',
+                                                type=str,
+                                                required=True)

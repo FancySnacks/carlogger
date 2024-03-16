@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import dataclasses
+
 from abc import abstractmethod, ABC
 from typing import TYPE_CHECKING
 
@@ -29,17 +31,46 @@ class ArgExecutor(ABC):
 
 class AddArgExecutor(ArgExecutor):
     """Handles 'add' subparser for adding new cars, collections and entry logs."""
-    valid_keys = ['name', 'manufacturer', 'model', 'year', 'mileage', 'body', 'length', 'weight']
-
-    def __init__(self, parsed_args: dict, app_session: AppSession):
+    def __init__(self, parsed_args: dict, app_session: AppSession, raw_args: list[str]):
         self.parsed_args = parsed_args
         self.app_session = app_session
+        self.raw_args = raw_args[1::]
+
+        self.arg_func_map = {'car': self.add_new_car,
+                             'collection': self.add_new_collection,
+                             'component': self.add_new_component,
+                             'entry': self.add_new_entry}
 
     def evaluate_args(self):
         """Execute mapped functions based on passed args."""
-        # remove args that are not related to this executor and subparser
-        vals = {key: value for (key, value) in self.parsed_args.items() if key in self.valid_keys}
+        context = self._recognize_context()
+        self.arg_func_map.get(context)()
+
+    def add_new_car(self):
+        """Create a new car directory based on passed argument values."""
+        valid_car_keys = [field.name for field in dataclasses.fields(Car)]
+        vals = {key: value for (key, value) in self.parsed_args.items() if key in valid_car_keys}
         self.app_session.add_new_car(vals)
+
+    def add_new_collection(self):
+        """Create a new car collection belonging to specified car."""
+        coll_name = self.parsed_args['name']
+        car_name = self.parsed_args['car']
+        self.app_session.add_new_collection(car_name, coll_name)
+
+    def add_new_component(self):
+        """Create a new car component belonging to a specified collection and car."""
+
+    def add_new_entry(self):
+        """Create a new car component belonging to a specified car, collection and component."""
+
+    def _recognize_context(self) -> str:
+        """What do we wish to create; car, collection, component or log entry?"""
+        match self.raw_args[1]:
+            case 'car': return 'car'
+            case 'collection': return 'collection'
+            case 'component': return 'component'
+            case 'entry': return 'entry'
 
 
 class ReadArgExecutor(ArgExecutor):
