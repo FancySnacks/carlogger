@@ -37,6 +37,7 @@ class ArgParser:
         subparser.create_subparser()
 
     def parse_args(self, args: list[str]) -> dict:
+        print(args)
         self.parsed_args = self.parser.parse_args(args).__dict__
         return self.parsed_args
 

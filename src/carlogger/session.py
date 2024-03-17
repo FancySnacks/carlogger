@@ -24,7 +24,7 @@ class AppSession:
             case 'add':
                 self.arg_executor = AddArgExecutor(parsed_args, self, raw_args)
             case _:
-                self.arg_executor = AddArgExecutor(parsed_args, self, raw_args)
+                self.arg_executor = ArgExecutor(parsed_args, self, raw_args)
 
         self.arg_executor.evaluate_args()
 

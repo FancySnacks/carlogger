@@ -1,6 +1,8 @@
 import pytest
 
-from carlogger.argparser import ArgParser
+from carlogger.arg_executor import ReadArgExecutor, AddArgExecutor
+from carlogger.argparser import ArgParser, AddSubparser, ReadSubparser
+from carlogger.session import AppSession
 
 
 def test_parses_args_to_parse():
@@ -21,3 +23,19 @@ def test_parses_args_to_parse():
 def test_get_subparser_type(args, expected):
     parser = ArgParser()
     assert parser.get_subparser_type(args) == expected
+
+
+@pytest.mark.parametrize("args, expected", [
+    (['read', '--car', 'Daily'], ReadArgExecutor),
+])
+def test_console_args_get_evaluated(args, expected, directory_manager):
+    session = AppSession(directory_manager)
+    parser = ArgParser()
+    subparser = ReadSubparser(parser) if 'read' in args else AddSubparser(parser)
+    parser.setup_args()
+    parser.add_subparser(subparser)
+
+    parsed_args = parser.parse_args(args)
+    session.execute_console_args(parser.get_subparser_type(args), parsed_args, args)
+
+    assert session.arg_executor.__class__ == expected

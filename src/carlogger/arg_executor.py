@@ -22,7 +22,7 @@ from carlogger.entryfilter import EntryFilter
 class ArgExecutor(ABC):
     """Abstract ReadArgExecutor class for executing functions related to console args."""
     @abstractmethod
-    def __init__(self, parsed_args: dict, app_session: AppSession):
+    def __init__(self, parsed_args: dict, app_session: AppSession, raw_args: list[str]):
         return
 
     @abstractmethod
