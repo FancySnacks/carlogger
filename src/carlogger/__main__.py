@@ -11,14 +11,14 @@ from carlogger.log_entry import LogEntry
 from carlogger.car_component import CarComponent
 
 
-def create_subparser(parser_parent: ArgParser, argv: list[str]) -> Subparser:
+def create_subparser(parser_parent: ArgParser, argv: list[str]) -> Subparser | None:
     if 'add' in argv:
         return AddSubparser(parser_parent)
 
     if 'read' in argv:
         return ReadSubparser(parser_parent)
 
-    return Subparser(parser_parent)
+    return None
 
 
 def main(argv: list[str] = None) -> int:
@@ -26,7 +26,10 @@ def main(argv: list[str] = None) -> int:
 
     parser = ArgParser()
     parser.setup_args()
-    parser.add_subparser(create_subparser(parser, raw_args))
+
+    if sp := create_subparser(parser, raw_args):
+        parser.add_subparser(sp)
+
     parsed_args: dict = parser.parse_args(argv)
 
     data_manager = JSONFiledataManager()
