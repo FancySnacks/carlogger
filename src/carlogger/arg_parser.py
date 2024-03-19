@@ -121,7 +121,6 @@ class AddSubparser(Subparser):
 
         self.add_car_parser = self.add_subparsers.add_parser('car')
 
-
         self.add_car_parser.add_argument('--name',
                                          type=str,
                                          required=True)
@@ -158,7 +157,8 @@ class AddSubparser(Subparser):
 
         self.add_collection_parser = self.add_subparsers.add_parser('collection')
 
-        self.add_collection_parser.add_argument('--name',
+        self.add_collection_parser.add_argument('-n',
+                                                '--name',
                                                 type=str,
                                                 required=True)
 
@@ -170,7 +170,8 @@ class AddSubparser(Subparser):
 
         self.add_component_parser = self.add_subparsers.add_parser('component')
 
-        self.add_component_parser.add_argument('--name',
+        self.add_component_parser.add_argument('-n',
+                                               '--name',
                                                type=str,
                                                required=True)
 
@@ -219,3 +220,75 @@ class AddSubparser(Subparser):
                                            type=str,
                                            nargs='*',
                                            default=[])
+
+
+class DeleteSubparser(Subparser):
+    def __init__(self, parser_parent: ArgParser):
+        self.parser_parent = parser_parent
+
+    def create_subparser(self):
+        self.delete_parser = self.parser_parent.subparsers.add_parser('delete',
+                                                                      help="Delete specified car, collection, component or log entry.",
+                                                                      formatter_class=argparse.RawTextHelpFormatter)
+
+        self.delete_subparsers = self.delete_parser.add_subparsers(help="Subcommands")
+
+        # ===== Delete Car ===== #
+
+        self.delete_car_parser = self.delete_subparsers.add_parser('car')
+
+        self.delete_car_parser.add_argument('-n',
+                                            '--name',
+                                            type=str,
+                                            required=True)
+
+        # ===== Delete Collection ===== #
+
+        self.delete_collection_parser = self.delete_subparsers.add_parser('collection')
+
+        self.delete_collection_parser.add_argument('-n',
+                                                   '--name',
+                                                   type=str,
+                                                   required=True)
+
+        self.delete_collection_parser.add_argument('--car',
+                                                   type=str,
+                                                   required=True)
+
+        # ===== Delete Collection ===== #
+
+        self.delete_component_parser = self.delete_subparsers.add_parser('component')
+
+        self.delete_component_parser.add_argument('-n',
+                                                  '--name',
+                                                  type=str,
+                                                  required=True)
+
+        self.delete_component_parser.add_argument('--car',
+                                                  type=str,
+                                                  required=True)
+
+        self.delete_component_parser.add_argument('--collection',
+                                                  type=str,
+                                                  required=True)
+
+        # ===== Delete Entry ===== #
+
+        self.delete_entry_parser = self.delete_subparsers.add_parser('entry')
+
+        self.delete_entry_parser.add_argument('-id',
+                                              '--id',
+                                              type=str,
+                                              required=True)
+
+        self.delete_entry_parser.add_argument('--car',
+                                              type=str,
+                                              required=True)
+
+        self.delete_entry_parser.add_argument('--collection',
+                                              type=str,
+                                              required=True)
+
+        self.delete_entry_parser.add_argument('--component',
+                                              type=str,
+                                              required=True)

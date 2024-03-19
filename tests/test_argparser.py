@@ -1,7 +1,7 @@
 import pytest
 
 from carlogger.arg_executor import ReadArgExecutor, AddArgExecutor
-from carlogger.argparser import ArgParser, AddSubparser, ReadSubparser
+from carlogger.arg_parser import ArgParser, AddSubparser, ReadSubparser
 from carlogger.session import AppSession
 
 

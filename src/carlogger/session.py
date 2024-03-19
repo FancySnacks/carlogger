@@ -23,6 +23,8 @@ class AppSession:
                 self.arg_executor = ReadArgExecutor(parsed_args, self)
             case 'add':
                 self.arg_executor = AddArgExecutor(parsed_args, self, raw_args)
+            case 'delete':
+                self.arg_executor = DeleteArgExecutor(parsed_args, self, raw_args)
             case _:
                 return
 
