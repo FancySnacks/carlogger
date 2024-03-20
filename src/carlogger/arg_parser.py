@@ -21,13 +21,6 @@ class ArgParser:
         self.parsed_args: dict = {}
 
     def setup_args(self):
-        # --gui argument
-        # argument for creating collections
-        # argument for creating components
-        # argument for creating entries
-
-        # ==== Returning Values ==== #
-
         self.parser.add_argument('--gui',
                                  action='store_true',
                                  help="Open graphical user interface for the app.")
@@ -200,6 +193,7 @@ class AddSubparser(Subparser):
                                            required=True)
 
         self.add_entry_parser.add_argument('--desc',
+                                           metavar='description',
                                            type=str,
                                            required=True)
 
