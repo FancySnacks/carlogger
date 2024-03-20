@@ -1,4 +1,0 @@
-carlogger add car --name Spare --manufacturer Skoda --model Roomster --year 2002 --mileage 198000 --body Hatchback --length 4200 --weight 1800
-carlogger add collection --name Engine --car Spare
-carlogger add component --name "Spark Plug" --car Spare --collection Engine
-carlogger add entry --car Spare --collection Engine --component "Spark Plug" --desc "Replaced all of spark plugs for new ones" --mileage 198000 --category 'swap'

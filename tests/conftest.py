@@ -10,6 +10,19 @@ from carlogger.directory_manager import DirectoryManager
 from carlogger.filedata_manager import JSONFiledataManager
 
 
+with open(pathlib.Path.cwd().joinpath("tests/add_arg_test"), "r") as f:
+    commands = [c.replace("\n", "").replace('"', "").split() for c in f.readlines()]
+    keys = ['car', 'collection', 'component', 'entry']
+    args = list(zip(keys, commands))
+
+ARGS = {k: v for k, v in args}
+
+
+@pytest.fixture
+def add_cmd() -> dict:
+    return ARGS
+
+
 @pytest.fixture(scope="session")
 def mock_car_info() -> dict:
     d = {

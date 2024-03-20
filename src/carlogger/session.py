@@ -45,37 +45,37 @@ class AppSession:
 
     def remove_car(self, car_name: str):
         """Delete car directory by name."""
-        car_to_remove = self.find_car_by_name(car_name)
+        car_to_remove = self.get_car_by_name(car_name)
         self.directory_manager.remove_car_directory(car_to_remove)
         self.cars.remove(car_to_remove)
 
     def save_car(self, car_name: str):
         """Update car directory."""
-        car = self.find_car_by_name(car_name)
+        car = self.get_car_by_name(car_name)
         self.directory_manager.update_car_directory(car)
 
     def add_new_collection(self, car_name: str, collection_name: str):
         """Add new collection to specified car and update save directory."""
-        car = self.find_car_by_name(car_name)
+        car = self.get_car_by_name(car_name)
         car.create_collection(collection_name)
         self.directory_manager.update_car_directory(car)
 
     def add_new_component(self, car_name: str, collection_name: str, component_name: str):
         """Add new collection to specified car and update save directory."""
-        car = self.find_car_by_name(car_name)
+        car = self.get_car_by_name(car_name)
         collection = car.get_collection_by_name(collection_name)
         collection.create_component(component_name)
         self.directory_manager.update_car_directory(car)
 
     def add_new_entry(self, car_name: str, collection_name: str, component_name: str, entry_data: dict):
         """Add new collection to specified car and update save directory."""
-        car = self.find_car_by_name(car_name)
+        car = self.get_car_by_name(car_name)
         collection = car.get_collection_by_name(collection_name)
         component = collection.get_component_by_name(component_name)
         component.create_entry(entry_data)
         self.directory_manager.update_car_directory(car)
 
-    def find_car_by_name(self, car_name: str) -> Car:
+    def get_car_by_name(self, car_name: str) -> Car:
         """Find car by name. If it's not found, attempt loading the car from save directory and check again."""
         try:
             return list(filter(lambda x: x.car_info.name == car_name, self.cars))[0]
