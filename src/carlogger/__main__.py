@@ -39,35 +39,6 @@ def main(argv: list[str] = None) -> int:
     app.execute_console_args(parser.get_subparser_type(raw_args), parsed_args, raw_args)
 
     print(parsed_args)
-    # app.execute_console_args(parsed_args)
-
-    # new_car = CarInfo(manufacturer='Seat',
-    #                   model='Leon 1',
-    #                   year=2003,
-    #                   body='hatchback',
-    #                   length=4140,
-    #                   mileage=205000,
-    #                   weight=1700,
-    #                   name='Daily')
-    #
-    # new_entry = {"desc": "Engine Checkup",
-    #              "date": "09-03-1964",
-    #              "mileage": 1404,
-    #              "category": "check",
-    #              "tags": [],
-    #              }
-    #
-    # cars = directory_manager.load_all_car_dir()
-
-    # app.cars = cars
-
-    # print(app.cars)
-
-    #app.remove_car("Daily")
-
-    # create a new app session
-    # load saved info: car -> collections -> car parts -> entries
-    # create widgets
 
     return 0
 
