@@ -80,6 +80,7 @@ class AddArgExecutor(ArgExecutor):
 
     def _recognize_context(self) -> str:
         """What do we wish to create; car, collection, component or log entry?"""
+        print(self.raw_args[1])
         match self.raw_args[1]:
             case 'car': return 'car'
             case 'collection': return 'collection'

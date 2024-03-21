@@ -33,7 +33,7 @@ def mock_car_info() -> dict:
         'length': 4140,
         'mileage': 205000,
         'weight': 1700,
-        'name': 'Daily'
+        'name': 'ProjectCar'
     }
 
     return d
@@ -87,6 +87,8 @@ def mock_car_directory(tmp_path, directory_manager, mock_car_info) -> dict[str, 
     car_info = CarInfo(**mock_car_info)
     path = tmp_path.joinpath(car_info.name)
     car_to_add = Car(car_info, path=path)
+
+    directory_manager.car_save_dir = tmp_path
 
     directory_manager.create_car_directory(car_to_add)
 

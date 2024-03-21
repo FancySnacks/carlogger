@@ -1,4 +1,5 @@
 import pytest
+import shutil
 
 from carlogger.arg_executor import ReadArgExecutor, AddArgExecutor
 from carlogger.arg_parser import ArgParser, AddSubparser, ReadSubparser
@@ -26,16 +27,26 @@ def test_get_subparser_type(args, expected):
 
 
 @pytest.mark.parametrize("args, expected", [
-    (['read', '--car', 'Daily'], ReadArgExecutor),
+    (['', 'add', 'car', '--name', 'CarTestPytest', '--manufacturer', 'Skoda', '--model', 'Roomster', '--year', '2002',
+      '--mileage', '198000', '--body', 'Hatchback', '--length', '4200', '--weight', '1800'], AddArgExecutor),
+    (['', 'read', '--car', 'CarTestPytest'], ReadArgExecutor)
 ])
 def test_console_args_get_evaluated(args, expected, directory_manager):
+
     session = AppSession(directory_manager)
     parser = ArgParser()
     subparser = ReadSubparser(parser) if 'read' in args else AddSubparser(parser)
     parser.setup_args()
     parser.add_subparser(subparser)
 
-    parsed_args = parser.parse_args(args)
+    parsed_args = parser.parse_args(args[1::])
     session.execute_console_args(parser.get_subparser_type(args), parsed_args, args)
 
     assert session.arg_executor.__class__ == expected
+
+
+def test_teardown(directory_manager):
+    """Tears down unnecessary save file. Dirty code woopsie :P"""
+    session = AppSession(directory_manager)
+    session.remove_car('CarTestPytest')
+    assert len(session.cars) < 1

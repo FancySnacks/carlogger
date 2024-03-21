@@ -13,8 +13,9 @@ from carlogger.util import get_car_dirs
 
 
 class DirectoryManager:
-    def __init__(self, data_manager: FiledataManager):
+    def __init__(self, data_manager: FiledataManager, car_save_dir=CARS_PATH):
         self.data_manager = data_manager
+        self.car_save_dir = car_save_dir
 
     def create_car_directory(self, car: Car):
         path = car.path
@@ -40,12 +41,11 @@ class DirectoryManager:
     def remove_car_directory(self, car: Car):
         """Delete a car directory along with all its data files from 'save' directory if it exists."""
         path = car.path
-
         try:
             shutil.rmtree(path)
-            print(REMOVE_CAR_SUCCESS.format(car.car_info.name))
+            print(REMOVE_CAR_SUCCESS.format(name=car.car_info.name))
         except OSError:
-            print(REMOVE_CAR_FAILURE.format(car.car_info.name))
+            print(REMOVE_CAR_FAILURE.format(name=car.car_info.name))
             return
 
     def update_car_directory(self, car: Car):
@@ -63,10 +63,10 @@ class DirectoryManager:
 
     def load_car_dir(self, car_name: str):
         """Load target car inside 'save' folder via name."""
-        car_dirs = get_car_dirs()
+        car_dirs = get_car_dirs(self.car_save_dir)
 
         if car_name in car_dirs:
-            path = CARS_PATH.joinpath(car_name)
+            path = self.car_save_dir.joinpath(car_name)
             car_info = CarInfo(**self.data_manager.load_file(self._create_car_info_path(path)))
 
             collections = self.load_car_collections_from_path(path)
@@ -83,7 +83,7 @@ class DirectoryManager:
         car_dirs = get_car_dirs()
 
         for directory in car_dirs:
-            path = CARS_PATH.joinpath(directory)
+            path = self.car_save_dir.joinpath(directory)
             car_info = CarInfo(**self.data_manager.load_file(self._create_car_info_path(path)))
 
             collections = self.load_car_collections_from_path(path)

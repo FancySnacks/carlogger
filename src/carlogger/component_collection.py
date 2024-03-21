@@ -69,6 +69,10 @@ class ComponentCollection:
 
         return new_component
 
+    def remove_component(self, name: str):
+        component_to_remove = self.get_component_by_name(name)
+        self.children.remove(component_to_remove)
+
     def _check_for_component_duplicates(self, name: str):
         if name in [ch.name for ch in self.children]:
             raise ValueError(ADD_COMPONENT_FAILURE.format(name=name, collection=self.name))

@@ -17,9 +17,9 @@ def create_car_dir_path(car_info: dict) -> Path:
     return path
 
 
-def get_car_dirs() -> list[str]:
-    car_dirs = filter(lambda x: os.path.isdir(CARS_PATH.joinpath(x)),
-                      os.listdir(CARS_PATH))
+def get_car_dirs(cars_save_path=CARS_PATH) -> list[str]:
+    car_dirs = filter(lambda x: os.path.isdir(cars_save_path.joinpath(x)),
+                      os.listdir(cars_save_path))
     return list(car_dirs)
 
 
