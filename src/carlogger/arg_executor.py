@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import dataclasses
+import uuid
 
 from abc import abstractmethod, ABC
 from typing import TYPE_CHECKING
@@ -32,14 +33,59 @@ class ArgExecutor(ABC):
 
 
 class DeleteArgExecutor(ArgExecutor):
-    """Handles 'delete' subparser for adding new cars, collections and entry logs."""
+    """Handles 'delete' subparser for deleting cars, collections or entry logs."""
     def __init__(self, parsed_args: dict, app_session: AppSession, raw_args: list[str]):
         self.parsed_args = parsed_args
         self.app_session = app_session
-        self.raw_args = raw_args
+        self.raw_args = raw_args[1::]
+
+        self.arg_func_map = {'car': self.delete_car,
+                             'collection': self.delete_collection,
+                             'component': self.delete_component,
+                             'entry': self.delete_entry}
 
     def evaluate_args(self):
-        pass
+        """Execute mapped functions based on passed args."""
+        context = self._recognize_context()
+        self.arg_func_map.get(context)
+
+    def delete_car(self):
+        car_name = self.parsed_args['car']
+        self.app_session.delete_car(car_name)
+
+    def delete_collection(self):
+        car_name = self.parsed_args['car']
+        collection_name = self.parsed_args['collection']
+        self.app_session.delete_collection(car_name, collection_name)
+
+    def delete_component(self):
+        car_name = self.parsed_args['car']
+        collection_name = self.parsed_args['collection']
+        component_name = self.parsed_args['component']
+        self.app_session.delete_component(car_name, collection_name, component_name)
+
+    def delete_entry(self):
+        car_name = self.parsed_args['car']
+        component_name = self.parsed_args['component']
+        entry = self.parsed_args['entry']
+
+        try:
+            uuid.UUID(entry, version=1)
+            self.app_session.delete_entry_by_id(car_name, component_name, entry)
+        except ValueError:
+            self.app_session.delete_entry_by_index(car_name, component_name, entry)
+
+    def _recognize_context(self):
+        """See which item user wants to delete."""
+        match self.raw_args[1]:
+            case 'car': return 'car'
+            case 'collection': return 'collection'
+            case 'component': return 'component'
+            case 'entry': return 'entry'
+
+    def check_if_item_is_empty(self) -> bool:
+        """Check if item has children."""
+        return False
 
 
 class AddArgExecutor(ArgExecutor):
@@ -91,7 +137,6 @@ class AddArgExecutor(ArgExecutor):
 
     def _recognize_context(self) -> str:
         """What do we wish to create; car, collection, component or log entry?"""
-        print(self.raw_args[1])
         match self.raw_args[1]:
             case 'car': return 'car'
             case 'collection': return 'collection'

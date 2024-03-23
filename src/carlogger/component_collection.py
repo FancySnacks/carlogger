@@ -69,7 +69,7 @@ class ComponentCollection:
 
         return new_component
 
-    def remove_component(self, name: str):
+    def delete_component(self, name: str):
         component_to_remove = self.get_component_by_name(name)
         self.children.remove(component_to_remove)
 

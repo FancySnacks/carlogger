@@ -46,5 +46,5 @@ def test_console_args_get_evaluated(args, expected, directory_manager):
 def test_teardown(directory_manager):
     """Tears down unnecessary save file. Dirty code woopsie :P"""
     session = AppSession(directory_manager)
-    session.remove_car('CarTestPytest')
+    session.delete_car('CarTestPytest')
     assert len(session.cars) < 1

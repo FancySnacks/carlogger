@@ -65,7 +65,7 @@ class ReadSubparser(Subparser):
     def create_subparser(self):
         self.return_parser = self.parser_parent.subparsers.add_parser('read',
                                                                       help="Return car info, collection/component list  or "
-                                                                           "log entries.",
+                                                                           "log entries by specifying the car.\n",
                                                                       formatter_class=argparse.RawTextHelpFormatter)
         self.return_parser.add_argument('--car',
                                         type=str,

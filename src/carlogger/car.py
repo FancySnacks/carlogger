@@ -44,7 +44,7 @@ class Car:
 
         return new_collection
 
-    def remove_collection(self, name: str):
+    def delete_collection(self, name: str):
         collection_to_remove = self.get_collection_by_name(name)
         self.collections.remove(collection_to_remove)
 
