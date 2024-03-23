@@ -5,7 +5,7 @@ import uuid
 
 from dataclasses import dataclass, field
 
-from carlogger.const import ADD_ENTRY_SUCCESS
+from carlogger.const import ADD_ENTRY_SUCCESS, REMOVE_ENTRY_SUCCESS, REMOVE_ENTRY_FAILURE
 from carlogger.log_entry import LogEntry
 from carlogger.entry_category import EntryCategory
 from carlogger.util import format_date_string_to_tuple
@@ -70,11 +70,17 @@ class CarComponent:
 
         self._add_search_tags_from_entry(entry_to_update)
 
-    def remove_entry_by_id(self, entry_id: str):
+    def delete_entry_by_id(self, entry_id: str):
         """Delete log entry given it's unique id hash."""
-        self.log_entries.remove(self.get_entry_by_id(entry_id))
+        entry_to_delete = self.get_entry_by_id(entry_id)
 
-    def remove_entry_by_index(self, entry_index: int = -1):
+        if entry_to_delete:
+            self.log_entries.remove(entry_to_delete)
+            print(REMOVE_ENTRY_SUCCESS.format(id=entry_id))
+        else:
+            print(REMOVE_ENTRY_FAILURE.format(id=entry_id, component=self))
+
+    def delete_entry_by_index(self, entry_index: int = -1):
         """Removes log entry from list at target index, removes last one by default."""
         self.log_entries.pop(entry_index)
 

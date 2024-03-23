@@ -50,18 +50,33 @@ class DeleteArgExecutor(ArgExecutor):
 
     def delete_car(self):
         car_name = self.parsed_args['car']
-        self.app_session.delete_car(car_name)
+
+        if any([self._check_if_car_is_empty(car_name),
+                self.parsed_args.get('forced') is not None]):
+            self.app_session.delete_car(car_name)
+        else:
+            print(f"ERROR: '{car_name}' cannot be removed because it's not empty!")
 
     def delete_collection(self):
         car_name = self.parsed_args['car']
-        collection_name = self.parsed_args['collection']
-        self.app_session.delete_collection(car_name, collection_name)
+        collection_name = self.parsed_args['name']
+
+        if any([self._check_if_collection_is_empty(collection_name, car_name),
+                self.parsed_args.get('forced') is not None]):
+            self.app_session.delete_collection(car_name, collection_name)
+        else:
+            print(f"ERROR: '{collection_name}' cannot be removed because it's not empty!")
 
     def delete_component(self):
         car_name = self.parsed_args['car']
         collection_name = self.parsed_args['collection']
-        component_name = self.parsed_args['component']
-        self.app_session.delete_component(car_name, collection_name, component_name)
+        component_name = self.parsed_args['name']
+
+        if any([self._check_if_component_is_empty(component_name, car_name),
+                self.parsed_args.get('forced') is not None]):
+            self.app_session.delete_component(car_name, collection_name, component_name)
+        else:
+            print(f"ERROR: '{component_name}' cannot be removed because it's not empty!")
 
     def delete_entry(self):
         car_name = self.parsed_args['car']
@@ -76,9 +91,17 @@ class DeleteArgExecutor(ArgExecutor):
             case 'component': return 'component'
             case 'entry': return 'entry'
 
-    def check_if_item_is_empty(self) -> bool:
-        """Check if item has children."""
-        return False
+    def _check_if_car_is_empty(self, car_name: str) -> bool:
+        car = self.app_session.get_car_by_name(car_name)
+        return len(car.collections) < 1
+
+    def _check_if_collection_is_empty(self, collection_name: str, car_name: str) -> bool:
+        coll = self.app_session.get_car_by_name(car_name).get_collection_by_name(collection_name)
+        return len(coll.children) < 1
+
+    def _check_if_component_is_empty(self, component_name: str, car_name: str) -> bool:
+        comp = self.app_session.get_car_by_name(car_name).get_component_by_name(component_name)
+        return len(comp.log_entries) < 1
 
 
 class AddArgExecutor(ArgExecutor):

@@ -7,7 +7,8 @@ import pathlib
 from dataclasses import dataclass, field
 
 from carlogger.car_component import CarComponent
-from carlogger.const import ADD_COMPONENT_SUCCESS, ADD_COMPONENT_FAILURE
+from carlogger.const import ADD_COMPONENT_SUCCESS, ADD_COMPONENT_FAILURE, \
+    REMOVE_COMPONENT_SUCCESS, REMOVE_COMPONENT_FAILURE
 from carlogger.log_entry import LogEntry
 
 
@@ -61,7 +62,6 @@ class ComponentCollection:
     def create_component(self, name: str) -> CarComponent:
         """Create new car component, add it to the list and return object reference."""
         self._check_for_component_duplicates(name)
-        print(self.path.parent.joinpath('components'))
         new_component = CarComponent(name, path=self.path.parent.joinpath('components'))
         self.children.append(new_component)
 
@@ -71,7 +71,12 @@ class ComponentCollection:
 
     def delete_component(self, name: str):
         component_to_remove = self.get_component_by_name(name)
-        self.children.remove(component_to_remove)
+
+        if component_to_remove:
+            self.children.remove(component_to_remove)
+            print(REMOVE_COMPONENT_SUCCESS.format(name=name))
+        else:
+            print(REMOVE_COMPONENT_FAILURE.format(name=name, collection=self.name))
 
     def _check_for_component_duplicates(self, name: str):
         if name in [ch.name for ch in self.children]:

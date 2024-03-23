@@ -48,6 +48,9 @@ class DirectoryManager:
             print(REMOVE_CAR_FAILURE.format(name=car.car_info.name))
             return
 
+    def remove_item(self, item):
+        self.data_manager.delete_file(item)
+
     def update_car_directory(self, car: Car):
         self.data_manager.save_file(car.car_info, self.create_car_info_path(car))
         self.update_collections_files(car.collections)

@@ -1,11 +1,9 @@
 """Class that combines everything together, the heart of the program"""
-import uuid
 
 from carlogger.directory_manager import DirectoryManager
 from carlogger.car import Car
 from carlogger.car_info import CarInfo
 from carlogger.arg_executor import ArgExecutor, AddArgExecutor, ReadArgExecutor, DeleteArgExecutor
-from carlogger.const import REMOVE_ENTRY_SUCCESS, REMOVE_ENTRY_FAILURE
 
 
 class AppSession:
@@ -65,6 +63,8 @@ class AppSession:
     def delete_collection(self, car_name: str, collection_name: str):
         """Delete collection from target car by name."""
         car = self.get_car_by_name(car_name)
+        coll = car.get_collection_by_name(collection_name)
+        self.directory_manager.remove_item(coll)
         car.delete_collection(collection_name)
         self.directory_manager.update_car_directory(car)
 
@@ -79,6 +79,8 @@ class AppSession:
         """Delete component by name from target collection from specified car."""
         car = self.get_car_by_name(car_name)
         coll = car.get_collection_by_name(collection_name)
+        comp = coll.get_component_by_name(component_name)
+        self.directory_manager.remove_item(comp)
         coll.delete_component(component_name)
         self.directory_manager.update_car_directory(car)
 
@@ -94,22 +96,15 @@ class AppSession:
         """Delete entry via list index from target component."""
         car = self.get_car_by_name(car_name)
         comp = car.get_component_by_name(component)
-        comp.remove_entry_by_index(entry_index)
+        comp.delete_entry_by_index(entry_index)
         self.directory_manager.update_car_directory(car)
 
     def delete_entry_by_id(self, car_name: str, entry_id: str):
         """Delete entry via list index from target component."""
         car = self.get_car_by_name(car_name)
-
-        try:
-            uuid.UUID(entry_id, version=1)
-            comp = car.get_component_of_entry_by_entry_id(entry_id)
-            comp.remove_entry_by_id(entry_id)
-            self.directory_manager.update_car_directory(car)
-        except ValueError:
-            print(REMOVE_ENTRY_FAILURE.format(id=entry_id, car=car_name))
-        else:
-            print(REMOVE_ENTRY_SUCCESS.format(id=entry_id))
+        comp = car.get_component_of_entry_by_entry_id(entry_id)
+        comp.delete_entry_by_id(entry_id)
+        self.directory_manager.update_car_directory(car)
 
     def get_car_by_name(self, car_name: str) -> Car:
         """Find car by name. If it's not found, attempt loading the car from save directory and check again."""

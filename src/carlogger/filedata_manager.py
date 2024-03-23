@@ -1,6 +1,7 @@
 """Save and load collections, components, logs."""
 
 import json
+import shutil
 
 from abc import ABC, abstractmethod
 from typing import Protocol
@@ -31,6 +32,11 @@ class FiledataManager(ABC):
         """Save data as file to target path."""
         pass
 
+    @abstractmethod
+    def delete_file(self, obj):
+        """Remove file from the system."""
+        pass
+
 
 class JSONFiledataManager(FiledataManager):
     suffix = "json"
@@ -49,3 +55,7 @@ class JSONFiledataManager(FiledataManager):
 
         with open(filepath, "w+") as file:
             json.dump(data_to_save, file, indent=3)
+
+    def delete_file(self, obj: JSONSerializableObject):
+        """Remove target savefile from the system."""
+        shutil.rmtree(obj.path)

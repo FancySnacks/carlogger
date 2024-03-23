@@ -265,12 +265,6 @@ class DeleteSubparser(Subparser):
                                                                         " specific, you have to add parenting car or "
                                                                         "collection.")
 
-        self.delete_parser.add_argument('-f',
-                                        '--forced',
-                                        help="Delete item and it's children even if it's not empty.\n"
-                                             "Applies to cars, collections and components, but not entries.",
-                                        action='store_true')
-
         # ===== Delete Car ===== #
 
         self.delete_car_parser = self.delete_subparsers.add_parser('car')
@@ -279,6 +273,11 @@ class DeleteSubparser(Subparser):
                                             '--name',
                                             type=str,
                                             required=True)
+
+        self.delete_car_parser.add_argument('-f',
+                                            '--forced',
+                                            help="Delete item and it's children even if it's not empty.\n",
+                                            action='store_true')
 
         # ===== Delete Collection ===== #
 
@@ -293,7 +292,12 @@ class DeleteSubparser(Subparser):
                                                    type=str,
                                                    required=True)
 
-        # ===== Delete Collection ===== #
+        self.delete_collection_parser.add_argument('-f',
+                                                   '--forced',
+                                                   help="Delete item and it's children even if it's not empty.\n",
+                                                   action='store_true')
+
+        # ===== Delete Component ===== #
 
         self.delete_component_parser = self.delete_subparsers.add_parser('component')
 
@@ -309,6 +313,11 @@ class DeleteSubparser(Subparser):
         self.delete_component_parser.add_argument('--collection',
                                                   type=str,
                                                   required=True)
+
+        self.delete_component_parser.add_argument('-f',
+                                                  '--forced',
+                                                  help="Delete item and it's children even if it's not empty.\n",
+                                                  action='store_true')
 
         # ===== Delete Entry ===== #
 
