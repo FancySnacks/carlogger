@@ -44,6 +44,9 @@ class ArgParser:
         if 'read' in argv:
             return 'read'
 
+        if 'delete' in argv:
+            return 'delete'
+
 
 class Subparser(ABC):
     @abstractmethod
@@ -66,17 +69,20 @@ class ReadSubparser(Subparser):
                                                                       formatter_class=argparse.RawTextHelpFormatter)
         self.return_parser.add_argument('--car',
                                         type=str,
+                                        metavar="CAR_NAME",
                                         help="Return car info via name.",
                                         required=True)
 
         self.return_parser.add_argument('--collection',
                                         type=str,
+                                        metavar="COLLECTION_NAME",
                                         help="Return collection via name.",
                                         nargs='*',
                                         required=False)
 
         self.return_parser.add_argument('--component',
                                         type=str,
+                                        metavar="COMPONENT_NAME",
                                         help="Return component via name.",
                                         nargs='*',
                                         required=False)
@@ -99,7 +105,7 @@ class ReadSubparser(Subparser):
                                              "'[-]n' - show 'n' amount of entries from youngest to oldest, '-' "
                                              "before integer will show oldest to youngest instead\n",
                                         nargs='*',
-                                        metavar='filter options',
+                                        metavar='FILTER_OPTIONS',
                                         required=False)
 
 
@@ -112,7 +118,10 @@ class AddSubparser(Subparser):
                                                                    help="Add new car, collection, component or log entry.",
                                                                    formatter_class=argparse.RawTextHelpFormatter)
 
-        self.add_subparsers = self.add_parser.add_subparsers(help="Subcommands")
+        self.add_subparsers = self.add_parser.add_subparsers(help="Choose item type to add.\n"
+                                                                  "Collections and components require only names and"
+                                                                  "parenting car and/or collection.\n"
+                                                                  "Cars and entries require much more data.")
 
         # ===== Add Car ===== #
 
@@ -120,6 +129,7 @@ class AddSubparser(Subparser):
 
         self.add_car_parser.add_argument('--name',
                                          type=str,
+                                         help="User-defined car name for easy access.",
                                          required=True)
 
         self.add_car_parser.add_argument('--manufacturer',
@@ -132,6 +142,7 @@ class AddSubparser(Subparser):
 
         self.add_car_parser.add_argument('--year',
                                          type=int,
+                                         help="Year of make.",
                                          required=True)
 
         self.add_car_parser.add_argument('--mileage',
@@ -140,6 +151,7 @@ class AddSubparser(Subparser):
 
         self.add_car_parser.add_argument('--body',
                                          type=str,
+                                         help="Hatchback, sedan, coupe, station wagon, SUV etc.",
                                          required=True)
 
         self.add_car_parser.add_argument('--length',
@@ -150,17 +162,26 @@ class AddSubparser(Subparser):
                                          type=int,
                                          required=True)
 
+        self.add_car_parser.add_argument('-p',
+                                         type=str,
+                                         help='More car properties as defined by the user, stored into a list.',
+                                         metavar='OTHER CAR PROPERTIES',
+                                         nargs='*',
+                                         default=[])
+
         # ===== Add Collection ===== #
 
         self.add_collection_parser = self.add_subparsers.add_parser('collection')
 
         self.add_collection_parser.add_argument('-n',
                                                 '--name',
+                                                metavar="COLLECTION NAME",
                                                 type=str,
                                                 required=True)
 
         self.add_collection_parser.add_argument('--car',
                                                 type=str,
+                                                help="Parent car.",
                                                 required=True)
 
         # ===== Add Component ===== #
@@ -169,14 +190,17 @@ class AddSubparser(Subparser):
 
         self.add_component_parser.add_argument('-n',
                                                '--name',
+                                               metavar="COMPONENT NAME",
                                                type=str,
                                                required=True)
 
         self.add_component_parser.add_argument('--car',
                                                type=str,
+                                               help="Parent car.",
                                                required=True)
 
         self.add_component_parser.add_argument('--collection',
+                                               help="Parent collection.",
                                                type=str,
                                                required=True)
 
@@ -185,10 +209,12 @@ class AddSubparser(Subparser):
         self.add_entry_parser = self.add_subparsers.add_parser('entry')
 
         self.add_entry_parser.add_argument('--car',
+                                           help="Parent collection.",
                                            type=str,
                                            required=True)
 
         self.add_entry_parser.add_argument('--collection',
+                                           help="Parent collection.",
                                            type=str,
                                            required=True)
 
@@ -197,12 +223,14 @@ class AddSubparser(Subparser):
                                            required=True)
 
         self.add_entry_parser.add_argument('--desc',
-                                           metavar='description',
+                                           help='Short entry description.',
                                            type=str,
                                            required=True)
 
         self.add_entry_parser.add_argument('--date',
                                            type=str,
+                                           help="FORMAT: 'DD-MM-YY'.\n"
+                                                "By default - current day.\n",
                                            default=datetime.today().date().strftime("%d-%m-%Y"))
 
         self.add_entry_parser.add_argument('--mileage',
@@ -216,6 +244,7 @@ class AddSubparser(Subparser):
 
         self.add_entry_parser.add_argument('--tags',
                                            type=str,
+                                           help="Custom tags used for easier search and filtering.",
                                            nargs='*',
                                            default=[])
 
@@ -229,7 +258,18 @@ class DeleteSubparser(Subparser):
                                                                       help="Delete specified car, collection, component or log entry.",
                                                                       formatter_class=argparse.RawTextHelpFormatter)
 
-        self.delete_subparsers = self.delete_parser.add_subparsers(help="Subcommands")
+        self.delete_subparsers = self.delete_parser.add_subparsers(help="Choose which item to delete, "
+                                                                        "then enter name or unique ID.\n"
+                                                                        "For entries only ID is necessary.\n"
+                                                                        "Collections and components removals need to be"
+                                                                        " specific, you have to add parenting car or "
+                                                                        "collection.")
+
+        self.delete_parser.add_argument('-f',
+                                        '--forced',
+                                        help="Delete item and it's children even if it's not empty.\n"
+                                             "Applies to cars, collections and components, but not entries.",
+                                        action='store_true')
 
         # ===== Delete Car ===== #
 
@@ -280,13 +320,5 @@ class DeleteSubparser(Subparser):
                                               required=True)
 
         self.delete_entry_parser.add_argument('--car',
-                                              type=str,
-                                              required=True)
-
-        self.delete_entry_parser.add_argument('--collection',
-                                              type=str,
-                                              required=True)
-
-        self.delete_entry_parser.add_argument('--component',
                                               type=str,
                                               required=True)
