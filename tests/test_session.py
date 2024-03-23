@@ -80,7 +80,7 @@ def test_entry_is_removed_by_unique_id(directory_manager, mock_car_directory, tm
     prev_count = len(entries)
     entry_id = entries[0].id
 
-    session.delete_entry_by_id(car_name, 'SparkPlug', entry_id)
+    session.delete_entry_by_id(car_name, entry_id)
     next_count = len(session.get_car_by_name(car_name).get_component_by_name('SparkPlug').log_entries)
 
     assert prev_count != next_count

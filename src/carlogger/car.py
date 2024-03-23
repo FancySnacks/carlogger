@@ -69,6 +69,14 @@ class Car:
 
         return None
 
+    def get_component_of_entry_by_entry_id(self, entry_id: str) -> CarComponent:
+        """Find and return LogEntry by unique id looping through all items."""
+        entries = self.get_all_entry_logs()
+
+        for entry in entries:
+            if entry.id == entry_id:
+                return entry.component
+
     def get_formatted_info(self) -> str:
         """Return well-formatted string representing data of this class."""
         result = ''

@@ -28,7 +28,7 @@ class CarComponent:
         """Creates a new entry adding it to the list and returns its unique id."""
 
         new_entry = LogEntry(desc=entry_data['desc'],
-                             date=format_date_string_to_tuple(entry_data['date']),
+                             date=entry_data['date'],
                              mileage=entry_data['mileage'],
                              category=EntryCategory(entry_data['category']),
                              tags=entry_data['tags'],

@@ -1,9 +1,11 @@
 """Class that combines everything together, the heart of the program"""
+import uuid
 
 from carlogger.directory_manager import DirectoryManager
 from carlogger.car import Car
 from carlogger.car_info import CarInfo
 from carlogger.arg_executor import ArgExecutor, AddArgExecutor, ReadArgExecutor, DeleteArgExecutor
+from carlogger.const import REMOVE_ENTRY_SUCCESS, REMOVE_ENTRY_FAILURE
 
 
 class AppSession:
@@ -88,19 +90,26 @@ class AppSession:
         component.create_entry(entry_data)
         self.directory_manager.update_car_directory(car)
 
-    def delete_entry_by_index(self, car_name: str, component_name: str, entry_index: int):
+    def delete_entry_by_index(self, car_name: str, component: str, entry_index: int):
         """Delete entry via list index from target component."""
         car = self.get_car_by_name(car_name)
-        comp = car.get_component_by_name(component_name)
+        comp = car.get_component_by_name(component)
         comp.remove_entry_by_index(entry_index)
         self.directory_manager.update_car_directory(car)
 
-    def delete_entry_by_id(self, car_name: str, component_name: str, entry_id: str):
+    def delete_entry_by_id(self, car_name: str, entry_id: str):
         """Delete entry via list index from target component."""
         car = self.get_car_by_name(car_name)
-        comp = car.get_component_by_name(component_name)
-        comp.remove_entry_by_id(entry_id)
-        self.directory_manager.update_car_directory(car)
+
+        try:
+            uuid.UUID(entry_id, version=1)
+            comp = car.get_component_of_entry_by_entry_id(entry_id)
+            comp.remove_entry_by_id(entry_id)
+            self.directory_manager.update_car_directory(car)
+        except ValueError:
+            print(REMOVE_ENTRY_FAILURE.format(id=entry_id, car=car_name))
+        else:
+            print(REMOVE_ENTRY_SUCCESS.format(id=entry_id))
 
     def get_car_by_name(self, car_name: str) -> Car:
         """Find car by name. If it's not found, attempt loading the car from save directory and check again."""

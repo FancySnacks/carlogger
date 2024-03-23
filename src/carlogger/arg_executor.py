@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import dataclasses
-import uuid
 
 from abc import abstractmethod, ABC
 from typing import TYPE_CHECKING
@@ -47,7 +46,7 @@ class DeleteArgExecutor(ArgExecutor):
     def evaluate_args(self):
         """Execute mapped functions based on passed args."""
         context = self._recognize_context()
-        self.arg_func_map.get(context)
+        self.arg_func_map.get(context)()
 
     def delete_car(self):
         car_name = self.parsed_args['car']
@@ -66,14 +65,8 @@ class DeleteArgExecutor(ArgExecutor):
 
     def delete_entry(self):
         car_name = self.parsed_args['car']
-        component_name = self.parsed_args['component']
-        entry = self.parsed_args['entry']
-
-        try:
-            uuid.UUID(entry, version=1)
-            self.app_session.delete_entry_by_id(car_name, component_name, entry)
-        except ValueError:
-            self.app_session.delete_entry_by_index(car_name, component_name, entry)
+        entry = self.parsed_args['id']
+        self.app_session.delete_entry_by_id(car_name, entry)
 
     def _recognize_context(self):
         """See which item user wants to delete."""

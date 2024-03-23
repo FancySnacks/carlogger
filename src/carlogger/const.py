@@ -20,3 +20,6 @@ ADD_COMPONENT_FAILURE = "ERROR: '{name}' was not created as component with exact
                         "in '{collection}'"
 
 ADD_ENTRY_SUCCESS = "SUCCESS: Entry of ID: '{id}' was successfully created"
+
+REMOVE_ENTRY_SUCCESS = "SUCCESS: Entry of id '{id}' was successfully removed"
+REMOVE_ENTRY_FAILURE = "ERROR: Entry of id '{id}' was not removed as specified unique ID was not found in '{car}' car"
