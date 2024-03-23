@@ -11,7 +11,7 @@ def test_log_entry_is_added_successfully(mock_log_entry):
 def test_log_entry_is_removed_successfully(mock_log_entry):
     c = CarComponent("Coolant")
     entry_id = c.create_entry(mock_log_entry)
-    c.remove_entry_by_id(entry_id)
+    c.delete_entry_by_id(entry_id)
 
     assert len(c.log_entries) < 1
 

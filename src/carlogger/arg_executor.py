@@ -49,10 +49,10 @@ class DeleteArgExecutor(ArgExecutor):
         self.arg_func_map.get(context)()
 
     def delete_car(self):
-        car_name = self.parsed_args['car']
+        car_name = self.parsed_args['name']
 
         if any([self._check_if_car_is_empty(car_name),
-                self.parsed_args.get('forced') is not None]):
+                self.parsed_args.get('forced')]):
             self.app_session.delete_car(car_name)
         else:
             print(f"ERROR: '{car_name}' cannot be removed because it's not empty!")
@@ -62,7 +62,7 @@ class DeleteArgExecutor(ArgExecutor):
         collection_name = self.parsed_args['name']
 
         if any([self._check_if_collection_is_empty(collection_name, car_name),
-                self.parsed_args.get('forced') is not None]):
+                self.parsed_args.get('forced')]):
             self.app_session.delete_collection(car_name, collection_name)
         else:
             print(f"ERROR: '{collection_name}' cannot be removed because it's not empty!")
@@ -73,7 +73,7 @@ class DeleteArgExecutor(ArgExecutor):
         component_name = self.parsed_args['name']
 
         if any([self._check_if_component_is_empty(component_name, car_name),
-                self.parsed_args.get('forced') is not None]):
+                self.parsed_args.get('forced')]):
             self.app_session.delete_component(car_name, collection_name, component_name)
         else:
             print(f"ERROR: '{component_name}' cannot be removed because it's not empty!")
