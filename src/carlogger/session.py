@@ -3,7 +3,7 @@
 from carlogger.directory_manager import DirectoryManager
 from carlogger.car import Car
 from carlogger.car_info import CarInfo
-from carlogger.arg_executor import ArgExecutor, AddArgExecutor, ReadArgExecutor
+from carlogger.arg_executor import ArgExecutor, AddArgExecutor, ReadArgExecutor, DeleteArgExecutor
 
 
 class AppSession:

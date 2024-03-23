@@ -3,7 +3,7 @@
 import sys
 
 from carlogger.session import AppSession
-from carlogger.arg_parser import ArgParser, Subparser, AddSubparser, ReadSubparser
+from carlogger.arg_parser import ArgParser, Subparser, AddSubparser, ReadSubparser, DeleteSubparser
 from carlogger.directory_manager import DirectoryManager
 from carlogger.filedata_manager import JSONFiledataManager
 
@@ -15,6 +15,9 @@ def create_subparser(parser_parent: ArgParser, argv: list[str]) -> Subparser | N
     if 'read' in argv:
         return ReadSubparser(parser_parent)
 
+    if 'delete' in argv:
+        return DeleteSubparser(parser_parent)
+
     return None
 
 
@@ -23,9 +26,6 @@ def main(argv: list[str] = None) -> int:
 
     parser = ArgParser()
     parser.setup_args()
-
-    if sp := create_subparser(parser, raw_args):
-        parser.add_subparser(sp)
 
     parsed_args: dict = parser.parse_args(argv)
 

@@ -35,9 +35,7 @@ def test_console_args_get_evaluated(args, expected, directory_manager):
 
     session = AppSession(directory_manager)
     parser = ArgParser()
-    subparser = ReadSubparser(parser) if 'read' in args else AddSubparser(parser)
     parser.setup_args()
-    parser.add_subparser(subparser)
 
     parsed_args = parser.parse_args(args[1::])
     session.execute_console_args(parser.get_subparser_type(args), parsed_args, args)

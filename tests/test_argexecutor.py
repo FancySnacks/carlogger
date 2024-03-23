@@ -12,9 +12,7 @@ def test_arg_executor_creates_new_car(directory_manager, add_cmd):
 
     session = AppSession(directory_manager)
     parser = ArgParser()
-    subparser = AddSubparser(parser)
     parser.setup_args()
-    parser.add_subparser(subparser)
 
     parsed_args = parser.parse_args(args[1::])
 
@@ -29,9 +27,7 @@ def test_arg_executor_creates_new_collection(directory_manager, add_cmd):
 
     session = AppSession(directory_manager)
     parser = ArgParser()
-    subparser = AddSubparser(parser)
     parser.setup_args()
-    parser.add_subparser(subparser)
 
     parsed_args = parser.parse_args(args[1::])
 
@@ -47,9 +43,7 @@ def test_arg_executor_creates_new_component(directory_manager, add_cmd):
 
     session = AppSession(directory_manager)
     parser = ArgParser()
-    subparser = AddSubparser(parser)
     parser.setup_args()
-    parser.add_subparser(subparser)
 
     parsed_args = parser.parse_args(args[1::])
 
@@ -70,9 +64,7 @@ def test_arg_executor_creates_new_entry(directory_manager, add_cmd):
 
     session = AppSession(directory_manager)
     parser = ArgParser()
-    subparser = AddSubparser(parser)
     parser.setup_args()
-    parser.add_subparser(subparser)
 
     parsed_args = parser.parse_args(args[1::])
 

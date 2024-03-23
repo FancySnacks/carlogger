@@ -31,6 +31,17 @@ class ArgExecutor(ABC):
         return
 
 
+class DeleteArgExecutor(ArgExecutor):
+    """Handles 'delete' subparser for adding new cars, collections and entry logs."""
+    def __init__(self, parsed_args: dict, app_session: AppSession, raw_args: list[str]):
+        self.parsed_args = parsed_args
+        self.app_session = app_session
+        self.raw_args = raw_args
+
+    def evaluate_args(self):
+        pass
+
+
 class AddArgExecutor(ArgExecutor):
     """Handles 'add' subparser for adding new cars, collections and entry logs."""
     def __init__(self, parsed_args: dict, app_session: AppSession, raw_args: list[str]):

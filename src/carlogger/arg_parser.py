@@ -25,6 +25,10 @@ class ArgParser:
                                  action='store_true',
                                  help="Open graphical user interface for the app.")
 
+        self.add_subparser(AddSubparser(self))
+        self.add_subparser(ReadSubparser(self))
+        self.add_subparser(DeleteSubparser(self))
+
     def add_subparser(self, subparser):
         self.subparser_obj.append(subparser)
         subparser.create_subparser()
