@@ -3,10 +3,23 @@
 import os
 import time
 import re
+import uuid
 
 from pathlib import Path
 
 from carlogger.const import CARS_PATH
+
+
+# ===== SAVING ===== #
+
+def is_valid_entry_id(entry_id: str) -> bool:
+    """Checks whether passed string is a valid entry id."""
+    try:
+        test = uuid.UUID(entry_id, version=1)
+        return True
+    except TypeError:
+        return False
+
 
 
 # ===== SAVING ===== #

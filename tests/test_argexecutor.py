@@ -1,9 +1,9 @@
 import shutil
 import os
 
-from carlogger.arg_parser import AddSubparser, ArgParser
+from carlogger.cli.arg_parser import ArgParser
 from carlogger.session import AppSession
-from carlogger.arg_executor import AddArgExecutor
+from carlogger.cli.arg_executor import AddArgExecutor
 from carlogger.const import CARS_PATH
 
 

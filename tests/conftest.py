@@ -1,11 +1,11 @@
 import pytest
 import pathlib
 
-from carlogger.car import Car
-from carlogger.car_component import CarComponent
-from carlogger.car_info import CarInfo
-from carlogger.component_collection import ComponentCollection
-from carlogger.entry_category import EntryCategory
+from carlogger.items.car import Car
+from carlogger.items.car_component import CarComponent
+from carlogger.items.car_info import CarInfo
+from carlogger.items.component_collection import ComponentCollection
+from carlogger.items.entry_category import EntryCategory
 from carlogger.directory_manager import DirectoryManager
 from carlogger.filedata_manager import JSONFiledataManager
 

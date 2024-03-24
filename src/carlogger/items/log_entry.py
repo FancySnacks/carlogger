@@ -6,8 +6,8 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from carlogger.car_component import CarComponent
-from carlogger.entry_category import EntryCategory
+    from carlogger.items.car_component import CarComponent
+from carlogger.items.entry_category import EntryCategory
 
 
 @dataclass(order=True)

@@ -1,5 +1,5 @@
-from carlogger.log_entry import LogEntry
-from carlogger.car_component import CarComponent
+from carlogger.items.log_entry import LogEntry
+from carlogger.items.car_component import CarComponent
 
 
 def test_get_function_returns_only_car_parts(mock_component_collection):

@@ -271,6 +271,7 @@ class DeleteSubparser(Subparser):
 
         self.delete_car_parser.add_argument('-n',
                                             '--name',
+                                            metavar="CAR_NAME",
                                             type=str,
                                             required=True)
 
@@ -285,10 +286,12 @@ class DeleteSubparser(Subparser):
 
         self.delete_collection_parser.add_argument('-n',
                                                    '--name',
+                                                   metavar="COLLECTION_NAME",
                                                    type=str,
                                                    required=True)
 
         self.delete_collection_parser.add_argument('--car',
+                                                   metavar="CAR_NAME",
                                                    type=str,
                                                    required=True)
 
@@ -303,14 +306,17 @@ class DeleteSubparser(Subparser):
 
         self.delete_component_parser.add_argument('-n',
                                                   '--name',
+                                                  metavar="COMPONENT_NAME",
                                                   type=str,
                                                   required=True)
 
         self.delete_component_parser.add_argument('--car',
+                                                  metavar="CAR_NAME",
                                                   type=str,
                                                   required=True)
 
         self.delete_component_parser.add_argument('--collection',
+                                                  metavar="COLLECTION_NAME",
                                                   type=str,
                                                   required=True)
 
@@ -325,9 +331,18 @@ class DeleteSubparser(Subparser):
 
         self.delete_entry_parser.add_argument('-id',
                                               '--id',
+                                              metavar="ID/INDEX",
+                                              help="Pass unique entry ID or it's index number in a component.\n"
+                                                   "When deleting via index it's mandatory to specify parent component.",
                                               type=str,
                                               required=True)
 
         self.delete_entry_parser.add_argument('--car',
+                                              metavar="CAR_NAME",
                                               type=str,
                                               required=True)
+
+        self.delete_entry_parser.add_argument('--component',
+                                              metavar="COMPONENT_NAME",
+                                              help="Not mandatory, only used when deleting entry by index number.",
+                                              type=str)

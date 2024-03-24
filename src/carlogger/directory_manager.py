@@ -3,11 +3,11 @@
 import os
 import shutil
 
-from carlogger.car import Car
+from carlogger.items.car import Car
 from carlogger.filedata_manager import FiledataManager
-from carlogger.component_collection import ComponentCollection
-from carlogger.car_component import CarComponent
-from carlogger.car_info import CarInfo
+from carlogger.items.component_collection import ComponentCollection
+from carlogger.items.car_component import CarComponent
+from carlogger.items.car_info import CarInfo
 from carlogger.const import CARS_PATH, ADD_CAR_SUCCESS, ADD_CAR_FAILURE, REMOVE_CAR_SUCCESS, REMOVE_CAR_FAILURE
 from carlogger.util import get_car_dirs
 
@@ -102,28 +102,35 @@ class DirectoryManager:
         collections = []
         collections_path = path.joinpath("collections")
 
-        for coll in os.listdir(collections_path):
-            collection_data = self.data_manager.load_file(collections_path.joinpath(coll))
-            new_collection = ComponentCollection(**collection_data, path=collections_path)
-            components = self.load_car_components_from_path(new_collection)
-            new_collection.children.clear()
-            
-            for comp in components:
-                new_collection.children.append(comp)
-            
-            collections.append(new_collection)
+        try:
+            for coll in os.listdir(collections_path):
+                collection_data = self.data_manager.load_file(collections_path.joinpath(coll))
+                new_collection = ComponentCollection(**collection_data, path=collections_path)
+                components = self.load_car_components_from_path(new_collection)
+                new_collection.children.clear()
 
-        return collections
+                for comp in components:
+                    new_collection.children.append(comp)
+
+                collections.append(new_collection)
+
+            return collections
+
+        except FileNotFoundError:
+            return []
 
     def load_car_components_from_path(self, collection: ComponentCollection) -> list[CarComponent]:
         coms = []
 
         for child in collection.children:
-            comp_data = self.data_manager.load_file(child['path'])
-            c = CarComponent(comp_data['name'], collection.path.parent.joinpath('components'))
-            self._add_entries_to_component(comp_data, c)
+            try:
+                comp_data = self.data_manager.load_file(child['path'])
+                c = CarComponent(comp_data['name'], collection.path.parent.joinpath('components'))
+                self._add_entries_to_component(comp_data, c)
 
-            coms.append(c)
+                coms.append(c)
+            except FileNotFoundError:
+                continue
         return coms
 
     def _add_entries_to_component(self, comp_data: dict, component_ref: CarComponent):

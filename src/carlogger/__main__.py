@@ -3,7 +3,7 @@
 import sys
 
 from carlogger.session import AppSession
-from carlogger.arg_parser import ArgParser, Subparser, AddSubparser, ReadSubparser, DeleteSubparser
+from carlogger.cli.arg_parser import ArgParser, Subparser, AddSubparser, ReadSubparser, DeleteSubparser
 from carlogger.directory_manager import DirectoryManager
 from carlogger.filedata_manager import JSONFiledataManager
 

@@ -6,12 +6,12 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from carlogger.const import ADD_COLLECTION_SUCCESS, ADD_COLLECTION_FAILURE, \
-    REMOVE_COLLECTION_SUCCESS, REMOVE_COLLECTION_FAILURE
+    REMOVE_COLLECTION_SUCCESS
 from carlogger.util import format_date_string_to_tuple, create_car_dir_path
-from carlogger.car_info import CarInfo
-from carlogger.component_collection import ComponentCollection
-from carlogger.car_component import CarComponent
-from carlogger.log_entry import LogEntry
+from carlogger.items.car_info import CarInfo
+from carlogger.items.component_collection import ComponentCollection
+from carlogger.items.car_component import CarComponent
+from carlogger.items.log_entry import LogEntry
 
 
 @dataclass

@@ -6,9 +6,9 @@ from uuid import UUID
 from typing import Callable, Optional
 from datetime import datetime
 
-from carlogger.log_entry import LogEntry
+from carlogger.items.log_entry import LogEntry
 from carlogger.util import is_date, format_date_string_to_tuple
-from carlogger.entry_category import EntryCategory
+from carlogger.items.entry_category import EntryCategory
 
 
 class CountFilter:

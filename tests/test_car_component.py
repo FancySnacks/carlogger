@@ -1,4 +1,4 @@
-from carlogger.car_component import CarComponent
+from carlogger.items.car_component import CarComponent
 
 
 def test_log_entry_is_added_successfully(mock_log_entry):

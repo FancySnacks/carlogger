@@ -5,10 +5,10 @@ import uuid
 
 from dataclasses import dataclass, field
 
-from carlogger.const import ADD_ENTRY_SUCCESS, REMOVE_ENTRY_SUCCESS, REMOVE_ENTRY_FAILURE
-from carlogger.log_entry import LogEntry
-from carlogger.entry_category import EntryCategory
-from carlogger.util import format_date_string_to_tuple
+from carlogger.const import ADD_ENTRY_SUCCESS, REMOVE_ENTRY_SUCCESS_ID, REMOVE_ENTRY_FAILURE_ID, \
+    REMOVE_ENTRY_FAILURE_INDEX, REMOVE_ENTRY_SUCCESS_INDEX
+from carlogger.items.log_entry import LogEntry
+from carlogger.items.entry_category import EntryCategory
 
 
 @dataclass
@@ -76,27 +76,19 @@ class CarComponent:
 
         if entry_to_delete:
             self.log_entries.remove(entry_to_delete)
-            print(REMOVE_ENTRY_SUCCESS.format(id=entry_id))
+            print(REMOVE_ENTRY_SUCCESS_ID.format(id=entry_id))
         else:
-            print(REMOVE_ENTRY_FAILURE.format(id=entry_id, component=self))
+            print(REMOVE_ENTRY_FAILURE_ID.format(id=entry_id, component=self.name))
 
     def delete_entry_by_index(self, entry_index: int = -1):
         """Removes log entry from list at target index, removes last one by default."""
-        self.log_entries.pop(entry_index)
+        try:
+            self.log_entries.pop(entry_index)
+            print(REMOVE_ENTRY_SUCCESS_INDEX.format(index=entry_index))
+        except IndexError:
+            print(REMOVE_ENTRY_FAILURE_INDEX.format(index=entry_index, component=self.name))
 
     def get_entry_by_id(self, entry_id: str) -> LogEntry | None:
-        """Return log entry by its unique id hash."""
-        i = 0
-
-        while i < len(self.log_entries):
-            if self.log_entries[i].id == entry_id:
-                return self.log_entries[i]
-            else:
-                i += 1
-
-        print("No entry with given id has been found")
-
-    def get_entry_by_date(self, entry_id: str) -> LogEntry | None:
         """Return log entry by its unique id hash."""
         i = 0
 

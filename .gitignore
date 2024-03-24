@@ -173,3 +173,4 @@ cython_debug/
 .idea
 .idea/
 /dev/add_arg_test.sh
+/dev/delete_arg_test.sh

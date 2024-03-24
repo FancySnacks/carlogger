@@ -1,9 +1,9 @@
 """Class that combines everything together, the heart of the program"""
 
 from carlogger.directory_manager import DirectoryManager
-from carlogger.car import Car
-from carlogger.car_info import CarInfo
-from carlogger.arg_executor import ArgExecutor, AddArgExecutor, ReadArgExecutor, DeleteArgExecutor
+from carlogger.items.car import Car
+from carlogger.items.car_info import CarInfo
+from carlogger.cli.arg_executor import ArgExecutor, AddArgExecutor, ReadArgExecutor, DeleteArgExecutor
 
 
 class AppSession:
@@ -92,10 +92,10 @@ class AppSession:
         component.create_entry(entry_data)
         self.directory_manager.update_car_directory(car)
 
-    def delete_entry_by_index(self, car_name: str, component: str, entry_index: int):
+    def delete_entry_by_index(self, car_name: str, component_name: str, entry_index: int):
         """Delete entry via list index from target component."""
         car = self.get_car_by_name(car_name)
-        comp = car.get_component_by_name(component)
+        comp = car.get_component_by_name(component_name)
         comp.delete_entry_by_index(entry_index)
         self.directory_manager.update_car_directory(car)
 

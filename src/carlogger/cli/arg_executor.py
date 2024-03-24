@@ -7,16 +7,17 @@ import dataclasses
 from abc import abstractmethod, ABC
 from typing import TYPE_CHECKING
 
-from carlogger.car_info import CarInfo
 
 if TYPE_CHECKING:
     from carlogger.session import AppSession
 
-from carlogger.car import Car
-from carlogger.component_collection import ComponentCollection
-from carlogger.car_component import CarComponent
-from carlogger.log_entry import LogEntry
-from carlogger.entryfilter import EntryFilter
+from carlogger.items.car import Car
+from carlogger.items.car_info import CarInfo
+from carlogger.items.component_collection import ComponentCollection
+from carlogger.items.car_component import CarComponent
+from carlogger.items.log_entry import LogEntry
+from carlogger.items.entryfilter import EntryFilter
+from carlogger.util import is_valid_entry_id
 
 
 class ArgExecutor(ABC):
@@ -81,7 +82,27 @@ class DeleteArgExecutor(ArgExecutor):
     def delete_entry(self):
         car_name = self.parsed_args['car']
         entry = self.parsed_args['id']
-        self.app_session.delete_entry_by_id(car_name, entry)
+
+        match self._get_entry_delete_method(entry):
+            case 'index':
+                component_name = self.parsed_args.get('component')
+
+                if not component_name:
+                    print(f"ERROR: Could not delete entry of index '{entry}' because you have not specified which "
+                          f"component it belongs to")
+                    return
+
+                self.app_session.delete_entry_by_index(car_name, component_name, int(entry))
+
+            case 'id':
+                self.app_session.delete_entry_by_id(car_name, entry)
+
+    def _get_entry_delete_method(self, entry_arg: str) -> str:
+        if entry_arg.isdigit():
+            return 'index'
+
+        if is_valid_entry_id(entry_arg):
+            return 'id'
 
     def _recognize_context(self):
         """See which item user wants to delete."""

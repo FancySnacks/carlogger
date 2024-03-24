@@ -6,10 +6,10 @@ import pathlib
 
 from dataclasses import dataclass, field
 
-from carlogger.car_component import CarComponent
+from carlogger.items.car_component import CarComponent
 from carlogger.const import ADD_COMPONENT_SUCCESS, ADD_COMPONENT_FAILURE, \
     REMOVE_COMPONENT_SUCCESS, REMOVE_COMPONENT_FAILURE
-from carlogger.log_entry import LogEntry
+from carlogger.items.log_entry import LogEntry
 
 
 @dataclass
