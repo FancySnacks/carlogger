@@ -9,6 +9,7 @@ from carlogger.const import CARS_PATH
 
 def test_arg_executor_creates_new_car(directory_manager, add_cmd):
     args = add_cmd['car']
+    print(args)
 
     session = AppSession(directory_manager)
     parser = ArgParser()
