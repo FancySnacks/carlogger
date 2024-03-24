@@ -4,6 +4,11 @@ from __future__ import annotations
 
 import pathlib
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from carlogger.items.car import Car
+
 from dataclasses import dataclass, field
 
 from carlogger.items.car_component import CarComponent
@@ -23,6 +28,7 @@ class ComponentCollection:
     """
 
     name: str
+    car: Car = None
     children: list[ComponentCollection | CarComponent] = field(default_factory=list)
     path: str = ""
 
@@ -77,6 +83,13 @@ class ComponentCollection:
             print(REMOVE_COMPONENT_SUCCESS.format(name=name))
         else:
             print(REMOVE_COMPONENT_FAILURE.format(name=name, collection=self.name))
+
+    def delete_children(self):
+        for child in self.children:
+            if type(child) == CarComponent:
+                self.delete_component(child.name)
+            else:
+                self.car.delete_collection(child.name)
 
     def _check_for_component_duplicates(self, name: str):
         if name in [ch.name for ch in self.children]:

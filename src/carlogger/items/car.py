@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from carlogger.const import ADD_COLLECTION_SUCCESS, ADD_COLLECTION_FAILURE, \
-    REMOVE_COLLECTION_SUCCESS
+    REMOVE_COLLECTION_SUCCESS, REMOVE_COLLECTION_FAILURE
 from carlogger.util import format_date_string_to_tuple, create_car_dir_path
 from carlogger.items.car_info import CarInfo
 from carlogger.items.component_collection import ComponentCollection
@@ -39,7 +39,7 @@ class Car:
         """Create new collection, add it to the list and return object reference."""
         self._check_for_collection_duplicates(name=name)
 
-        new_collection = ComponentCollection(name, path=self.path.joinpath("collections"))
+        new_collection = ComponentCollection(name, car=self, path=self.path.joinpath("collections"))
         self.collections.append(new_collection)
         print(ADD_COLLECTION_SUCCESS.format(name=name))
 
@@ -49,10 +49,12 @@ class Car:
         collection_to_remove = self.get_collection_by_name(name)
 
         if collection_to_remove:
+            collection_to_remove.delete_children()
             self.collections.remove(collection_to_remove)
+
             print(REMOVE_COLLECTION_SUCCESS.format(name=name))
         else:
-            print(REMOVE_COLLECTION_SUCCESS.format(name=name, car=self.car_info.name))
+            print(REMOVE_COLLECTION_FAILURE.format(name=name, car=self.car_info.name))
 
     def _check_for_collection_duplicates(self, name):
         if name in [coll.name for coll in self.collections]:

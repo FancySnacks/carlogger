@@ -15,12 +15,24 @@ with open(pathlib.Path.cwd().joinpath("tests/add_arg_test"), "r") as f:
     keys = ['car', 'collection', 'component', 'entry']
     args = list(zip(keys, commands))
 
-ARGS = {k: v for k, v in args}
+ADD_ARGS = {k: v for k, v in args}
+
+with open(pathlib.Path.cwd().joinpath("tests/delete_arg_test"), "r") as f:
+    commands = [c.replace("\n", "").replace('"', "").split() for c in f.readlines()]
+    keys = ['entry', 'component', 'collection', 'car']
+    args = list(zip(keys, commands))
+
+DEL_ARGS = {k: v for k, v in args}
 
 
 @pytest.fixture
 def add_cmd() -> dict:
-    return ARGS
+    return ADD_ARGS
+
+
+@pytest.fixture
+def delete_cmd() -> dict:
+    return DEL_ARGS
 
 
 @pytest.fixture(scope="session")
