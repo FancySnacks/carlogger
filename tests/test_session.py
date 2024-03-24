@@ -1,3 +1,5 @@
+import os
+
 from carlogger.session import AppSession
 
 
@@ -26,6 +28,21 @@ def test_collection_is_removed(directory_manager, mock_car_directory, tmp_path):
     next_count = len(session.selected_car.collections)
 
     assert prev_count != next_count
+
+
+def test_collection_children_are_removed_with_it(directory_manager, mock_car_directory, tmp_path):
+    car_name = mock_car_directory['car_dir'].name
+
+    directory_manager.car_save_dir = tmp_path
+    session = AppSession(directory_manager)
+    session.load_car_dir(car_name)
+
+    session.add_new_collection(car_name, 'Test')
+    session.add_new_component(car_name, 'Test', 'ComponentTest')
+
+    session.delete_collection(car_name, 'Test')
+
+    assert 'components' not in os.listdir(mock_car_directory['car_dir'])
 
 
 def test_component_is_removed(directory_manager, mock_car_directory, tmp_path):
