@@ -10,17 +10,16 @@ class AppSession:
     """Setup current app session, load saved info: load collections, components and log entries."""
     def __init__(self, directory_manager: DirectoryManager):
         self.directory_manager = directory_manager
+        self.arg_executor: ArgExecutor = ...
 
         self.cars: list[Car] = []
         self.selected_car: Car = ...
-
-        self.arg_executor: ArgExecutor = ...
 
     def execute_console_args(self, subparser_type: str, parsed_args: dict, raw_args: list[str]):
         """Create ArgExecutor object based on subparser in use and execute console arguments."""
         match subparser_type:
             case 'read':
-                self.arg_executor = ReadArgExecutor(parsed_args, self)
+                self.arg_executor = ReadArgExecutor(parsed_args, self, raw_args)
             case 'add':
                 self.arg_executor = AddArgExecutor(parsed_args, self, raw_args)
             case 'delete':

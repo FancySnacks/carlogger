@@ -1,0 +1,4 @@
+carlogger read car --name CarTestPytest
+carlogger read collection --name Engine --car CarTestPytest
+carlogger read component --name "Spark_Plug" --car CarTestPytest
+carlogger read entry --car CarTestPytest

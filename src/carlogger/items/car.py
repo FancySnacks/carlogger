@@ -87,7 +87,7 @@ class Car:
 
     def get_formatted_info(self) -> str:
         """Return well-formatted string representing data of this class."""
-        result = ''
+        result = f'\n=== {self.car_info.name} ===\n'
         info = vars(self.car_info)
         info.pop('path')
 
