@@ -12,14 +12,14 @@ from carlogger.filedata_manager import JSONFiledataManager
 
 with open(pathlib.Path.cwd().joinpath("tests/add_arg_test"), "r") as f:
     commands = [c.replace("\n", "").replace('"', "").split() for c in f.readlines()]
-    keys = ['car', 'collection', 'component', 'entry']
+    keys = ['car', 'collection', 'nested', 'nestedsqr', 'component', 'entry']
     args = list(zip(keys, commands))
 
 ADD_ARGS = {k: v for k, v in args}
 
 with open(pathlib.Path.cwd().joinpath("tests/delete_arg_test"), "r") as f:
     commands = [c.replace("\n", "").replace('"', "").split() for c in f.readlines()]
-    keys = ['entry', 'component', 'collection', 'car']
+    keys = ['entry', 'component', 'nestedsqr', 'nested', 'collection', 'car']
     args = list(zip(keys, commands))
 
 DEL_ARGS = {k: v for k, v in args}
@@ -63,7 +63,7 @@ def mock_log_entry() -> dict:
     return entry
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def mock_component(mock_log_entry) -> CarComponent:
     comp = CarComponent("TestComponent")
     comp.create_entry(mock_log_entry)
@@ -71,13 +71,13 @@ def mock_component(mock_log_entry) -> CarComponent:
     return comp
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def mock_component_clean(mock_log_entry) -> CarComponent:
     comp = CarComponent("TestComponent")
     return comp
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def mock_component_collection() -> ComponentCollection:
     sp = CarComponent("Spark Plug")
     v = CarComponent("Valves")
@@ -92,6 +92,13 @@ def mock_component_collection() -> ComponentCollection:
     engine_c.children.append(v)
 
     return engine_c
+
+
+@pytest.fixture
+def mock_car(mock_car_info) -> Car:
+    car_info = CarInfo(**mock_car_info)
+    car = Car(car_info)
+    return car
 
 
 @pytest.fixture

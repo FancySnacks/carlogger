@@ -181,6 +181,11 @@ class AddSubparser(Subparser):
                                                 help="Parent car.",
                                                 required=True)
 
+        self.add_collection_parser.add_argument('--parent',
+                                                type=str,
+                                                metavar="PARENT COLLECTION NAME",
+                                                help="Parent collection.")
+
         # ===== Add Component ===== #
 
         self.add_component_parser = self.add_subparsers.add_parser('component')

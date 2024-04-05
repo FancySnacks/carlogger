@@ -59,6 +59,12 @@ class AppSession:
         car.create_collection(collection_name)
         self.directory_manager.update_car_directory(car)
 
+    def add_new_nested_collection(self, car_name: str, collection_name: str, parent_collection_name: str):
+        """Add new nested collection to specified car and parent collection and update save directory."""
+        car = self.get_car_by_name(car_name)
+        car.create_nested_collection(collection_name, parent_collection_name)
+        self.directory_manager.update_car_directory(car)
+
     def delete_collection(self, car_name: str, collection_name: str):
         """Delete collection from target car by name."""
         car = self.get_car_by_name(car_name)
@@ -72,8 +78,8 @@ class AppSession:
         self.directory_manager.update_car_directory(car)
 
     def delete_collection_children(self, collection):
-        for child in collection.children:
-            self.directory_manager.remove_item(child)
+        for ch in collection.children:
+            self.directory_manager.remove_item(ch)
         collection.delete_children()
 
     def add_new_component(self, car_name: str, collection_name: str, component_name: str):

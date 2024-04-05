@@ -1,4 +1,7 @@
 carlogger add car --name CarTestPytest --manufacturer Skoda --model Roomster --year 2002 --mileage 198000 --body Hatchback --length 4200 --weight 1800
 carlogger add collection --name Engine --car CarTestPytest
+carlogger add collection --name "Turbocharger" --car CarTestPytest --parent Engine
+carlogger add collection --name "Battery" --car CarTestPytest --parent Engine
+carlogger add component --name Airflow --car CarTestPytest --collection Turbocharger
 carlogger add component --name "Spark_Plug" --car CarTestPytest --collection Engine
 carlogger add entry --car CarTestPytest --collection Engine --component "Spark_Plug" --desc "Replaced" --mileage 198000 --category "swap"

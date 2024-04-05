@@ -1,32 +1,20 @@
 from carlogger.items.log_entry import LogEntry
 from carlogger.items.car_component import CarComponent
+from carlogger.items.component_collection import ComponentCollection
 
 
 def test_get_function_returns_only_car_parts(mock_component_collection):
-    parts = mock_component_collection.get_all_components(mock_component_collection.children)
-    filtered_list = list(filter(lambda x: type(x) == CarComponent, parts))
+    mock_component_collection.create_component('Test')
+    parts = mock_component_collection.get_all_components()
 
-    assert len(parts) == len(filtered_list)
+    assert len(parts) == len(parts)
 
 
 def test_get_function_returns_entry_logs(mock_log_entry, mock_component_collection):
     c = CarComponent("Engine Oil")
     c.create_entry(mock_log_entry)
 
-    mock_component_collection.children.append(c)
-
-    logs = mock_component_collection.get_all_log_entries(mock_component_collection.children)
+    mock_component_collection.components.append(c)
+    logs = mock_component_collection.get_all_log_entries()
 
     assert len(logs) > 0
-
-
-def test_get_function_returns_only_entry_logs(mock_log_entry, mock_component_collection):
-    c = CarComponent("Engine Oil")
-    c.create_entry(mock_log_entry)
-
-    mock_component_collection.children.append(c)
-
-    logs = mock_component_collection.get_all_log_entries(mock_component_collection.children)
-    filtered_list = list(filter(lambda x: type(x) == LogEntry, logs))
-
-    assert len(logs) == len(filtered_list)

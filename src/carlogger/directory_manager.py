@@ -58,7 +58,7 @@ class DirectoryManager:
     def update_collections_files(self, comp_collections: list[ComponentCollection]):
         for coll in comp_collections:
             self.data_manager.save_file(coll, coll.get_target_path(self.data_manager.suffix))
-            self.update_components_files(coll.children)
+            self.update_components_files(coll.components)
 
     def update_components_files(self, comp_list: list[CarComponent]):
         for comp in comp_list:
@@ -72,9 +72,9 @@ class DirectoryManager:
             path = self.car_save_dir.joinpath(car_name)
             car_info = CarInfo(**self.data_manager.load_file(self._create_car_info_path(path)))
 
-            collections = self.load_car_collections_from_path(path)
-
-            new_car = Car(car_info, collections=collections, path=path)
+            new_car = Car(car_info, path=path)
+            collections = self.load_car_collections_from_path(path, new_car)
+            new_car.collections = collections
 
             return new_car
 
@@ -89,15 +89,14 @@ class DirectoryManager:
             path = self.car_save_dir.joinpath(directory)
             car_info = CarInfo(**self.data_manager.load_file(self._create_car_info_path(path)))
 
-            collections = self.load_car_collections_from_path(path)
-
-            cars.append(Car(car_info,
-                            collections=collections,
-                            path=path))
+            new_car = Car(car_info, path=path)
+            collections = self.load_car_collections_from_path(path, new_car)
+            new_car.collections = collections
+            cars.append(new_car)
 
         return cars
 
-    def load_car_collections_from_path(self, path) -> list[ComponentCollection]:
+    def load_car_collections_from_path(self, path, parent_car: Car = None) -> list[ComponentCollection]:
         """Load collections from target car directory and return them as list."""
         collections = []
         collections_path = path.joinpath("collections")
@@ -105,12 +104,17 @@ class DirectoryManager:
         try:
             for coll in os.listdir(collections_path):
                 collection_data = self.data_manager.load_file(collections_path.joinpath(coll))
-                new_collection = ComponentCollection(**collection_data, path=collections_path)
+                new_collection = ComponentCollection(**collection_data, path=collections_path, car=parent_car)
                 components = self.load_car_components_from_path(new_collection)
-                new_collection.children.clear()
+                new_collection.collections = \
+                    [ComponentCollection(**data, car=parent_car) for data in new_collection.collections]
+                new_collection.components.clear()
+
+                for c in new_collection.collections:
+                    c.path = collections_path
 
                 for comp in components:
-                    new_collection.children.append(comp)
+                    new_collection.components.append(comp)
 
                 collections.append(new_collection)
 
@@ -124,11 +128,12 @@ class DirectoryManager:
 
         for child in collection.children:
             try:
-                comp_data = self.data_manager.load_file(child['path'])
-                c = CarComponent(comp_data['name'], collection.path.parent.joinpath('components'))
-                self._add_entries_to_component(comp_data, c)
+                if "collections" not in child['path']:
+                    item_data: dict = self.data_manager.load_file(child['path'])
+                    c = CarComponent(item_data['name'], collection.path.parent.joinpath('components'))
+                    self._add_entries_to_component(item_data, c)
+                    coms.append(c)
 
-                coms.append(c)
             except FileNotFoundError:
                 continue
         return coms

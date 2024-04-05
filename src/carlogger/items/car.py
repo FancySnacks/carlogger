@@ -29,7 +29,7 @@ class Car:
     def get_all_entry_logs(self) -> list[LogEntry]:
         """Get ALL log entries regarding this car.\n
         NOTE: it's a heavy operation, use it sparingly."""
-        entries = [collection.get_all_log_entries(collection.children) for collection in self.collections]
+        entries = [collection.get_all_log_entries() for collection in self.collections]
         entries_joined = []
         [entries_joined.extend(entry_list) for entry_list in entries]
 
@@ -45,16 +45,41 @@ class Car:
 
         return new_collection
 
+    def create_nested_collection(self, name: str, parent_collection_name: str) -> ComponentCollection:
+        """Create new collection, add it to the list and return object reference."""
+        self._check_for_collection_duplicates(name=name)
+
+        parent_collection = self.get_collection_by_name(parent_collection_name)
+        new_collection = ComponentCollection(name, car=self, parent_collection=parent_collection,
+                                             path=self.path.joinpath("collections"))
+        parent_collection.collections.append(new_collection)
+        print(f"==== {new_collection.path}")
+
+        self.collections.append(new_collection)
+
+        print(ADD_COLLECTION_SUCCESS.format(name=name))
+
+        return new_collection
+
     def delete_collection(self, name: str):
         collection_to_remove = self.get_collection_by_name(name)
 
         if collection_to_remove:
-            collection_to_remove.delete_children()
             self.collections.remove(collection_to_remove)
-
-            print(REMOVE_COLLECTION_SUCCESS.format(name=name))
         else:
             print(REMOVE_COLLECTION_FAILURE.format(name=name, car=self.car_info.name))
+
+        for coll in self.collections:
+            try:
+                c = coll.get_collection_by_name(name)
+            except ValueError:
+                continue
+            else:
+                if c.name == name:
+                    coll.delete_collection(c.name)
+                    return
+
+        print(REMOVE_COLLECTION_SUCCESS.format(name=name))
 
     def _check_for_collection_duplicates(self, name):
         if name in [coll.name for coll in self.collections]:
@@ -75,7 +100,7 @@ class Car:
                 if child.name == name:
                     return child
 
-        return None
+        raise ValueError(f"ERROR: Component '{name}' was not found in '{self.car_info.name}' car!")
 
     def get_component_of_entry_by_entry_id(self, entry_id: str) -> CarComponent:
         """Find and return LogEntry by unique id looping through all items."""

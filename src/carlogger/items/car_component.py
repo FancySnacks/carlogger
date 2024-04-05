@@ -102,7 +102,8 @@ class CarComponent:
 
     def to_json(self) -> dict:
         """Returns object properties as JSON-serializable dictionary."""
-        d = {'name': self.name,
+        d = {'type': 'component',
+             'name': self.name,
              'log_entries': [entry.to_json() for entry in self.log_entries],
              'search_tags': list(self.search_tags),
              }

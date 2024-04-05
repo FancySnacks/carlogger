@@ -152,7 +152,11 @@ class AddArgExecutor(ArgExecutor):
         """Create a new car collection belonging to specified car."""
         car_name = self.parsed_args['car']
         coll_name = self.parsed_args['name']
-        self.app_session.add_new_collection(car_name, coll_name)
+
+        if parent_coll := self.parsed_args.get('parent'):
+            self.app_session.add_new_nested_collection(car_name, coll_name, parent_coll)
+        else:
+            self.app_session.add_new_collection(car_name, coll_name)
 
     def add_new_component(self):
         """Create a new car component belonging to a specified collection and car."""

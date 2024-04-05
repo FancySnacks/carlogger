@@ -13,7 +13,8 @@ from dataclasses import dataclass, field
 
 from carlogger.items.car_component import CarComponent
 from carlogger.const import ADD_COMPONENT_SUCCESS, ADD_COMPONENT_FAILURE, \
-    REMOVE_COMPONENT_SUCCESS, REMOVE_COMPONENT_FAILURE
+    REMOVE_COMPONENT_SUCCESS, REMOVE_COMPONENT_FAILURE, ADD_COLLECTION_FAILURE, REMOVE_COLLECTION_FAILURE, \
+    REMOVE_COLLECTION_SUCCESS
 from carlogger.items.log_entry import LogEntry
 
 
@@ -21,55 +22,47 @@ from carlogger.items.log_entry import LogEntry
 class ComponentCollection:
     """Contains multiple CarComponent OR ComponentCollection classes identified by a single category,
     example: engine group.\n
-    Adding more ComponentCollection classes to 'children' list allows for more specific grouping.\n
+    Adding more ComponentCollection classes to 'components' list allows for more specific grouping.\n
     For example user could want to have 'engine' collection and have various parts as part of this collection or,
     he might wish to be more specific and create additional collections like 'ignition', 'exhaust', 'crankshaft'
     which hold actual CarComponent classes.
     """
 
     name: str
+    components: list[CarComponent] = field(default_factory=list)
+    collections: list[ComponentCollection] = field(default_factory=list)
     car: Car = None
-    children: list[ComponentCollection | CarComponent] = field(default_factory=list)
+    parent_collection: ComponentCollection = None
     path: str = ""
 
     def __post_init__(self):
         self.path = pathlib.Path(self.path)
 
-    def get_all_components(self,  list_to_search: list, buffer_list: list = None) -> list[CarComponent]:
-        """Returns all CarComponent items from all children collections."""
-        if buffer_list is None:
-            buffer_list = []
+    @property
+    def children(self) -> list:
+        return self.collections + self.components
 
-        for c in list_to_search:
-            if type(c) == CarComponent:
-                buffer_list.append(c)
-            elif type(c) == ComponentCollection:
-                self.get_all_components(c.children, buffer_list)
-            else:
-                continue
+    def get_all_components(self) -> list[CarComponent]:
+        """Returns all CarComponent items from all components collections."""
+        n = [coll.children for coll in self.collections]
+        e = []
+        [e.extend(item) for item in n]
+        return e + self.components
 
-        return buffer_list
+    def get_all_log_entries(self) -> list[LogEntry]:
+        """Returns all log entries from components CarComponent objects from all components collections."""
+        components = self.get_all_components()
+        entries = [comp.log_entries for comp in components]
+        joined_entries = []
+        [joined_entries.extend(e) for e in entries]
 
-    def get_all_log_entries(self,  list_to_search: list, buffer_list: list = None) -> list[LogEntry]:
-        """Returns all log entries from children CarComponent objects from all children collections."""
-        if buffer_list is None:
-            buffer_list = []
-
-        for c in list_to_search:
-            if type(c) == CarComponent:
-                if len(c.log_entries) > 0:
-                    buffer_list.extend(c.log_entries)
-            elif type(c) == ComponentCollection:
-                self.get_all_log_entries(c.children, buffer_list)
-            else:
-                continue
-        return buffer_list
+        return joined_entries
 
     def create_component(self, name: str) -> CarComponent:
         """Create new car component, add it to the list and return object reference."""
         self._check_for_component_duplicates(name)
         new_component = CarComponent(name, path=self.path.parent.joinpath('components'))
-        self.children.append(new_component)
+        self.components.append(new_component)
 
         print(ADD_COMPONENT_SUCCESS.format(name=name))
 
@@ -79,35 +72,63 @@ class ComponentCollection:
         component_to_remove = self.get_component_by_name(name)
 
         if component_to_remove:
-            self.children.remove(component_to_remove)
+            self.components.remove(component_to_remove)
             print(REMOVE_COMPONENT_SUCCESS.format(name=name))
         else:
             print(REMOVE_COMPONENT_FAILURE.format(name=name, collection=self.name))
 
+    def delete_collection(self, name: str):
+        collection_to_remove = self.get_collection_by_name(name)
+
+        if collection_to_remove:
+            self.collections.remove(collection_to_remove)
+            print(REMOVE_COLLECTION_SUCCESS.format(name=name))
+        else:
+            print(REMOVE_COLLECTION_FAILURE.format(name=name, car=self.car.car_info.name))
+
+    def delete_components(self):
+        for child in self.components:
+            self.delete_component(child.name)
+        self.components.clear()
+
+    def delete_collections(self):
+        for child in self.collections:
+            self.delete_collection(child.name)
+        self.collections.clear()
+
     def delete_children(self):
-        for child in self.children:
-            if type(child) == CarComponent:
-                self.delete_component(child.name)
-            else:
-                self.car.delete_collection(child.name)
+        self.delete_components()
+        self.delete_collections()
+
+    def _check_for_nested_collection_duplicates(self, name: str):
+        if name in [ch.name for ch in self.components]:
+            raise ValueError(ADD_COLLECTION_FAILURE.format(name=name, car=self.car.car_info.name))
 
     def _check_for_component_duplicates(self, name: str):
-        if name in [ch.name for ch in self.children]:
+        if name in [ch.name for ch in self.components]:
             raise ValueError(ADD_COMPONENT_FAILURE.format(name=name, collection=self.name))
 
     def get_component_by_name(self, name: str) -> CarComponent:
         """Find and return car component of this collection by name."""
-        for child in self.children:
-            if child.name == name and type(child) == CarComponent:
-                return child
+        for comp in self.components:
+            if comp.name == name:
+                return comp
 
         raise ValueError(f"ERROR: Component '{name}' was not found in '{self.name}' collection!")
+
+    def get_collection_by_name(self, name: str) -> ComponentCollection:
+        """Find and return nested component collection by name."""
+        for child in self.collections:
+            if child.name == name:
+                return child
+
+        raise ValueError(f"ERROR: Component collection '{name}' was not found in '{self.name}' collection!")
     
     def to_json(self) -> dict:
         d = {'name': self.name,
-             'children': [self._create_child_reference(child, "json") for child in self.children]
+             'collections': [self._create_child_reference(child, "json") for child in self.collections],
+             'components': [self._create_child_reference(child, "json") for child in self.components]
              }
-
         return d
 
     def _create_child_reference(self, obj: CarComponent | ComponentCollection, extension: str) -> dict:
@@ -119,9 +140,9 @@ class ComponentCollection:
 
     def get_formatted_info(self) -> str:
         """Return well-formatted string representing data of this class."""
-        result = f"{self.name} ({len(self.children)}): \n"
+        result = f"{self.name} ({len(self.components)}): \n"
 
-        for element in self.children:
+        for element in self.components:
             result += f"{element.name}\n"
 
         return result

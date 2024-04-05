@@ -1,6 +1,7 @@
 """Save and load collections, components, logs."""
 
 import json
+import os
 import shutil
 
 from abc import ABC, abstractmethod
@@ -58,4 +59,4 @@ class JSONFiledataManager(FiledataManager):
 
     def delete_file(self, obj: JSONSerializableObject):
         """Remove target savefile from the system."""
-        shutil.rmtree(obj.path)
+        os.remove(obj.get_target_path(self.suffix))
