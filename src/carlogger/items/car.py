@@ -53,7 +53,6 @@ class Car:
         new_collection = ComponentCollection(name, car=self, parent_collection=parent_collection,
                                              path=self.path.joinpath("collections"))
         parent_collection.collections.append(new_collection)
-        print(f"==== {new_collection.path}")
 
         self.collections.append(new_collection)
 
@@ -65,19 +64,13 @@ class Car:
         collection_to_remove = self.get_collection_by_name(name)
 
         if collection_to_remove:
+
+            if parent := collection_to_remove.parent_collection:
+                parent.delete_collection(name)
+
             self.collections.remove(collection_to_remove)
         else:
             print(REMOVE_COLLECTION_FAILURE.format(name=name, car=self.car_info.name))
-
-        for coll in self.collections:
-            try:
-                c = coll.get_collection_by_name(name)
-            except ValueError:
-                continue
-            else:
-                if c.name == name:
-                    coll.delete_collection(c.name)
-                    return
 
         print(REMOVE_COLLECTION_SUCCESS.format(name=name))
 

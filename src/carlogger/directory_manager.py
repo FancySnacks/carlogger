@@ -1,6 +1,7 @@
 """Manage car save directories."""
 
 import os
+import pathlib
 import shutil
 
 from carlogger.items.car import Car
@@ -76,6 +77,10 @@ class DirectoryManager:
             collections = self.load_car_collections_from_path(path, new_car)
             new_car.collections = collections
 
+            for coll in new_car.collections:
+                if coll.parent_collection != "":
+                    coll.parent_collection = new_car.get_collection_by_name(pathlib.Path(coll.parent_collection).stem)
+
             return new_car
 
         raise NotADirectoryError(f"'{car_name}' directory not found in save folder")
@@ -94,6 +99,11 @@ class DirectoryManager:
             new_car.collections = collections
             cars.append(new_car)
 
+            for car in cars:
+                for coll in car.collections:
+                    if coll.parent_collection != "":
+                        coll.parent_collection = new_car.get_collection_by_name(coll.parent_collection.split()[-2])
+
         return cars
 
     def load_car_collections_from_path(self, path, parent_car: Car = None) -> list[ComponentCollection]:
@@ -107,7 +117,12 @@ class DirectoryManager:
                 new_collection = ComponentCollection(**collection_data, path=collections_path, car=parent_car)
                 components = self.load_car_components_from_path(new_collection)
                 new_collection.collections = \
-                    [ComponentCollection(**data, car=parent_car) for data in new_collection.collections]
+                    [ComponentCollection(name=data.get('name'),
+                                         collections=data.get('collections'),
+                                         components=data.get('components'),
+                                         parent_collection=data.get('parent_collection'),
+                                         car=parent_car)
+                     for data in new_collection.collections]
                 new_collection.components.clear()
 
                 for c in new_collection.collections:

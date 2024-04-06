@@ -1,7 +1,7 @@
 carlogger delete entry --id 0 --car CarTestPytest --component "Spark_Plug"
 carlogger delete component --name "Spark_Plug" --collection Engine --car CarTestPytest
 carlogger delete component --name Airflow --car CarTestPytest --collection Turbocharger
+carlogger delete collection --name Intake --car CarTestPytest
 carlogger delete collection --name Turbocharger --car CarTestPytest
-carlogger delete collection --name "Battery" --car CarTestPytest
 carlogger delete collection --name Engine --car CarTestPytest
 carlogger delete car --name CarTestPytest

@@ -4,6 +4,7 @@ from carlogger.directory_manager import DirectoryManager
 from carlogger.items.car import Car
 from carlogger.items.car_info import CarInfo
 from carlogger.cli.arg_executor import ArgExecutor, AddArgExecutor, ReadArgExecutor, DeleteArgExecutor
+from carlogger.items.component_collection import ComponentCollection
 
 
 class AppSession:
@@ -71,15 +72,18 @@ class AppSession:
         coll = car.get_collection_by_name(collection_name)
 
         if coll and len(coll.children) > 0:
-            self.delete_collection_children(coll)
+            self.delete_collection_children(coll, car_name)
 
         self.directory_manager.remove_item(coll)
         car.delete_collection(collection_name)
         self.directory_manager.update_car_directory(car)
 
-    def delete_collection_children(self, collection):
+    def delete_collection_children(self, collection: ComponentCollection, car_name: str):
         for ch in collection.children:
-            self.directory_manager.remove_item(ch)
+            if type(ch) == ComponentCollection:
+                self.delete_collection(car_name, ch.name)
+            else:
+                self.delete_component(car_name, collection.name, ch.name)
         collection.delete_children()
 
     def add_new_component(self, car_name: str, collection_name: str, component_name: str):

@@ -37,6 +37,8 @@ class ComponentCollection:
 
     def __post_init__(self):
         self.path = pathlib.Path(self.path)
+        self.components = [] if self.components is None else self.components
+        self.collections = [] if self.collections is None else self.collections
 
     @property
     def children(self) -> list:
@@ -82,19 +84,15 @@ class ComponentCollection:
 
         if collection_to_remove:
             self.collections.remove(collection_to_remove)
-            print(REMOVE_COLLECTION_SUCCESS.format(name=name))
-        else:
-            print(REMOVE_COLLECTION_FAILURE.format(name=name, car=self.car.car_info.name))
-
     def delete_components(self):
         for child in self.components:
             self.delete_component(child.name)
-        self.components.clear()
+        self.components = []
 
     def delete_collections(self):
         for child in self.collections:
             self.delete_collection(child.name)
-        self.collections.clear()
+        self.collections = []
 
     def delete_children(self):
         self.delete_components()
@@ -126,13 +124,24 @@ class ComponentCollection:
     
     def to_json(self) -> dict:
         d = {'name': self.name,
-             'collections': [self._create_child_reference(child, "json") for child in self.collections],
+             'parent_collection': self._get_parent_collection_path(self.parent_collection),
+             'collections': [self._create_child_collection_reference(child, "json") for child in self.collections],
              'components': [self._create_child_reference(child, "json") for child in self.components]
              }
         return d
 
+    def _get_parent_collection_path(self, parent_collection: ComponentCollection) -> str:
+        if parent_collection not in (None, ""):
+            return str(self.parent_collection.get_target_path("json"))
+        else:
+            return ""
+
     def _create_child_reference(self, obj: CarComponent | ComponentCollection, extension: str) -> dict:
         return {'name': obj.name, 'path': str(obj.get_target_path(extension))}
+
+    def _create_child_collection_reference(self, obj: ComponentCollection, extension: str) -> dict:
+        return {'name': obj.name,
+                'path': str(obj.get_target_path(extension))}
 
     def get_target_path(self, extension: str) -> str:
         """Extension without the dot"""
@@ -146,3 +155,7 @@ class ComponentCollection:
             result += f"{element.name}\n"
 
         return result
+
+    def __repr__(self) -> str:
+        return f"[COLLECTION] {self.name} {len(self.components)} " \
+               f"Components | {len(self.collections)} Nested Collections"

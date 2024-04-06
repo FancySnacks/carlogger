@@ -12,14 +12,14 @@ from carlogger.filedata_manager import JSONFiledataManager
 
 with open(pathlib.Path.cwd().joinpath("tests/add_arg_test"), "r") as f:
     commands = [c.replace("\n", "").replace('"', "").split() for c in f.readlines()]
-    keys = ['car', 'collection', 'nested', 'nestedsqr', 'component', 'entry']
+    keys = ['car', 'collection', 'nested', 'nestedtwo', 'component', 'nestedcomponent', 'entry']
     args = list(zip(keys, commands))
 
 ADD_ARGS = {k: v for k, v in args}
 
 with open(pathlib.Path.cwd().joinpath("tests/delete_arg_test"), "r") as f:
     commands = [c.replace("\n", "").replace('"', "").split() for c in f.readlines()]
-    keys = ['entry', 'component', 'nestedsqr', 'nested', 'collection', 'car']
+    keys = ['entry', 'component', 'nestedcomponent', 'nestedtwo', 'nested', 'collection', 'car']
     args = list(zip(keys, commands))
 
 DEL_ARGS = {k: v for k, v in args}

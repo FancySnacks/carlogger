@@ -42,8 +42,7 @@ def test_collection_children_are_removed_with_it(directory_manager, mock_car_dir
 
     session.delete_collection(car_name, 'Test')
 
-    print(os.listdir(mock_car_directory['car_dir'].joinpath('components')))
-    assert 'components' not in os.listdir(mock_car_directory['car_dir'])
+    assert len(os.listdir(mock_car_directory['car_dir'].joinpath("components"))) == 0
 
 
 def test_component_is_removed(directory_manager, mock_car_directory, tmp_path):
