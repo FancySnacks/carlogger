@@ -348,3 +348,78 @@ class DeleteSubparser(Subparser):
                                               metavar="COMPONENT_NAME",
                                               help="Not mandatory, only used when deleting entry by index number.",
                                               type=str)
+
+
+class UpdateSubparser(Subparser):
+    def __init__(self, parser_parent):
+        self.parser_parent = parser_parent
+
+    def create_subparser(self):
+        self.update_parser = self.parser_parent.subparsers.add_parser('update',
+                                                                      help="Update data of car, collection, "
+                                                                           "component or entry.",
+                                                                      formatter_class=argparse.RawTextHelpFormatter)
+
+        self.update_subparsers = self.update_parser.add_subparsers(help="Choose item type to update.\n")
+
+        # ===== UPDATE CAR ===== #
+
+        self.update_car_parser = self.update_subparsers.add_parser('car')
+
+        self.update_car_parser.add_argument('-n',
+                                            '--name',
+                                            type=str,
+                                            metavar="CAR_NAME",
+                                            help="Update specified car by name.",
+                                            required=True)
+
+        # ===== UPDATE COLLECTION ===== #
+
+        self.update_collection_parser = self.update_subparsers.add_parser('collection')
+
+        self.update_collection_parser.add_argument('-n',
+                                                   '--name',
+                                                   metavar="COLLECTION NAME",
+                                                   help="Update collection via name.",
+                                                   type=str,
+                                                   required=True)
+
+        self.update_collection_parser.add_argument('--car',
+                                                   type=str,
+                                                   metavar="CAR_NAME",
+                                                   help="Parent car name.",
+                                                   required=True)
+
+        # ===== UPDATE COMPONENT ===== #
+
+        self.update_component_parser = self.update_subparsers.add_parser('component')
+
+        self.update_component_parser.add_argument('-n',
+                                                  '--name',
+                                                  type=str,
+                                                  metavar="COMPONENT_NAME",
+                                                  help="Update component via name.",
+                                                  required=True)
+
+        self.update_component_parser.add_argument('--car',
+                                                  type=str,
+                                                  metavar="CAR_NAME",
+                                                  help="Parent car name.",
+                                                  required=True)
+
+        # ===== UPDATE ENTRY ===== #
+
+        self.update_entry_parser = self.update_subparsers.add_parser('entry')
+
+        self.update_entry_parser.add_argument('-id',
+                                              '--id',
+                                              metavar="ID/INDEX",
+                                              help="Update entry via unique index.\n",
+                                              type=str,
+                                              required=True)
+
+        self.update_entry_parser.add_argument('--car',
+                                              type=str,
+                                              metavar="CAR_NAME",
+                                              help="Parent car name.",
+                                              required=True)

@@ -2,7 +2,7 @@
 
 import argparse
 
-from carlogger.cli.subparser import Subparser, AddSubparser, ReadSubparser, DeleteSubparser
+from carlogger.cli.subparser import Subparser, AddSubparser, ReadSubparser, DeleteSubparser, UpdateSubparser
 
 
 class ArgParser:
@@ -34,6 +34,7 @@ class ArgParser:
         self.add_subparser(AddSubparser(self))
         self.add_subparser(ReadSubparser(self))
         self.add_subparser(DeleteSubparser(self))
+        self.add_subparser(UpdateSubparser(self))
 
     def add_subparser(self, subparser):
         self.subparser_obj.append(subparser)
