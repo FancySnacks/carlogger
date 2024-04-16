@@ -84,7 +84,7 @@ class Car:
             if collection.name == name:
                 return collection
 
-        raise ValueError(f"ERROR: Collection '{name}' was not found in '{self.car_info.name}' car!")
+        raise ValueError(f"ERROR: Collection '{name}' was not found in '{self.car_info.name}'!")
 
     def get_component_by_name(self, name: str) -> CarComponent | None:
         """Find and return component by name looping through all collections."""
@@ -93,7 +93,15 @@ class Car:
                 if child.name == name:
                     return child
 
-        raise ValueError(f"ERROR: Component '{name}' was not found in '{self.car_info.name}' car!")
+        raise ValueError(f"ERROR: Component '{name}' was not found in '{self.car_info.name}'!")
+
+    def get_entry_by_id(self, entry_id: str) -> LogEntry | None:
+        entries = self.get_all_entry_logs()
+        for entry in entries:
+            if entry.id == entry_id:
+                return entry
+
+        raise ValueError(f"ERROR: Entry of ID '{entry_id}' was not found in '{self.car_info.name}'!")
 
     def get_component_of_entry_by_entry_id(self, entry_id: str) -> CarComponent:
         """Find and return LogEntry by unique id looping through all items."""

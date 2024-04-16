@@ -52,13 +52,12 @@ class EntryFilter:
         self.count_filter: Optional[CountFilter] = None
 
         self.filter_dict = {"*": (self.filter_all, 'all'),
-                            "id": (self.filter_by_desc, 'all'),
+                            "id": (self.filter_by_id, 'all'),
                             "desc": (self.filter_by_desc, 'desc'),
-                            "category": (self.filter_by_desc, 'category'),
+                            "category": (self.filter_by_category, 'category'),
                             "date": (self.filter_by_date, 'date'),
                             "date_older": (self.filter_by_older_date, 'date'),
                             "date_younger": (self.filter_by_younger_date, 'date'),
-                            "mileage": (self.filter_by_date, 'date'),
                             "mileage_gt": (self.filter_by_gt_mileage, 'mileage'),
                             "mileage_lt": (self.filter_by_lt_mileage, 'mileage'),
                             }

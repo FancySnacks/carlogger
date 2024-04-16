@@ -211,7 +211,7 @@ class AddSubparser(Subparser):
         self.add_entry_parser = self.add_subparsers.add_parser('entry')
 
         self.add_entry_parser.add_argument('--car',
-                                           help="Parent collection.",
+                                           help="Parent car.",
                                            type=str,
                                            required=True)
 
@@ -366,19 +366,52 @@ class UpdateSubparser(Subparser):
 
         self.update_car_parser = self.update_subparsers.add_parser('car')
 
-        self.update_car_parser.add_argument('-n',
-                                            '--name',
+        self.update_car_parser.add_argument('-c',
+                                            '--car',
                                             type=str,
                                             metavar="CAR_NAME",
                                             help="Update specified car by name.",
                                             required=True)
 
+        self.update_car_parser.add_argument('--name',
+                                            type=str,
+                                            help="Update car name.")
+
+        self.update_car_parser.add_argument('--manufacturer',
+                                            type=str)
+
+        self.update_car_parser.add_argument('--model',
+                                            type=str)
+
+        self.update_car_parser.add_argument('--year',
+                                            type=int)
+
+        self.update_car_parser.add_argument('--mileage',
+                                            type=int)
+
+        self.update_car_parser.add_argument('--body',
+                                            type=str,
+                                            help="Hatchback, sedan, coupe, station wagon, SUV etc.")
+
+        self.update_car_parser.add_argument('--length',
+                                            type=int)
+
+        self.update_car_parser.add_argument('--weight',
+                                            type=int)
+
+        self.update_car_parser.add_argument('-p',
+                                            type=str,
+                                            help='More car properties as defined by the user, stored into a list.',
+                                            metavar='OTHER CAR PROPERTIES',
+                                            nargs='*',
+                                            default=[])
+
         # ===== UPDATE COLLECTION ===== #
 
         self.update_collection_parser = self.update_subparsers.add_parser('collection')
 
-        self.update_collection_parser.add_argument('-n',
-                                                   '--name',
+        self.update_collection_parser.add_argument('-c',
+                                                   '--collection',
                                                    metavar="COLLECTION NAME",
                                                    help="Update collection via name.",
                                                    type=str,
@@ -390,12 +423,16 @@ class UpdateSubparser(Subparser):
                                                    help="Parent car name.",
                                                    required=True)
 
+        self.update_collection_parser.add_argument('--name',
+                                                   help='Update collection name.',
+                                                   type=str)
+
         # ===== UPDATE COMPONENT ===== #
 
         self.update_component_parser = self.update_subparsers.add_parser('component')
 
-        self.update_component_parser.add_argument('-n',
-                                                  '--name',
+        self.update_component_parser.add_argument('-c',
+                                                  '--component',
                                                   type=str,
                                                   metavar="COMPONENT_NAME",
                                                   help="Update component via name.",
@@ -407,19 +444,43 @@ class UpdateSubparser(Subparser):
                                                   help="Parent car name.",
                                                   required=True)
 
+        self.update_component_parser.add_argument('--name',
+                                                  help='Update component name.',
+                                                  type=str)
+
         # ===== UPDATE ENTRY ===== #
 
         self.update_entry_parser = self.update_subparsers.add_parser('entry')
 
         self.update_entry_parser.add_argument('-id',
                                               '--id',
-                                              metavar="ID/INDEX",
-                                              help="Update entry via unique index.\n",
+                                              metavar="ID",
+                                              help="Unique entry ID.\n",
                                               type=str,
                                               required=True)
 
         self.update_entry_parser.add_argument('--car',
+                                              help="Parent car.",
                                               type=str,
-                                              metavar="CAR_NAME",
-                                              help="Parent car name.",
                                               required=True)
+
+        self.update_entry_parser.add_argument('--desc',
+                                              help='Short entry description.',
+                                              type=str)
+
+        self.update_entry_parser.add_argument('--date',
+                                              type=str,
+                                              help="FORMAT: 'DD-MM-YY'.\n")
+
+        self.update_entry_parser.add_argument('--mileage',
+                                              type=int)
+
+        self.update_entry_parser.add_argument('--category',
+                                              type=str,
+                                              choices=['check', 'swap', 'repair', 'fluid_change', 'fluid_add', 'other'])
+
+        self.update_entry_parser.add_argument('--tags',
+                                              type=str,
+                                              help="Custom tags used for easier search and filtering.",
+                                              nargs='*',
+                                              default=[])

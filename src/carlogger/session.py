@@ -3,7 +3,8 @@
 from carlogger.directory_manager import DirectoryManager
 from carlogger.items.car import Car
 from carlogger.items.car_info import CarInfo
-from carlogger.cli.arg_executor import ArgExecutor, AddArgExecutor, ReadArgExecutor, DeleteArgExecutor
+from carlogger.cli.arg_executor import ArgExecutor, AddArgExecutor, ReadArgExecutor, DeleteArgExecutor, \
+    UpdateArgExecutor
 from carlogger.items.component_collection import ComponentCollection
 
 
@@ -25,6 +26,8 @@ class AppSession:
                 self.arg_executor = AddArgExecutor(parsed_args, self, raw_args)
             case 'delete':
                 self.arg_executor = DeleteArgExecutor(parsed_args, self, raw_args)
+            case 'update':
+                self.arg_executor = UpdateArgExecutor(parsed_args, self, raw_args)
             case _:
                 return
 

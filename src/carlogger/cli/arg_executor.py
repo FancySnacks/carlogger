@@ -106,6 +106,10 @@ class DeleteArgExecutor(ArgExecutor):
 
     def _recognize_context(self):
         """See which item user wants to delete."""
+        if len(self.raw_args) < 2:
+            raise ValueError(
+                "Item to delete was not specified. (use one of these: 'car', 'collection', 'component', 'entry')")
+
         match self.raw_args[1]:
             case 'car': return 'car'
             case 'collection': return 'collection'
@@ -178,6 +182,11 @@ class AddArgExecutor(ArgExecutor):
 
     def _recognize_context(self) -> str:
         """What do we wish to create; car, collection, component or log entry?"""
+
+        if len(self.raw_args) < 2:
+            raise ValueError(
+                "Item to add was not specified. (use one of these: 'car', 'collection', 'component', 'entry')")
+
         match self.raw_args[1]:
             case 'car': return 'car'
             case 'collection': return 'collection'
@@ -204,6 +213,11 @@ class ReadArgExecutor(ArgExecutor):
 
     def _recognize_context(self) -> str:
         """What do we wish to read; car, collection, component or log entry?"""
+
+        if len(self.raw_args) < 2:
+            raise ValueError(
+                "Item to read was not specified. (use one of these: 'car', 'collection', 'component', 'entry')")
+
         match self.raw_args[1]:
             case 'car': return 'car'
             case 'collection': return 'collection'
@@ -213,8 +227,13 @@ class ReadArgExecutor(ArgExecutor):
     def get_car(self):
         """Find car by name and return car info."""
         car_name = self.args.get('name')
-        car = self.app.get_car_by_name(car_name)
-        self.print_car_info(car)
+
+        if car_name == '*':
+            all_cars = self.app.directory_manager.load_all_car_dir()
+            print([c.car_info.name for c in all_cars])
+        else:
+            car = self.app.get_car_by_name(car_name)
+            self.print_car_info(car)
 
     def print_car_info(self, car: Car):
         """Print car info of the loaded/cached car."""
@@ -286,3 +305,112 @@ class ReadArgExecutor(ArgExecutor):
                 return ['*', match[0]]
 
         return entries
+
+
+class UpdateArgExecutor(ArgExecutor):
+    """Handles 'update' subparser for updating car, collection, component or entry log data."""
+    def __init__(self, parsed_args: dict, app_session: AppSession, raw_args: list[str]):
+        self.parsed_args = parsed_args
+        self.app_session = app_session
+        self.raw_args = raw_args[1::]
+
+        self.arg_func_map = {'car': self.update_car,
+                             'collection': self.update_collection,
+                             'component': self.update_component,
+                             'entry': self.update_entry}
+
+    def evaluate_args(self):
+        """Execute mapped functions based on passed args."""
+        context = self._recognize_context()
+        self.arg_func_map.get(context)()
+
+    def update_car(self):
+        """Update car data based on passed arguments."""
+        car_name = self.parsed_args['car']
+        car = self.app_session.get_car_by_name(car_name)
+
+        valid_car_keys = [field.name for field in dataclasses.fields(CarInfo)]
+        new_data = {key: value for (key, value) in self.parsed_args.items() if key in valid_car_keys}
+
+        entry_data = self._clamp_updated_values(new_data, car.car_info)
+
+        for key, value in entry_data.items():
+            setattr(car.car_info, key, value)
+
+        self.app_session.directory_manager.update_car_directory(car)
+
+    def update_collection(self):
+        """Update collection data based on passed arguments."""
+        car_name = self.parsed_args['car']
+        coll_name = self.parsed_args['collection']
+        car = self.app_session.get_car_by_name(car_name)
+        collection = car.get_collection_by_name(coll_name)
+
+        valid_coll_keys = [field.name for field in dataclasses.fields(ComponentCollection)]
+        new_data = {key: value for (key, value) in self.parsed_args.items() if key in valid_coll_keys}
+
+        coll_data = self._clamp_updated_values(new_data, collection)
+
+        for key, value in coll_data.items():
+            setattr(collection, key, value)
+
+        self.app_session.directory_manager.update_car_directory(car)
+
+    def update_component(self):
+        """Update component data based on passed arguments."""
+        car_name = self.parsed_args['car']
+        comp_name = self.parsed_args['component']
+        car = self.app_session.get_car_by_name(car_name)
+        component = car.get_component_by_name(comp_name)
+
+        valid_comp_keys = [field.name for field in dataclasses.fields(CarComponent)]
+        new_data = {key: value for (key, value) in self.parsed_args.items() if key in valid_comp_keys}
+
+        comp_data = self._clamp_updated_values(new_data, component)
+
+        for key, value in comp_data.items():
+            setattr(component, key, value)
+
+        self.app_session.directory_manager.update_car_directory(car)
+
+    def update_entry(self):
+        """Update entry data based on passed arguments."""
+        car_name = self.parsed_args['car']
+        entry_id = self.parsed_args['id']
+        car = self.app_session.get_car_by_name(car_name)
+        entry = car.get_entry_by_id(entry_id)
+
+        valid_entry_keys = [field.name for field in dataclasses.fields(LogEntry)]
+        entry_data = {key: value for (key, value) in self.parsed_args.items() if key in valid_entry_keys}
+
+        entry_data = self._clamp_updated_values(entry_data, entry)
+
+        for key, value in entry_data.items():
+            setattr(entry, key, value)
+
+        self.app_session.directory_manager.update_car_directory(car)
+
+    def _clamp_updated_values(self, new_data: dict, item: Car | ComponentCollection | CarComponent | LogEntry) -> dict:
+        """Filter out data that is empty, not set or exactly the same as existing one in target item."""
+        clamped_dict = {}
+        
+        for key in new_data.keys():
+            data = new_data.get(key)
+            if data:
+                if data != getattr(item, key, new_data[key]):
+                    clamped_dict[key] = new_data[key]
+        
+        return clamped_dict
+
+    def _recognize_context(self) -> str:
+        """Which item to update; car, collection, component or log entry?"""
+
+        if len(self.raw_args) < 2:
+            raise ValueError(
+                "Item to update was not specified. (use one of these: 'car', 'collection', 'component', 'entry')")
+
+        match self.raw_args[1]:
+            case 'car': return 'car'
+            case 'collection': return 'collection'
+            case 'component': return 'component'
+            case 'entry': return 'entry'

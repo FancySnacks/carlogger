@@ -53,3 +53,6 @@ class ArgParser:
 
         if 'delete' in argv:
             return 'delete'
+
+        if 'update' in argv:
+            return 'update'
