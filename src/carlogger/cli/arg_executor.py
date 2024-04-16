@@ -238,6 +238,7 @@ class ReadArgExecutor(ArgExecutor):
     def print_car_info(self, car: Car):
         """Print car info of the loaded/cached car."""
         print(car.get_formatted_info())
+        print(car.collections)
 
     def get_collection(self):
         """Return list of component collections of target car."""
@@ -346,6 +347,8 @@ class UpdateArgExecutor(ArgExecutor):
         car = self.app_session.get_car_by_name(car_name)
         collection = car.get_collection_by_name(coll_name)
 
+        self.app_session.directory_manager.remove_item(collection)
+
         valid_coll_keys = [field.name for field in dataclasses.fields(ComponentCollection)]
         new_data = {key: value for (key, value) in self.parsed_args.items() if key in valid_coll_keys}
 
@@ -362,6 +365,8 @@ class UpdateArgExecutor(ArgExecutor):
         comp_name = self.parsed_args['component']
         car = self.app_session.get_car_by_name(car_name)
         component = car.get_component_by_name(comp_name)
+
+        self.app_session.directory_manager.remove_item(component)
 
         valid_comp_keys = [field.name for field in dataclasses.fields(CarComponent)]
         new_data = {key: value for (key, value) in self.parsed_args.items() if key in valid_comp_keys}
