@@ -157,5 +157,5 @@ class ComponentCollection:
         return result
 
     def __repr__(self) -> str:
-        return f"\n[COLLECTION] {self.name} {len(self.components)} " \
-               f"Components | {len(self.collections)} Nested Collections"
+        return f"[COLLECTION] {self.name} ({len(self.components)} " \
+               f"Components | {len(self.collections)} Nested Collections)\n"

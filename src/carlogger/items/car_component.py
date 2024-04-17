@@ -128,3 +128,6 @@ class CarComponent:
 
         for tag in string_tags:
             self.search_tags.add(tag)
+
+    def __repr__(self) -> str:
+        return f"[COMPONENT] {self.name} ({len(self.log_entries)} Entries)\n"

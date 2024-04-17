@@ -2,4 +2,6 @@ carlogger read car --name CarTestPytest
 carlogger read collection --name Engine --car CarTestPytest
 carlogger read collection --name "Turbocharger" --car CarTestPytest
 carlogger read component --name "Spark_Plug" --car CarTestPytest
+carlogger read collection --name '*' --car CarTestPytest
+carlogger read component --name '*' --car CarTestPytest
 carlogger read entry --car CarTestPytest

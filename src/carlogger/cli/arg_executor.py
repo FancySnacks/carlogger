@@ -238,16 +238,19 @@ class ReadArgExecutor(ArgExecutor):
     def print_car_info(self, car: Car):
         """Print car info of the loaded/cached car."""
         print(car.get_formatted_info())
-        print(car.collections)
+        print(*car.collections)
 
     def get_collection(self):
         """Return list of component collections of target car."""
         car_name = self.args.get('car')
         collection_name = self.args.get('name')
         car = self.app.get_car_by_name(car_name)
-        collection = car.get_collection_by_name(collection_name)
 
-        self.print_collection(collection)
+        if collection_name == '*':
+            print(*car.collections)
+        else:
+            collection = car.get_collection_by_name(collection_name)
+            self.print_collection(collection)
 
     def print_collection(self, collection: ComponentCollection):
         """Print desired collections."""
@@ -258,9 +261,15 @@ class ReadArgExecutor(ArgExecutor):
         car_name = self.args.get('car')
         component_name = self.args.get('name')
         car = self.app.get_car_by_name(car_name)
-        component = car.get_component_by_name(component_name)
 
-        self.print_component(component)
+        if component_name == '*':
+            components = [c.components for c in car.collections]
+            all_components = []
+            [all_components.extend(clist) for clist in components]
+            print(*all_components)
+        else:
+            component = car.get_component_by_name(component_name)
+            self.print_component(component)
     
     def print_component(self, component: CarComponent):
         """Print desired components from cached car."""
