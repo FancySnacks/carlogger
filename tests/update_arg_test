@@ -1,0 +1,3 @@
+carlogger update component --component "Spark_Plug" --car CarTestPytest --name "Coil"
+carlogger update collection --collection "Engine" --car CarTestPytest --name "Engine_Sector"
+carlogger update car --car "CarTestPytest" --model "Felicia"
