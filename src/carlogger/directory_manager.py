@@ -56,6 +56,11 @@ class DirectoryManager:
         self.data_manager.save_file(car.car_info, self.create_car_info_path(car))
         self.update_collections_files(car.collections)
 
+    def rename_car_dir(self, car: Car, legacy_car_info_path: str):
+        os.remove(legacy_car_info_path)
+        self.update_car_directory(car)
+        os.rename(car.path, car.path.parent.joinpath(car.car_info.name))
+
     def update_collections_files(self, comp_collections: list[ComponentCollection]):
         for coll in comp_collections:
             self.data_manager.save_file(coll, coll.get_target_path(self.data_manager.suffix))

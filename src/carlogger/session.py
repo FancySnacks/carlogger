@@ -127,6 +127,35 @@ class AppSession:
         comp.delete_entry_by_id(entry_id)
         self.directory_manager.update_car_directory(car)
 
+    def update_car_info(self, car: Car, updated_data: dict[str, ...]):
+        """Update target car info values and update the save file."""
+
+        legacy_car_info_path = car.car_info.path
+
+        for key, value in updated_data.items():
+            setattr(car.car_info, key, value)
+
+        # Create new directory and copy items over when changing name of the car
+        if 'name' in updated_data.keys():
+            self.directory_manager.rename_car_dir(car, legacy_car_info_path)
+        else:
+            self.directory_manager.update_car_directory(car)
+
+    def update_component_or_collection(self, parent_car: Car, item, updated_data: dict[str, ...]):
+        self.directory_manager.remove_item(item)
+
+        for key, value in updated_data.items():
+            setattr(item, key, value)
+
+        self.directory_manager.update_car_directory(parent_car)
+
+    def update_entry(self, parent_car: Car, entry, updated_data: dict[str, ...]):
+        """Update values of target entry and update the save file."""
+        for key, value in updated_data.items():
+            setattr(entry, key, value)
+
+        self.directory_manager.update_car_directory(parent_car)
+
     def get_car_by_name(self, car_name: str) -> Car:
         """Find car by name. If it's not found, attempt loading the car from save directory and check again."""
         try:

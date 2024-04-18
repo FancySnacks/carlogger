@@ -3,6 +3,9 @@ from carlogger.session import AppSession
 from carlogger.cli.arg_executor import AddArgExecutor, DeleteArgExecutor
 
 
+# ===== ADD ===== #
+
+
 def test_arg_executor_creates_new_car(directory_manager, add_cmd):
     args = add_cmd['car']
 
@@ -79,6 +82,9 @@ def test_arg_executor_creates_new_entry(directory_manager, add_cmd):
     assert len(component.log_entries) > 0
 
 
+# ===== DELETE ===== #
+
+
 def test_arg_executor_deletes_entry(directory_manager, delete_cmd):
     args = delete_cmd['entry']
 
@@ -152,3 +158,14 @@ def test_arg_executor_deletes_car(directory_manager, delete_cmd):
     arg_executor.delete_car()
 
     assert len(session.cars) == 0
+
+
+# ===== UPDATE ===== #
+
+
+def test_arg_executor_updates_entry(directory_manager, mock_log_entry, mock_component):
+    session = AppSession(directory_manager)
+    parser = ArgParser()
+    parser.setup_args()
+
+    assert True

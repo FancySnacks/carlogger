@@ -124,6 +124,7 @@ class CarComponent:
         return result
 
     def _add_search_tags_from_entry(self, entry: LogEntry):
+        self._search_tags = []
         string_tags = entry.desc, *entry.tags, entry.component.name, entry.category, entry.date
 
         for tag in string_tags:
