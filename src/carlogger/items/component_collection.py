@@ -12,9 +12,7 @@ if TYPE_CHECKING:
 from dataclasses import dataclass, field
 
 from carlogger.items.car_component import CarComponent
-from carlogger.const import ADD_COMPONENT_SUCCESS, ADD_COMPONENT_FAILURE, \
-    REMOVE_COMPONENT_SUCCESS, REMOVE_COMPONENT_FAILURE, ADD_COLLECTION_FAILURE, REMOVE_COLLECTION_FAILURE, \
-    REMOVE_COLLECTION_SUCCESS
+from carlogger.printer import Printer
 from carlogger.items.log_entry import LogEntry
 
 
@@ -66,7 +64,8 @@ class ComponentCollection:
         new_component = CarComponent(name, path=self.path.parent.joinpath('components'))
         self.components.append(new_component)
 
-        print(ADD_COMPONENT_SUCCESS.format(name=name))
+        Printer.print_msg(new_component,
+                          'ADD_SUCCESS', name=new_component.name, relation=f"{self.car.car_info.name}->{self.name}")
 
         return new_component
 
@@ -75,15 +74,16 @@ class ComponentCollection:
 
         if component_to_remove:
             self.components.remove(component_to_remove)
-            print(REMOVE_COMPONENT_SUCCESS.format(name=name))
+            Printer.print_msg(component_to_remove, 'DEL_SUCCESS', name=component_to_remove.name, relation=self)
         else:
-            print(REMOVE_COMPONENT_FAILURE.format(name=name, collection=self.name))
+            Printer.print_msg(component_to_remove, 'DEL_FAIL', name=component_to_remove.name, relation=self)
 
     def delete_collection(self, name: str):
         collection_to_remove = self.get_collection_by_name(name)
 
         if collection_to_remove:
             self.collections.remove(collection_to_remove)
+
     def delete_components(self):
         for child in self.components:
             self.delete_component(child.name)
@@ -100,11 +100,11 @@ class ComponentCollection:
 
     def _check_for_nested_collection_duplicates(self, name: str):
         if name in [ch.name for ch in self.components]:
-            raise ValueError(ADD_COLLECTION_FAILURE.format(name=name, car=self.car.car_info.name))
+            Printer.print_msg(self, 'ADD_FAIL', name=name, relation=self)
 
     def _check_for_component_duplicates(self, name: str):
         if name in [ch.name for ch in self.components]:
-            raise ValueError(ADD_COMPONENT_FAILURE.format(name=name, collection=self.name))
+            Printer.print_msg(self, 'ADD_FAIL', name=name, relation=self)
 
     def get_component_by_name(self, name: str) -> CarComponent:
         """Find and return car component of this collection by name."""
@@ -112,7 +112,7 @@ class ComponentCollection:
             if comp.name == name:
                 return comp
 
-        raise ValueError(f"ERROR: Component '{name}' was not found in '{self.name}' collection!")
+        Printer.print_msg(comp, 'READ_FAIL', name=name, relation=self)
 
     def get_collection_by_name(self, name: str) -> ComponentCollection:
         """Find and return nested component collection by name."""
@@ -120,7 +120,7 @@ class ComponentCollection:
             if child.name == name:
                 return child
 
-        raise ValueError(f"ERROR: Component collection '{name}' was not found in '{self.name}' collection!")
+        Printer.print_msg(child, 'READ_FAIL', name=name, relation=self)
     
     def to_json(self) -> dict:
         d = {'name': self.name,

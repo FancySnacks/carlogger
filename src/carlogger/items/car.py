@@ -5,8 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from carlogger.const import ADD_COLLECTION_SUCCESS, ADD_COLLECTION_FAILURE, \
-    REMOVE_COLLECTION_SUCCESS, REMOVE_COLLECTION_FAILURE
+from carlogger.printer import Printer
 from carlogger.util import format_date_string_to_tuple, create_car_dir_path
 from carlogger.items.car_info import CarInfo
 from carlogger.items.component_collection import ComponentCollection
@@ -37,13 +36,16 @@ class Car:
 
     def create_collection(self, name: str) -> ComponentCollection:
         """Create new collection, add it to the list and return object reference."""
-        self._check_for_collection_duplicates(name=name)
+        try:
+            self._check_for_collection_duplicates(name=name)
 
-        new_collection = ComponentCollection(name, car=self, path=self.path.joinpath("collections"))
-        self.collections.append(new_collection)
-        print(ADD_COLLECTION_SUCCESS.format(name=name))
+            new_collection = ComponentCollection(name, car=self, path=self.path.joinpath("collections"))
+            self.collections.append(new_collection)
+            Printer.print_msg(new_collection, 'ADD_SUCCESS', name=new_collection.name, relation=self.car_info.name)
 
-        return new_collection
+            return new_collection
+        except Exception:
+            Printer.print_msg(ComponentCollection, 'ADD_FAIL', name=name, relation=self.car_info.name)
 
     def create_nested_collection(self, name: str, parent_collection_name: str) -> ComponentCollection:
         """Create new collection, add it to the list and return object reference."""
@@ -56,7 +58,8 @@ class Car:
 
         self.collections.append(new_collection)
 
-        print(ADD_COLLECTION_SUCCESS.format(name=name))
+        Printer.print_msg(new_collection, 'ADD_SUCCESS', name=new_collection.name,
+                          relation=f"{self.car_info.name}->{parent_collection.name}")
 
         return new_collection
 
@@ -69,14 +72,20 @@ class Car:
                 parent.delete_collection(name)
 
             self.collections.remove(collection_to_remove)
-        else:
-            print(REMOVE_COLLECTION_FAILURE.format(name=name, car=self.car_info.name))
 
-        print(REMOVE_COLLECTION_SUCCESS.format(name=name))
+            if parent:
+                Printer.print_msg(collection_to_remove,
+                                  'DEL_SUCCESS', name=name, relation=f"{self.car_info.name}->{parent.name}")
+                return
+
+            Printer.print_msg(collection_to_remove, 'DEL_SUCCESS', name=name, relation=self.car_info.name)
+        else:
+            Printer.print_msg(ComponentCollection, 'DEL_FAIL', name=name, relation=self.car_info.name)
 
     def _check_for_collection_duplicates(self, name):
         if name in [coll.name for coll in self.collections]:
-            raise ValueError(ADD_COLLECTION_FAILURE.format(name=name, car=self.car_info.name))
+            Printer.print_msg(ComponentCollection, 'ADD_FAIL', name=name,
+                              relation=self.car_info.name, reason=" because collection of exact name already exists")
 
     def get_collection_by_name(self, name: str) -> ComponentCollection | None:
         """Find and return collection by name."""
@@ -84,7 +93,7 @@ class Car:
             if collection.name == name:
                 return collection
 
-        raise ValueError(f"ERROR: Collection '{name}' was not found in '{self.car_info.name}'!")
+        Printer.print_msg(ComponentCollection, 'READ_FAIL', name=name, relation=self.car_info.name)
 
     def get_component_by_name(self, name: str) -> CarComponent | None:
         """Find and return component by name looping through all collections."""
@@ -93,7 +102,7 @@ class Car:
                 if child.name == name:
                     return child
 
-        raise ValueError(f"ERROR: Component '{name}' was not found in '{self.car_info.name}'!")
+        Printer.print_msg(CarComponent, 'READ_FAIL', name=name, relation=self.car_info.name)
 
     def get_entry_by_id(self, entry_id: str) -> LogEntry | None:
         entries = self.get_all_entry_logs()
@@ -101,7 +110,7 @@ class Car:
             if entry.id == entry_id:
                 return entry
 
-        raise ValueError(f"ERROR: Entry of ID '{entry_id}' was not found in '{self.car_info.name}'!")
+        Printer.print_msg(LogEntry, 'READ_FAIL', name=entry_id, relation=self.car_info.name)
 
     def get_component_of_entry_by_entry_id(self, entry_id: str) -> CarComponent:
         """Find and return LogEntry by unique id looping through all items."""

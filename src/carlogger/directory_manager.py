@@ -10,6 +10,7 @@ from carlogger.items.component_collection import ComponentCollection
 from carlogger.items.car_component import CarComponent
 from carlogger.items.car_info import CarInfo
 from carlogger.const import CARS_PATH, ADD_CAR_SUCCESS, ADD_CAR_FAILURE, REMOVE_CAR_SUCCESS, REMOVE_CAR_FAILURE
+from carlogger.printer import Printer
 from carlogger.util import get_car_dirs
 
 
@@ -34,19 +35,20 @@ class DirectoryManager:
             os.mkdir(path.joinpath("collections"))
             os.mkdir(path.joinpath("components"))
         except FileExistsError:
-            print(ADD_CAR_FAILURE.format(name=path.name, path=path))
+            Printer.print_msg(Car, 'ADD_FAIL', name=path.name, relation=path,
+                              reason=" because a directory with exact name already exists")
             return
         else:
-            print(ADD_CAR_SUCCESS.format(name=path.name, path=path))
+            Printer.print_msg(Car, 'ADD_SUCCESS', name=path.name, relation=path)
 
     def remove_car_directory(self, car: Car):
         """Delete a car directory along with all its data files from 'save' directory if it exists."""
         path = car.path
         try:
             shutil.rmtree(path)
-            print(REMOVE_CAR_SUCCESS.format(name=car.car_info.name))
+            Printer.print_msg(Car, 'DEL_SUCCESS', name=path.name, relation=path)
         except OSError:
-            print(REMOVE_CAR_FAILURE.format(name=car.car_info.name))
+            Printer.print_msg(Car, 'DEL_FAIL', name=path.name, relation=path)
             return
 
     def remove_item(self, item):
