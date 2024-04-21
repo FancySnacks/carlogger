@@ -34,7 +34,8 @@ class CarComponent:
                                  category=EntryCategory(entry_data['category']),
                                  tags=entry_data['tags'],
                                  component=self,
-                                 _id=str(uuid.uuid1()))
+                                 _id=str(uuid.uuid1()),
+                                 custom_info=entry_data['custom_info'])
         except Exception:
             Printer.print_msg(None, 'ADD_FAIL', name="new entry", relation=self.name)
         else:

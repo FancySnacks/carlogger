@@ -259,6 +259,15 @@ class AddSubparser(Subparser):
                                            nargs='*',
                                            default=[])
 
+        self.add_entry_parser.add_argument('--custom',
+                                           action=ParseKwargs,
+                                           type=str,
+                                           help='More entry properties as defined by the user, stored into a dictionary.',
+                                           metavar='CUSTOM ENTRY PROPERTIES',
+                                           dest='custom_info',
+                                           nargs='*',
+                                           default=[])
+
 
 class DeleteSubparser(Subparser):
     def __init__(self, parser_parent):

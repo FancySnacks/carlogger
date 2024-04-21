@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -21,6 +21,7 @@ class LogEntry:
     tags: list[str]
     component: CarComponent
     _id: str
+    custom_info: dict[str, ...] = field(default_factory=dict)
 
     @property
     def id(self) -> str:
@@ -44,6 +45,9 @@ class LogEntry:
             'component': self.component.name,
             'id': self.id
         }
+
+        for k, v in self.custom_info.items():
+            d[k] = v
 
         return d
 
