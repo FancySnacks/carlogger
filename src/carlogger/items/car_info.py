@@ -1,6 +1,6 @@
 """Car info; manufacturer, year of make, equipment version, weight, classification etc."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -14,6 +14,7 @@ class CarInfo:
     weight: int
     name: str = ""
     path: str = ""
+    custom_info: dict[str, ...] = field(default_factory=dict)
 
     def __post_init__(self):
         if self.name == "":

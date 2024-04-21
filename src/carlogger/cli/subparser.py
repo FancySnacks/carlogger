@@ -6,6 +6,14 @@ from datetime import datetime
 from abc import ABC, abstractmethod
 
 
+class ParseKwargs(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        setattr(namespace, self.dest, dict())
+        for value in values:
+            key, value = value.split('=')
+            getattr(namespace, self.dest)[key] = value
+
+
 class Subparser(ABC):
     @abstractmethod
     def __init__(self, parser_parent):
@@ -159,10 +167,11 @@ class AddSubparser(Subparser):
                                          type=int,
                                          required=True)
 
-        self.add_car_parser.add_argument('-p',
-                                         type=str,
-                                         help='More car properties as defined by the user, stored into a list.',
+        self.add_car_parser.add_argument('--custom',
+                                         action=ParseKwargs, type=str,
+                                         help='More car properties as defined by the user, stored into a dictionary.',
                                          metavar='OTHER CAR PROPERTIES',
+                                         dest='custom_info',
                                          nargs='*',
                                          default=[])
 
