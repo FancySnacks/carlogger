@@ -35,7 +35,7 @@ class CarComponent:
                                  tags=entry_data['tags'],
                                  component=self,
                                  _id=str(uuid.uuid1()),
-                                 custom_info=entry_data['custom_info'])
+                                 custom_info=entry_data.get('custom_info') or {})
         except Exception:
             Printer.print_msg(None, 'ADD_FAIL', name="new entry", relation=self.name)
         else:
@@ -53,7 +53,8 @@ class CarComponent:
                              category=EntryCategory(entry_data['category']),
                              tags=entry_data['tags'],
                              component=self,
-                             _id=entry_data['id'])
+                             _id=entry_data['id'],
+                             custom_info=entry_data.get('custom_info') or {})
         self.log_entries.append(new_entry)
 
         self._add_search_tags_from_entry(new_entry)
