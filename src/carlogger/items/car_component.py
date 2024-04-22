@@ -18,12 +18,17 @@ class CarComponent:
 
     name: str
     log_entries: list[LogEntry] = field(init=False, default_factory=list)
+    current_part: str = field(init=False, default="")
     search_tags: set[str] = field(init=False, default_factory=set)
     path: str = ""
 
     def __post_init__(self):
         self.search_tags.add(self.name)
         self.path = pathlib.Path(self.path)
+
+    @property
+    def latest_entry(self) -> LogEntry:
+        return self.log_entries[-1]
 
     def create_entry(self, entry_data: dict) -> str:
         """Creates a new entry adding it to the list and returns its unique id."""
@@ -40,8 +45,12 @@ class CarComponent:
             Printer.print_msg(None, 'ADD_FAIL', name="new entry", relation=self.name)
         else:
             self.log_entries.append(new_entry)
+
             Printer.print_msg(new_entry, 'ADD_SUCCESS', name=f"Entry of id '{new_entry.id}'", relation=self.name)
+
             self._add_search_tags_from_entry(new_entry)
+            self._update_current_part(new_entry)
+
             return new_entry.id
 
     def create_entry_from_file(self, entry_data: dict) -> str:
@@ -58,6 +67,7 @@ class CarComponent:
         self.log_entries.append(new_entry)
 
         self._add_search_tags_from_entry(new_entry)
+        self._update_current_part(new_entry)
 
         return new_entry.id
 
@@ -108,6 +118,7 @@ class CarComponent:
         """Returns object properties as JSON-serializable dictionary."""
         d = {'type': 'component',
              'name': self.name,
+             'current_part': self.current_part,
              'log_entries': [entry.to_json() for entry in self.log_entries],
              'search_tags': list(self.search_tags),
              }
@@ -133,6 +144,12 @@ class CarComponent:
 
         for tag in string_tags:
             self.search_tags.add(tag)
+
+    def _update_current_part(self, entry: LogEntry):
+        if new_part := entry.custom_info.get('part'):
+            if self.current_part != new_part:
+                if entry.category in (EntryCategory.swap, EntryCategory.fluid_change):
+                    self.current_part = new_part
 
     def __repr__(self) -> str:
         return f"[COMPONENT] {self.name} ({len(self.log_entries)} Entries)\n"
