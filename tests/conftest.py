@@ -81,6 +81,8 @@ def mock_scheduled_log_entry() -> dict:
              "mileage": 2380,
              "category": EntryCategory.check,
              "tags": [],
+             "repeating": True,
+             "day_frequency": 10,
              }
 
     return entry

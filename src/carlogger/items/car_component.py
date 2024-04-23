@@ -83,7 +83,9 @@ class CarComponent:
                                           tags=entry_data['tags'],
                                           component=self,
                                           _id=str(uuid.uuid1()),
-                                          custom_info=entry_data.get('custom_info') or {})
+                                          custom_info=entry_data.get('custom_info') or {},
+                                          repeating=True,
+                                          day_frequency=10)
         except Exception:
             Printer.print_msg(None, 'ADD_FAIL', name="new scheduled entry", relation=self.name)
         else:
@@ -96,6 +98,15 @@ class CarComponent:
             self._update_current_part(new_entry)
 
             return new_entry.id
+
+    def mark_scheduled_entry_as_done(self, entry_id: str):
+        entry = self.get_entry_by_id(entry_id)
+        self.create_entry(entry.to_json())
+
+        if not entry.repeating:
+            self.delete_entry_by_id(entry_id)
+        else:
+            entry.repeat()
 
     def update_entry(self, entry_id: str, changes: dict):
         """Update values of log entry with specified unique id hash. \n
@@ -133,13 +144,21 @@ class CarComponent:
                               name=f"entry'",
                               relation=self.name, reason=f"as it was not found  at index {entry_index}")
 
-    def get_entry_by_id(self, entry_id: str) -> LogEntry | None:
+    def get_entry_by_id(self, entry_id: str) -> LogEntry | ScheduledLogEntry | None:
         """Return log entry by its unique id hash."""
         i = 0
 
         while i < len(self.log_entries):
             if self.log_entries[i].id == entry_id:
                 return self.log_entries[i]
+            else:
+                i += 1
+
+        i = 0
+
+        while i < len(self.scheduled_log_entries):
+            if self.scheduled_log_entries[i].id == entry_id:
+                return self.scheduled_log_entries[i]
             else:
                 i += 1
 

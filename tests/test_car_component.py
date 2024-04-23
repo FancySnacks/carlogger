@@ -106,3 +106,27 @@ def test_scheduled_log_entry_returns_mileage_remaining(mock_component, mock_log_
 
     assert entry.get_mileage_remaining() == 976
 
+
+def test_scheduled_log_entry_completion(mock_component, mock_log_entry, mock_scheduled_log_entry):
+    c = mock_component
+    c = CarComponent("Coolant")
+    c.create_scheduled_entry(mock_scheduled_log_entry)
+
+    entry = c.scheduled_log_entries[0].id
+
+    c.mark_scheduled_entry_as_done(entry)
+
+    assert len(c.log_entries) > 0
+
+
+def test_scheduled_log_entry_completion_refreshes(mock_component, mock_log_entry, mock_scheduled_log_entry):
+    c = mock_component
+    c = CarComponent("Coolant")
+    c.create_scheduled_entry(mock_scheduled_log_entry)
+
+    entry = c.scheduled_log_entries[0]
+    og_date = entry.date
+
+    c.mark_scheduled_entry_as_done(entry.id)
+
+    assert og_date != c.scheduled_log_entries[0].date

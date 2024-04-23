@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import datetime
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
@@ -9,7 +10,7 @@ if TYPE_CHECKING:
     from carlogger.items.car_component import CarComponent
 from carlogger.items.entry_category import EntryCategory
 from carlogger.const import TODAY
-from carlogger.util import date_string_to_date
+from carlogger.util import date_string_to_date, format_date_struct_to_tuple, format_tuple_to_date_string
 
 
 @dataclass(order=True)
@@ -66,6 +67,21 @@ class LogEntry:
 class ScheduledLogEntry(LogEntry):
     """LogEntry but scheduled in time based on date or target mileage and ability to be repeatable."""
 
+    day_frequency: int = 1
+    repeating: bool = False
+
+    def __post_init__(self):
+        self.repeat()
+
+    def repeat(self):
+        self.date = self.get_new_date()
+
+    def get_new_date(self) -> str:
+        old_date = date_string_to_date(self.date)
+        new_date = old_date + datetime.timedelta(days=self.day_frequency)
+        new_date = (new_date.day, new_date.month, new_date.year)
+        return format_tuple_to_date_string(new_date)
+
     def get_days_remaining(self) -> int:
         date = date_string_to_date(self.date)
         days = date - date_string_to_date(TODAY)
@@ -73,3 +89,8 @@ class ScheduledLogEntry(LogEntry):
 
     def get_mileage_remaining(self) -> int:
         return self.mileage - self.component.current_mileage
+
+    def get_formatted_info(self) -> str:
+        """Return well-formatted string representing data of this class."""
+        return f"[{self.date}] [in {self.get_days_remaining()} days] {self.desc} [Mileage: {self.mileage}] " \
+               f"[Type: {self.category}] [{self.id}]\n"
