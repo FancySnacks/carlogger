@@ -18,6 +18,7 @@ class CarComponent:
     log_entries: list[LogEntry] = field(init=False, default_factory=list)
     scheduled_log_entries: list[ScheduledLogEntry] = field(init=False, default_factory=list)
     current_part: str = field(init=False, default="")
+    current_mileage: int = field(init=False)
     search_tags: set[str] = field(init=False, default_factory=set)
     path: str = ""
 
@@ -49,6 +50,7 @@ class CarComponent:
 
             self._add_search_tags_from_entry(new_entry)
             self._update_current_part(new_entry)
+            self._update_mileage(new_entry)
 
             return new_entry.id
 
@@ -67,6 +69,7 @@ class CarComponent:
 
         self._add_search_tags_from_entry(new_entry)
         self._update_current_part(new_entry)
+        self._update_mileage(new_entry)
 
         return new_entry.id
 
@@ -122,10 +125,13 @@ class CarComponent:
     def delete_entry_by_index(self, entry_index: int = -1):
         """Removes log entry from list at target index, removes last one by default."""
         try:
-            self.log_entries.pop(entry_index)
-            print(REMOVE_ENTRY_SUCCESS_INDEX.format(index=entry_index))
+            deleted_entry = self.log_entries.pop(entry_index)
+            Printer.print_msg(LogEntry, 'DEL_SUCCESS',
+                              name=f"Entry of id '{deleted_entry.id}'", relation=self.name)
         except IndexError:
-            print(REMOVE_ENTRY_FAILURE_INDEX.format(index=entry_index, component=self.name))
+            Printer.print_msg(LogEntry, 'DEL_SUCCESS',
+                              name=f"entry'",
+                              relation=self.name, reason=f"as it was not found  at index {entry_index}")
 
     def get_entry_by_id(self, entry_id: str) -> LogEntry | None:
         """Return log entry by its unique id hash."""
@@ -175,6 +181,10 @@ class CarComponent:
             if self.current_part != new_part:
                 if entry.category in (EntryCategory.swap, EntryCategory.fluid_change):
                     self.current_part = new_part
+
+    def _update_mileage(self, entry: LogEntry):
+        if entry.mileage > self.current_mileage:
+            self.current_mileage = entry.mileage
 
     def __repr__(self) -> str:
         return f"[COMPONENT] {self.name} ({len(self.log_entries)} Entries)\n"
