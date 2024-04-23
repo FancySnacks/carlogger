@@ -65,7 +65,11 @@ class LogEntry:
 @dataclass(order=True)
 class ScheduledLogEntry(LogEntry):
     """LogEntry but scheduled in time based on date or target mileage and ability to be repeatable."""
+
     def get_days_remaining(self) -> int:
         date = date_string_to_date(self.date)
         days = date - date_string_to_date(TODAY)
         return abs(days.days)
+
+    def get_mileage_remaining(self) -> int:
+        return self.mileage - self.component.current_mileage

@@ -18,7 +18,7 @@ class CarComponent:
     log_entries: list[LogEntry] = field(init=False, default_factory=list)
     scheduled_log_entries: list[ScheduledLogEntry] = field(init=False, default_factory=list)
     current_part: str = field(init=False, default="")
-    current_mileage: int = field(init=False)
+    current_mileage: int = field(init=False, default=0)
     search_tags: set[str] = field(init=False, default_factory=set)
     path: str = ""
 

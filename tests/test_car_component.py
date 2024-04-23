@@ -16,6 +16,13 @@ def test_log_entry_is_removed_successfully(mock_log_entry):
     assert len(c.log_entries) < 1
 
 
+def test_latest_mileage_is_updated_on_entry_add(mock_log_entry):
+    c = CarComponent("Coolant")
+    c.create_entry(mock_log_entry)
+
+    assert c.current_mileage == mock_log_entry.get('mileage')
+
+
 def test_log_entry_is_updated_successfully(mock_component):
     c = mock_component
 
@@ -87,3 +94,15 @@ def test_scheduled_log_entry_returns_days_remaining(mock_component, mock_schedul
     entry = c.scheduled_log_entries[0]
 
     assert entry.get_days_remaining() > 0
+
+
+def test_scheduled_log_entry_returns_mileage_remaining(mock_component, mock_log_entry, mock_scheduled_log_entry):
+    c = mock_component
+    c = CarComponent("Coolant")
+    c.create_entry(mock_log_entry)
+    c.create_scheduled_entry(mock_scheduled_log_entry)
+
+    entry = c.scheduled_log_entries[0]
+
+    assert entry.get_mileage_remaining() == 976
+
