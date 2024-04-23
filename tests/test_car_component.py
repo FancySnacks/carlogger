@@ -73,3 +73,17 @@ def test_log_entry_does_not_update_current_part(mock_component):
 
     assert c.current_part != new_part
 
+
+def test_scheduled_log_entry_is_added(mock_component, mock_log_entry):
+    c = mock_component
+    mock_component.create_scheduled_entry(mock_log_entry)
+
+    assert len(c.log_entries) > 0
+
+
+def test_scheduled_log_entry_returns_days_remaining(mock_component, mock_scheduled_log_entry):
+    c = mock_component
+    mock_component.create_scheduled_entry(mock_scheduled_log_entry)
+    entry = c.scheduled_log_entries[0]
+
+    assert entry.get_days_remaining() > 0

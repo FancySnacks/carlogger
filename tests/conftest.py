@@ -74,6 +74,19 @@ def mock_log_entry() -> dict:
     return entry
 
 
+@pytest.fixture(scope="session")
+def mock_scheduled_log_entry() -> dict:
+    entry = {"desc": "Engine Checkup",
+             "date": "12-06-1964",
+             "mileage": 2380,
+             "category": EntryCategory.check,
+             "tags": [],
+             }
+
+    return entry
+
+
+
 @pytest.fixture
 def mock_component(mock_log_entry) -> CarComponent:
     comp = CarComponent("TestComponent")

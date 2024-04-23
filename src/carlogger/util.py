@@ -1,5 +1,5 @@
 """General utility functions"""
-
+import datetime
 import os
 import time
 import re
@@ -52,6 +52,12 @@ def format_tuple_to_date_string(date: tuple[int, int, int]) -> str:
 def format_date_string_to_tuple(date: str) -> tuple[int]:
     """Format time string to a three int tuple."""
     return tuple([int(x) for x in date.split('-')])
+
+
+def date_string_to_date(date: str) -> datetime.date:
+    """Format time string to a datetime.date class"""
+    date_tuple = tuple([int(x) for x in date.split('-')])
+    return datetime.date(year=date_tuple[2], month=date_tuple[1], day=date_tuple[0])
 
 
 def is_date(date: str) -> bool:

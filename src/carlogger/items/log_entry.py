@@ -8,6 +8,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from carlogger.items.car_component import CarComponent
 from carlogger.items.entry_category import EntryCategory
+from carlogger.const import TODAY
+from carlogger.util import date_string_to_date
 
 
 @dataclass(order=True)
@@ -15,7 +17,7 @@ class LogEntry:
     """Depicts a single maintenance, checkup or work done on a specific car component."""
 
     desc: str
-    date: tuple[int, int, int]
+    date: str
     mileage: int
     category: EntryCategory
     tags: list[str]
@@ -33,7 +35,7 @@ class LogEntry:
     def get_formatted_info(self) -> str:
         """Return well-formatted string representing data of this class."""
         return f"[{self.date}] {self.desc} [Mileage: {self.mileage}] " \
-               f"[Type: {self.category}] [{self.tags}] [{self.id}]\n"
+               f"[Type: {self.category}] [{self.id}]\n"
 
     def __dict__(self) -> dict:
         d = {
@@ -58,3 +60,12 @@ class LogEntry:
         if isinstance(other, LogEntry):
             return self.id == other.id
         return NotImplemented
+
+
+@dataclass(order=True)
+class ScheduledLogEntry(LogEntry):
+    """LogEntry but scheduled in time based on date or target mileage and ability to be repeatable."""
+    def get_days_remaining(self) -> int:
+        date = date_string_to_date(self.date)
+        days = date - date_string_to_date(TODAY)
+        return abs(days.days)

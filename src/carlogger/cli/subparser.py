@@ -2,8 +2,9 @@
 
 import argparse
 
-from datetime import datetime
 from abc import ABC, abstractmethod
+
+from carlogger.const import TODAY
 
 
 class ParseKwargs(argparse.Action):
@@ -242,7 +243,7 @@ class AddSubparser(Subparser):
                                            type=str,
                                            help="FORMAT: 'DD-MM-YY'.\n"
                                                 "By default - current day.\n",
-                                           default=datetime.today().date().strftime("%d-%m-%Y"))
+                                           default=TODAY)
 
         self.add_entry_parser.add_argument('--mileage',
                                            type=int,

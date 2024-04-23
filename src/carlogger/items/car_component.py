@@ -5,9 +5,7 @@ import uuid
 
 from dataclasses import dataclass, field
 
-from carlogger.const import ADD_ENTRY_SUCCESS, REMOVE_ENTRY_SUCCESS_ID, REMOVE_ENTRY_FAILURE_ID, \
-    REMOVE_ENTRY_FAILURE_INDEX, REMOVE_ENTRY_SUCCESS_INDEX
-from carlogger.items.log_entry import LogEntry
+from carlogger.items.log_entry import LogEntry, ScheduledLogEntry
 from carlogger.items.entry_category import EntryCategory
 from carlogger.printer import Printer
 
@@ -18,6 +16,7 @@ class CarComponent:
 
     name: str
     log_entries: list[LogEntry] = field(init=False, default_factory=list)
+    scheduled_log_entries: list[ScheduledLogEntry] = field(init=False, default_factory=list)
     current_part: str = field(init=False, default="")
     search_tags: set[str] = field(init=False, default_factory=set)
     path: str = ""
@@ -71,6 +70,30 @@ class CarComponent:
 
         return new_entry.id
 
+    def create_scheduled_entry(self, entry_data: dict) -> str:
+        """Creates a new scheduled entry adding it to the list and returns its unique id."""
+        try:
+            new_entry = ScheduledLogEntry(desc=entry_data['desc'],
+                                          date=entry_data['date'],
+                                          mileage=entry_data['mileage'],
+                                          category=EntryCategory(entry_data['category']),
+                                          tags=entry_data['tags'],
+                                          component=self,
+                                          _id=str(uuid.uuid1()),
+                                          custom_info=entry_data.get('custom_info') or {})
+        except Exception:
+            Printer.print_msg(None, 'ADD_FAIL', name="new scheduled entry", relation=self.name)
+        else:
+            self.scheduled_log_entries.append(new_entry)
+
+            Printer.print_msg(new_entry, 'ADD_SUCCESS',
+                              name=f"Scheduled entry of id '{new_entry.id}'", relation=self.name)
+
+            self._add_search_tags_from_entry(new_entry)
+            self._update_current_part(new_entry)
+
+            return new_entry.id
+
     def update_entry(self, entry_id: str, changes: dict):
         """Update values of log entry with specified unique id hash. \n
         'entry_changes' is a dictionary that contains only keys that are to be overwritten and their new values.\n
@@ -90,9 +113,11 @@ class CarComponent:
 
         if entry_to_delete:
             self.log_entries.remove(entry_to_delete)
-            print(REMOVE_ENTRY_SUCCESS_ID.format(id=entry_id))
+            Printer.print_msg(entry_to_delete, 'DEL_SUCCESS',
+                              name=f"Entry of id '{entry_to_delete.id}'", relation=self.name)
         else:
-            print(REMOVE_ENTRY_FAILURE_ID.format(id=entry_id, component=self.name))
+            Printer.print_msg(LogEntry, 'DEL_FAIL',
+                              name=f"Entry of id '{entry_to_delete.id}'", relation=self.name)
 
     def delete_entry_by_index(self, entry_index: int = -1):
         """Removes log entry from list at target index, removes last one by default."""
