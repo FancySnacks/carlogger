@@ -96,6 +96,7 @@ class LogEntryScheduleRule(ABC):
 class DateScheduleRule(LogEntryScheduleRule):
     def set_new_time(self):
         self.parent_log_entry.date = self.get_new_time()
+        self.parent_log_entry.mileage = self.parent_log_entry.component.current_mileage
 
     def get_new_time(self) -> str:
         """Get new target mileage for scheduled entry"""
@@ -195,9 +196,7 @@ class ScheduledLogEntry(LogEntry):
         return new_obj
 
     def repeat(self):
-        old = self.date
         self._schedule_obj.set_new_time()
-        print(f"{old} + {self.frequency} = {self.date}")
 
     def get_new_date(self) -> int | str:
         return self._schedule_obj.get_new_time()
