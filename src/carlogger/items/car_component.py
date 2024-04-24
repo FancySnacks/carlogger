@@ -89,9 +89,11 @@ class CarComponent:
                                           repeating=entry_data['repeating'],
                                           rule=entry_data.get('rule', 'date'))
         except Exception as e:
-            Printer.print_msg(ScheduledLogEntry, 'ADD_FAIL', name="loaded scheduled entry", relation=self.name,
+            Printer.print_msg(ScheduledLogEntry, 'ADD_FAIL', name="new scheduled entry", relation=self.name,
                               reason=f"reason={e}")
         else:
+            Printer.print_msg(new_entry, 'ADD_SUCCESS',
+                              name=f"Scheduled entry of id '{new_entry.id}'", relation=self.name)
             self.scheduled_log_entries.append(new_entry)
             self._add_search_tags_from_entry(new_entry)
 
@@ -113,13 +115,10 @@ class CarComponent:
                                           repeating=entry_data['repeating'],
                                           rule=entry_data.get('rule', 'date'))
         except Exception as e:
-            Printer.print_msg(ScheduledLogEntry, 'ADD_FAIL', name="new scheduled entry", relation=self.name,
+            Printer.print_msg(ScheduledLogEntry, 'ADD_FAIL', name="loaded scheduled entry", relation=self.name,
                               reason=f"reason={e}")
         else:
             self.scheduled_log_entries.append(new_entry)
-
-            Printer.print_msg(new_entry, 'ADD_SUCCESS',
-                              name=f"Scheduled entry of id '{new_entry.id}'", relation=self.name)
 
             self._add_search_tags_from_entry(new_entry)
 

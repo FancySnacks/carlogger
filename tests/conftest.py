@@ -89,7 +89,6 @@ def mock_scheduled_log_entry() -> dict:
     return entry
 
 
-
 @pytest.fixture
 def mock_component(mock_log_entry) -> CarComponent:
     comp = CarComponent("TestComponent")

@@ -178,6 +178,7 @@ class ScheduledLogEntry(LogEntry):
     def __post_init__(self):
         if self.date == "":
             self.date = TODAY
+
             if self.rule == 'date':
                 self.repeating = True
 
@@ -194,7 +195,9 @@ class ScheduledLogEntry(LogEntry):
         return new_obj
 
     def repeat(self):
+        old = self.date
         self._schedule_obj.set_new_time()
+        print(f"{old} + {self.frequency} = {self.date}")
 
     def get_new_date(self) -> int | str:
         return self._schedule_obj.get_new_time()

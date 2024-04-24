@@ -94,8 +94,8 @@ def test_scheduled_log_entry_is_added(mock_component, mock_log_entry):
 
 def test_scheduled_log_entry_returns_days_remaining(mock_component, mock_scheduled_log_entry):
     c = mock_component
-    mock_component.create_scheduled_entry(mock_scheduled_log_entry)
-    entry = c.scheduled_log_entries[0]
+    entry_id = mock_component.create_scheduled_entry(mock_scheduled_log_entry)
+    entry = c.get_entry_by_id(entry_id)
 
     assert entry.get_time_remaining() < 0
 
@@ -131,10 +131,20 @@ def test_scheduled_log_entry_completion(mock_component, mock_log_entry, mock_sch
     assert len(c.log_entries) > 0
 
 
-def test_scheduled_log_entry_completion_refreshes(mock_component, mock_log_entry, mock_scheduled_log_entry):
+def test_scheduled_log_entry_completion_refreshes(mock_component):
     c = mock_component
-    c = CarComponent("Coolant")
-    c.create_scheduled_entry(mock_scheduled_log_entry)
+
+    entry = {"desc": "Engine Checkup",
+             "date": "",
+             "mileage": 2380,
+             "category": 'swap',
+             "tags": [],
+             "repeating": True,
+             "frequency": 10,
+             "rule": "date",
+             }
+
+    c.create_scheduled_entry(entry)
 
     entry = c.scheduled_log_entries[0]
     og_date = entry.date
@@ -146,7 +156,7 @@ def test_scheduled_log_entry_completion_refreshes(mock_component, mock_log_entry
 
 @pytest.mark.parametrize("entry_data, expected", [
     ({"desc": "Engine Checkup",
-      "date": TODAY,
+      "date": '',
       "mileage": 2380,
       "category": 'swap',
       "tags": [],
@@ -156,7 +166,7 @@ def test_scheduled_log_entry_completion_refreshes(mock_component, mock_log_entry
       },
      "in 10 days"),
     ({"desc": "Engine Checkup",
-      "date": date_n_days_from_now(-20),
+      "date": date_n_days_from_now(-10),
       "mileage": 2380,
       "category": 'swap',
       "tags": [],
@@ -166,12 +176,12 @@ def test_scheduled_log_entry_completion_refreshes(mock_component, mock_log_entry
       },
      "10 days ago"),
     ({"desc": "Engine Checkup",
-      "date": date_n_days_from_now(-10),
+      "date": TODAY,
       "mileage": 2380,
       "category": 'swap',
       "tags": [],
       "repeating": True,
-      "frequency": 10,
+      "frequency": 0,
       "rule": "date",
       },
      ""),
