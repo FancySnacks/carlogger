@@ -7,7 +7,7 @@ import uuid
 
 from pathlib import Path
 
-from carlogger.const import CARS_PATH
+from carlogger.const import CARS_PATH, TODAY
 
 
 # ===== SAVING ===== #
@@ -65,3 +65,19 @@ def is_date(date: str) -> bool:
     it does NOT check for validity of day, month and year numbers!"""
     regex = re.fullmatch(r'^(0[1-9]|[12]\d|3[01])-(0[1-9]|1[0-2])-(\d{4})$', date)
     return regex is not None
+
+
+def days_between_date_strings(date: str, date2: str) -> int:
+    """Takes two date strings formatted as 'xx-xx-xxx' and returns number od days between them"""
+    date = date_string_to_date(date)
+    days = date - date_string_to_date(date2)
+    return days.days
+
+
+def date_n_days_from_now(days: int) -> str:
+    """Returns a string date x days from now"""
+    date_today = date_string_to_date(TODAY)
+    new_date = date_today - datetime.timedelta(days=days * -1)
+    new_date = (new_date.day, new_date.month, new_date.year)
+    return format_tuple_to_date_string(new_date)
+

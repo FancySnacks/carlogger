@@ -1,4 +1,8 @@
+import pytest
+
 from carlogger.items.car_component import CarComponent
+from carlogger.const import TODAY
+from carlogger.util import date_n_days_from_now
 
 
 def test_log_entry_is_added_successfully(mock_log_entry):
@@ -93,7 +97,7 @@ def test_scheduled_log_entry_returns_days_remaining(mock_component, mock_schedul
     mock_component.create_scheduled_entry(mock_scheduled_log_entry)
     entry = c.scheduled_log_entries[0]
 
-    assert entry.get_days_remaining() > 0
+    assert entry.get_days_remaining() < 0
 
 
 def test_scheduled_log_entry_returns_mileage_remaining(mock_component, mock_log_entry, mock_scheduled_log_entry):
@@ -130,3 +134,39 @@ def test_scheduled_log_entry_completion_refreshes(mock_component, mock_log_entry
     c.mark_scheduled_entry_as_done(entry.id)
 
     assert og_date != c.scheduled_log_entries[0].date
+
+
+@pytest.mark.parametrize("entry_data, expected", [
+    ({"desc": "Engine Checkup",
+      "date": TODAY,
+      "mileage": 2380,
+      "category": 'swap',
+      "tags": [],
+      "repeating": True,
+      "day_frequency": 10,
+      },
+     "in 10 days"),
+    ({"desc": "Engine Checkup",
+      "date": date_n_days_from_now(-20),
+      "mileage": 2380,
+      "category": 'swap',
+      "tags": [],
+      "repeating": True,
+      "day_frequency": 10,
+      },
+     "10 days ago"),
+    ({"desc": "Engine Checkup",
+      "date": date_n_days_from_now(-10),
+      "mileage": 2380,
+      "category": 'swap',
+      "tags": [],
+      "repeating": True,
+      "day_frequency": 10,
+      },
+     "")
+])
+def test_scheduled_log_entry_returns_days_remaining_string(mock_component, entry_data, expected):
+    entry_id = mock_component.create_scheduled_entry(entry_data)
+    entry = mock_component.get_entry_by_id(entry_id)
+
+    assert entry.days_remaining_to_str() == expected

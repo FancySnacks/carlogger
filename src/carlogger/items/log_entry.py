@@ -6,11 +6,13 @@ import datetime
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
+from carlogger.const import TODAY
+
 if TYPE_CHECKING:
     from carlogger.items.car_component import CarComponent
 from carlogger.items.entry_category import EntryCategory
-from carlogger.const import TODAY
-from carlogger.util import date_string_to_date, format_date_struct_to_tuple, format_tuple_to_date_string
+from carlogger.util import date_string_to_date, days_between_date_strings, \
+    format_tuple_to_date_string, date_n_days_from_now
 
 
 @dataclass(order=True)
@@ -65,13 +67,16 @@ class LogEntry:
 
 @dataclass(order=True)
 class ScheduledLogEntry(LogEntry):
-    """LogEntry but scheduled in time based on date or target mileage and ability to be repeatable."""
+    """LogEntry but scheduled in time based on date or target mileage and ability to be repeatable.
+    When creating a 'late' entry (in a past manner) the 'day_frequency' value should be 0."""
 
     day_frequency: int = 1
     repeating: bool = False
 
     def __post_init__(self):
+        print(f"1 {self.date}")
         self.repeat()
+        print(f"2 {self.date}")
 
     def repeat(self):
         self.date = self.get_new_date()
@@ -83,14 +88,23 @@ class ScheduledLogEntry(LogEntry):
         return format_tuple_to_date_string(new_date)
 
     def get_days_remaining(self) -> int:
-        date = date_string_to_date(self.date)
-        days = date - date_string_to_date(TODAY)
-        return abs(days.days)
+        return days_between_date_strings(self.date, TODAY)
 
     def get_mileage_remaining(self) -> int:
         return self.mileage - self.component.current_mileage
 
+    def days_remaining_to_str(self) -> str:
+        """Get remaining days until scheduled entry and return a formatted informative string"""
+        days = self.get_days_remaining()
+
+        if self.get_days_remaining() > 0:
+            return f"in {days} days"
+        elif self.get_days_remaining() < 0:
+            return f"{abs(days)} days ago"
+        else:
+            return ""
+
     def get_formatted_info(self) -> str:
         """Return well-formatted string representing data of this class."""
-        return f"[{self.date}] [in {self.get_days_remaining()} days] {self.desc} [Mileage: {self.mileage}] " \
+        return f"[{self.date}] [{self.days_remaining_to_str()}] {self.desc} [Mileage: {self.mileage}] " \
                f"[Type: {self.category}] [{self.id}]\n"

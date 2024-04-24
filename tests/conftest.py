@@ -62,7 +62,7 @@ def mock_car_info() -> dict:
     return d
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def mock_log_entry() -> dict:
     entry = {"desc": "Engine Checkup",
              "date": "09-03-1964",
@@ -74,7 +74,7 @@ def mock_log_entry() -> dict:
     return entry
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def mock_scheduled_log_entry() -> dict:
     entry = {"desc": "Engine Checkup",
              "date": "12-06-1964",
