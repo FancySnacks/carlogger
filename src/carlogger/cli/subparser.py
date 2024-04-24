@@ -275,6 +275,85 @@ class AddSubparser(Subparser):
                                            nargs='*',
                                            default=[])
 
+        # ===== Add Scheduled Entry ===== #
+
+        self.add_scheduled_entry_parser = self.add_subparsers.add_parser('scheduled_entry')
+
+        self.add_scheduled_entry_parser.add_argument('--car',
+                                                     help="Parent car.",
+                                                     type=str,
+                                                     required=True)
+
+        self.add_scheduled_entry_parser.add_argument('--collection',
+                                                     help="Parent collection.",
+                                                     type=str,
+                                                     required=True)
+
+        self.add_scheduled_entry_parser.add_argument('--component',
+                                                     type=str,
+                                                     required=True)
+
+        self.add_scheduled_entry_parser.add_argument('--desc',
+                                                     help='Short entry description.',
+                                                     type=str,
+                                                     required=True)
+
+        self.add_scheduled_entry_parser.add_argument('--date',
+                                                     type=str,
+                                                     help="FORMAT: 'DD-MM-YY'.\n"
+                                                          "If passed, frequency will be ignored and entry will "
+                                                          "be non-repeating.\n"
+                                                          "Empty by default.\n",
+                                                     default="")
+
+        self.add_scheduled_entry_parser.add_argument('--mileage',
+                                                     type=int,
+                                                     required=True)
+
+        self.add_scheduled_entry_parser.add_argument('--category',
+                                                     type=str,
+                                                     choices=['check', 'swap', 'repair', 'fluid_change', 'fluid_add',
+                                                              'other'],
+                                                     required=True)
+
+        self.add_scheduled_entry_parser.add_argument('--tags',
+                                                     type=str,
+                                                     help="Custom tags used for easier search and filtering.",
+                                                     nargs='*',
+                                                     default=[])
+
+        self.add_scheduled_entry_parser.add_argument('--rule',
+                                                     type=str,
+                                                     choices=['date', 'mileage'],
+                                                     default='date',
+                                                     required=True)
+
+        self.add_scheduled_entry_parser.add_argument('--frequency',
+                                                     type=int,
+                                                     help="Number of days / mileage between each Scheduled Entry "
+                                                          "if it's repeating (if '--repeating' argument is passed).\n"
+                                                          "'1' by default.",
+                                                     default=1)
+
+        self.add_scheduled_entry_parser.add_argument('--repeating',
+                                                     action='store_true',
+                                                     help="Presence of this argument will set scheduled entry to be "
+                                                          "repeated each time it is marked as done.\n"
+                                                          "Number of days/mileage between each loop is defined by "
+                                                          "'--frequency' argument.\n")
+
+        self.add_scheduled_entry_parser.add_argument('--custom',
+                                                     action=ParseKwargs,
+                                                     type=str,
+                                                     help="More entry properties as defined by the user, "
+                                                          "stored into a dictionary.\n"
+                                                          "Pass arguments as 'key=value' pairs, separated by spaces.\n"
+                                                          "Example: --custom 'catalogue_number=450159' 'warranty=5 years'",
+                                                     metavar='CUSTOM ENTRY PROPERTIES',
+                                                     dest='custom_info',
+                                                     nargs='*',
+                                                     default=[])
+
 
 class DeleteSubparser(Subparser):
     def __init__(self, parser_parent):

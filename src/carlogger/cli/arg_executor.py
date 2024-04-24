@@ -15,7 +15,7 @@ from carlogger.items.car import Car
 from carlogger.items.car_info import CarInfo
 from carlogger.items.component_collection import ComponentCollection
 from carlogger.items.car_component import CarComponent
-from carlogger.items.log_entry import LogEntry
+from carlogger.items.log_entry import LogEntry, ScheduledLogEntry
 from carlogger.items.entryfilter import EntryFilter
 from carlogger.util import is_valid_entry_id
 
@@ -139,7 +139,8 @@ class AddArgExecutor(ArgExecutor):
         self.arg_func_map = {'car': self.add_new_car,
                              'collection': self.add_new_collection,
                              'component': self.add_new_component,
-                             'entry': self.add_new_entry}
+                             'entry': self.add_new_entry,
+                             'scheduled_entry': self.add_new_scheduled_entry}
 
     def evaluate_args(self):
         """Execute mapped functions based on passed args."""
@@ -170,7 +171,7 @@ class AddArgExecutor(ArgExecutor):
         self.app_session.add_new_component(car_name, coll_name, comp_name)
 
     def add_new_entry(self):
-        """Create a new car component belonging to a specified car, collection and component."""
+        """Create a new log entry belonging to a specified car and component."""
         car_name = self.parsed_args['car']
         coll_name = self.parsed_args['collection']
         comp_name = self.parsed_args['component']
@@ -180,6 +181,17 @@ class AddArgExecutor(ArgExecutor):
 
         self.app_session.add_new_entry(car_name, coll_name, comp_name, entry_data)
 
+    def add_new_scheduled_entry(self):
+        """Create a new car component belonging to a specified car, collection and component."""
+        car_name = self.parsed_args['car']
+        coll_name = self.parsed_args['collection']
+        comp_name = self.parsed_args['component']
+
+        valid_entry_keys = [field.name for field in dataclasses.fields(ScheduledLogEntry)]
+        entry_data = {key: value for (key, value) in self.parsed_args.items() if key in valid_entry_keys}
+
+        self.app_session.add_new_scheduled_entry(car_name, coll_name, comp_name, entry_data)
+
     def _recognize_context(self) -> str:
         """What do we wish to create; car, collection, component or log entry?"""
 
@@ -187,11 +199,7 @@ class AddArgExecutor(ArgExecutor):
             raise ValueError(
                 "Item to add was not specified. (use one of these: 'car', 'collection', 'component', 'entry')")
 
-        match self.raw_args[1]:
-            case 'car': return 'car'
-            case 'collection': return 'collection'
-            case 'component': return 'component'
-            case 'entry': return 'entry'
+        return self.raw_args[1]
 
 
 class ReadArgExecutor(ArgExecutor):

@@ -165,7 +165,10 @@ class ScheduledLogEntry(LogEntry):
     schedule_rule: str - should be equal to either 'date' or 'mileage' based on whether scheduled entry is scheduled every
     n days or every n mileage \n
     repeating: bool - whether this Scheduled Entry is re-added after completion and scheduled for a new date \n
-    frequency: int - number of days or mileage increment between TODAY and Scheduled Entry
+    frequency: int - number of days or mileage increment between TODAY and Scheduled Entry \n
+    \n
+    If instance has 'date' arg not passed as empty string it will assume the entry is scheduled for one time only, if
+    the passed date string is empty then it will automatically turn to today's date
     """
 
     schedule_rule: str = "date"
@@ -174,6 +177,11 @@ class ScheduledLogEntry(LogEntry):
     _schedule_obj: LogEntryScheduleRule = field(init=False, repr=False, default=None)
 
     def __post_init__(self):
+        if self.date == "":
+            # If entry has specified date, it is treated as one-time only scheduled reminder
+            self.date = TODAY
+            self.repeating = False
+
         self._schedule_obj = self.create_schedule_rule_obj()
         self.repeat()
 

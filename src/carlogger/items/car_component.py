@@ -84,8 +84,9 @@ class CarComponent:
                                           component=self,
                                           _id=str(uuid.uuid1()),
                                           custom_info=entry_data.get('custom_info') or {},
+                                          frequency=0 if entry_data['date'] == "" and entry_data.get('rule') == 'date'
+                                          else entry_data['frequency'],
                                           repeating=entry_data['repeating'],
-                                          frequency=entry_data['frequency'],
                                           schedule_rule=entry_data.get('rule', 'date'))
         except Exception as e:
             Printer.print_msg(None, 'ADD_FAIL', name="new scheduled entry", relation=self.name, reason=f"reason={e}")

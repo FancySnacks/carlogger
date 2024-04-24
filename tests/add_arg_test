@@ -5,3 +5,4 @@ carlogger add collection --name "Intake" --car CarTestPytest --parent Turbocharg
 carlogger add component --name "Spark_Plug" --car CarTestPytest --collection Engine
 carlogger add component --name Airflow --car CarTestPytest --collection Turbocharger
 carlogger add entry --car CarTestPytest --collection Engine --component "Spark_Plug" --desc "Replaced all spark plugs." --mileage 198000 --category "swap" --custom "part=Bosch Double Iridium"
+carlogger add scheduled_entry --car CarTestPytest --collection Engine --component "Spark_Plug" --desc "Spark plug swap." --mileage 0 --category "swap" --repeating --rule 'mileage' --frequency 1200

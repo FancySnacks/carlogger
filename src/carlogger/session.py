@@ -106,11 +106,19 @@ class AppSession:
         self.directory_manager.update_car_directory(car)
 
     def add_new_entry(self, car_name: str, collection_name: str, component_name: str, entry_data: dict):
-        """Add new collection to specified car and update save directory."""
+        """Add new entry to specified car and update save directory."""
         car = self.get_car_by_name(car_name)
         collection = car.get_collection_by_name(collection_name)
         component = collection.get_component_by_name(component_name)
         component.create_entry(entry_data)
+        self.directory_manager.update_car_directory(car)
+
+    def add_new_scheduled_entry(self, car_name: str, collection_name: str, component_name: str, entry_data: dict):
+        """Add new collection to specified car and update save directory."""
+        car = self.get_car_by_name(car_name)
+        collection = car.get_collection_by_name(collection_name)
+        component = collection.get_component_by_name(component_name)
+        component.create_scheduled_entry(entry_data)
         self.directory_manager.update_car_directory(car)
 
     def delete_entry_by_index(self, car_name: str, component_name: str, entry_index: int):
