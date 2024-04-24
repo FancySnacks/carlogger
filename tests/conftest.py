@@ -82,7 +82,8 @@ def mock_scheduled_log_entry() -> dict:
              "category": EntryCategory.check,
              "tags": [],
              "repeating": True,
-             "day_frequency": 10,
+             "frequency": 10,
+             "rule": "date",
              }
 
     return entry

@@ -97,18 +97,26 @@ def test_scheduled_log_entry_returns_days_remaining(mock_component, mock_schedul
     mock_component.create_scheduled_entry(mock_scheduled_log_entry)
     entry = c.scheduled_log_entries[0]
 
-    assert entry.get_days_remaining() < 0
+    assert entry.get_time_remaining() < 0
 
 
-def test_scheduled_log_entry_returns_mileage_remaining(mock_component, mock_log_entry, mock_scheduled_log_entry):
+def test_scheduled_log_entry_returns_mileage_remaining(mock_component, mock_log_entry):
+    mock_scheduled_log_entry = {"desc": "Engine Checkup",
+                                "date": "12-06-1964",
+                                "mileage": mock_log_entry['mileage'],
+                                "category": 'swap',
+                                "tags": [],
+                                "repeating": True,
+                                "frequency": 1000,
+                                "rule": "mileage",
+                                }
     c = mock_component
-    c = CarComponent("Coolant")
     c.create_entry(mock_log_entry)
     c.create_scheduled_entry(mock_scheduled_log_entry)
 
     entry = c.scheduled_log_entries[0]
 
-    assert entry.get_mileage_remaining() == 976
+    assert entry.get_time_remaining() == 1000
 
 
 def test_scheduled_log_entry_completion(mock_component, mock_log_entry, mock_scheduled_log_entry):
@@ -143,7 +151,8 @@ def test_scheduled_log_entry_completion_refreshes(mock_component, mock_log_entry
       "category": 'swap',
       "tags": [],
       "repeating": True,
-      "day_frequency": 10,
+      "frequency": 10,
+      "rule": "date",
       },
      "in 10 days"),
     ({"desc": "Engine Checkup",
@@ -152,7 +161,8 @@ def test_scheduled_log_entry_completion_refreshes(mock_component, mock_log_entry
       "category": 'swap',
       "tags": [],
       "repeating": True,
-      "day_frequency": 10,
+      "frequency": 10,
+      "rule": "date",
       },
      "10 days ago"),
     ({"desc": "Engine Checkup",
@@ -161,7 +171,8 @@ def test_scheduled_log_entry_completion_refreshes(mock_component, mock_log_entry
       "category": 'swap',
       "tags": [],
       "repeating": True,
-      "day_frequency": 10,
+      "frequency": 10,
+      "rule": "date",
       },
      "")
 ])
@@ -169,4 +180,4 @@ def test_scheduled_log_entry_returns_days_remaining_string(mock_component, entry
     entry_id = mock_component.create_scheduled_entry(entry_data)
     entry = mock_component.get_entry_by_id(entry_id)
 
-    assert entry.days_remaining_to_str() == expected
+    assert entry.time_remaining_to_str() == expected

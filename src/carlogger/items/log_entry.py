@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import datetime
 from dataclasses import dataclass, field
+from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 from carlogger.const import TODAY
@@ -65,46 +66,137 @@ class LogEntry:
         return NotImplemented
 
 
-@dataclass(order=True)
-class ScheduledLogEntry(LogEntry):
-    """LogEntry but scheduled in time based on date or target mileage and ability to be repeatable.
-    When creating a 'late' entry (in a past manner) the 'day_frequency' value should be 0."""
+@dataclass
+class LogEntryScheduleRule(ABC):
+    """Abstract class for defining scheduling rule for ScheduledLogEntry class."""
+    frequency: int
+    parent_log_entry: LogEntry
 
-    day_frequency: int = 1
-    repeating: bool = False
+    @abstractmethod
+    def set_new_time(self):
+        pass
 
-    def __post_init__(self):
-        print(f"1 {self.date}")
-        self.repeat()
-        print(f"2 {self.date}")
+    @abstractmethod
+    def get_time_remaining(self):
+        pass
 
-    def repeat(self):
-        self.date = self.get_new_date()
+    @abstractmethod
+    def get_new_time(self):
+        pass
 
-    def get_new_date(self) -> str:
-        old_date = date_string_to_date(self.date)
-        new_date = old_date + datetime.timedelta(days=self.day_frequency)
+    @abstractmethod
+    def time_remaining_to_str(self):
+        pass
+
+    @abstractmethod
+    def get_formatted_info(self) -> str:
+        pass
+
+
+@dataclass
+class DateScheduleRule(LogEntryScheduleRule):
+    def set_new_time(self):
+        self.parent_log_entry.date = self.get_new_time()
+
+    def get_new_time(self) -> str:
+        """Get new target mileage for scheduled entry"""
+        old_date = date_string_to_date(self.parent_log_entry.date)
+        new_date = old_date + datetime.timedelta(days=self.frequency)
         new_date = (new_date.day, new_date.month, new_date.year)
         return format_tuple_to_date_string(new_date)
 
-    def get_days_remaining(self) -> int:
-        return days_between_date_strings(self.date, TODAY)
+    def get_time_remaining(self) -> int:
+        """Get remaining days until scheduled entry as int"""
+        return days_between_date_strings(self.parent_log_entry.date, TODAY)
 
-    def get_mileage_remaining(self) -> int:
-        return self.mileage - self.component.current_mileage
-
-    def days_remaining_to_str(self) -> str:
+    def time_remaining_to_str(self) -> str:
         """Get remaining days until scheduled entry and return a formatted informative string"""
-        days = self.get_days_remaining()
+        days = self.get_time_remaining()
 
-        if self.get_days_remaining() > 0:
+        if self.get_time_remaining() > 0:
             return f"in {days} days"
-        elif self.get_days_remaining() < 0:
+        elif self.get_time_remaining() < 0:
             return f"{abs(days)} days ago"
         else:
             return ""
 
     def get_formatted_info(self) -> str:
+        """Return well-formatted string representing data of this class"""
+        return f"[{self.parent_log_entry.date}] [{self.time_remaining_to_str()}] " \
+               f"{self.parent_log_entry.desc} [Type: {self.parent_log_entry.category}] [{self.parent_log_entry.id}]\n"
+
+
+@dataclass
+class MileageScheduleRule(LogEntryScheduleRule):
+    def set_new_time(self):
+        self.parent_log_entry.mileage = self.get_new_time()
+
+    def get_new_time(self) -> int:
+        """Get new target mileage for scheduled entry"""
+        return self.parent_log_entry.component.current_mileage + self.frequency
+
+    def get_time_remaining(self) -> int:
+        """Get remaining mileage until scheduled entry as int"""
+        return self.parent_log_entry.mileage - self.parent_log_entry.component.current_mileage
+
+    def time_remaining_to_str(self) -> str:
+        """Get remaining mileage until scheduled entry and return a formatted informative string"""
+        mileage_remaining = self.get_time_remaining()
+
+        if self.get_time_remaining() > 0:
+            return f"{mileage_remaining} / {self.parent_log_entry.mileage}"
+        elif self.get_time_remaining() < 0:
+            return f"+ {abs(abs(mileage_remaining) - self.parent_log_entry.mileage)} / {self.parent_log_entry.mileage}"
+        else:
+            return ""
+
+    def get_formatted_info(self) -> str:
         """Return well-formatted string representing data of this class."""
-        return f"[{self.date}] [{self.days_remaining_to_str()}] {self.desc} [Mileage: {self.mileage}] " \
-               f"[Type: {self.category}] [{self.id}]\n"
+        return f"{self.parent_log_entry.desc} [Mileage: {self.parent_log_entry.mileage}] " \
+               f"[Target: {self.get_time_remaining()}]" \
+               f"[Type: {self.parent_log_entry.category}] [{self.parent_log_entry.id}]\n"
+
+
+@dataclass(order=True)
+class ScheduledLogEntry(LogEntry):
+    """LogEntry but scheduled in time based on date or target mileage and ability to be repeatable.
+    \n
+    Params:\n
+    schedule_rule: str - should be equal to either 'date' or 'mileage' based on whether scheduled entry is scheduled every
+    n days or every n mileage \n
+    repeating: bool - whether this Scheduled Entry is re-added after completion and scheduled for a new date \n
+    frequency: int - number of days or mileage increment between TODAY and Scheduled Entry
+    """
+
+    schedule_rule: str = "date"
+    frequency: int = 1
+    repeating: bool = True
+    _schedule_obj: LogEntryScheduleRule = field(init=False, repr=False, default=None)
+
+    def __post_init__(self):
+        self._schedule_obj = self.create_schedule_rule_obj()
+        self.repeat()
+
+    def create_schedule_rule_obj(self) -> LogEntryScheduleRule:
+        new_obj = None
+
+        match self.schedule_rule:
+            case 'date': new_obj = DateScheduleRule(self.frequency, self)
+            case 'mileage': new_obj = MileageScheduleRule(self.frequency, self)
+
+        return new_obj
+
+    def repeat(self):
+        self._schedule_obj.set_new_time()
+
+    def get_new_date(self) -> int | str:
+        return self._schedule_obj.get_new_time()
+
+    def get_time_remaining(self) -> int | str:
+        return self._schedule_obj.get_time_remaining()
+
+    def time_remaining_to_str(self) -> str:
+        return self._schedule_obj.time_remaining_to_str()
+
+    def get_formatted_info(self) -> str:
+        return self._schedule_obj.get_formatted_info()
