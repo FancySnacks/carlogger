@@ -174,10 +174,46 @@ def test_scheduled_log_entry_completion_refreshes(mock_component, mock_log_entry
       "frequency": 10,
       "rule": "date",
       },
-     "")
+     ""),
+    ({"desc": "Engine Checkup",
+      "date": TODAY,
+      "mileage": 0,
+      "category": 'swap',
+      "tags": [],
+      "repeating": True,
+      "frequency": 1500,
+      "rule": "mileage",
+      },
+     "-1500")
 ])
 def test_scheduled_log_entry_returns_days_remaining_string(mock_component, entry_data, expected):
     entry_id = mock_component.create_scheduled_entry(entry_data)
     entry = mock_component.get_entry_by_id(entry_id)
 
     assert entry.time_remaining_to_str() == expected
+
+
+def test_scheduled_log_entry_is_too_late(mock_component):
+    entry = {"desc": "Engine Checkup",
+             "date": TODAY,
+             "mileage": 0,
+             "category": 'swap',
+             "tags": [],
+             "repeating": True,
+             "frequency": 1000,
+             "rule": "mileage",
+             }
+
+    entry_id = mock_component.create_scheduled_entry(entry)
+    entry = mock_component.get_entry_by_id(entry_id)
+
+    entry_data = {"desc": "New oil and oil filter. Note: get a better tool for removing oil filters.",
+                  "date": (12, 8, 2023),
+                  "mileage": 5341,
+                  "category": "fluid_change",
+                  "tags": [],
+                  }
+
+    mock_component.create_entry(entry_data)
+
+    assert entry.time_remaining_to_str() == "+2937"

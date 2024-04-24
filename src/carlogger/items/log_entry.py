@@ -144,16 +144,16 @@ class MileageScheduleRule(LogEntryScheduleRule):
         mileage_remaining = self.get_time_remaining()
 
         if self.get_time_remaining() > 0:
-            return f"{mileage_remaining} / {self.parent_log_entry.mileage}"
+            return f"-{mileage_remaining}"
         elif self.get_time_remaining() < 0:
-            return f"+ {abs(abs(mileage_remaining) - self.parent_log_entry.mileage)} / {self.parent_log_entry.mileage}"
+            return f"+{abs(mileage_remaining)}"
         else:
             return ""
 
     def get_formatted_info(self) -> str:
         """Return well-formatted string representing data of this class."""
-        return f"{self.parent_log_entry.desc} [Mileage: {self.parent_log_entry.mileage}] " \
-               f"[Target: {self.get_time_remaining()}]" \
+        return f"{self.parent_log_entry.desc} [Target Mileage: {self.parent_log_entry.mileage}] " \
+               f"[Current: {self.get_time_remaining()}]" \
                f"[Type: {self.parent_log_entry.category}] [{self.parent_log_entry.id}]\n"
 
 
