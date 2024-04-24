@@ -12,8 +12,7 @@ from carlogger.const import TODAY
 if TYPE_CHECKING:
     from carlogger.items.car_component import CarComponent
 from carlogger.items.entry_category import EntryCategory
-from carlogger.util import date_string_to_date, days_between_date_strings, \
-    format_tuple_to_date_string, date_n_days_from_now
+from carlogger.util import date_string_to_date, days_between_date_strings, format_tuple_to_date_string
 
 
 @dataclass(order=True)
@@ -162,7 +161,7 @@ class ScheduledLogEntry(LogEntry):
     """LogEntry but scheduled in time based on date or target mileage and ability to be repeatable.
     \n
     Params:\n
-    schedule_rule: str - should be equal to either 'date' or 'mileage' based on whether scheduled entry is scheduled every
+    rule: str - should be equal to either 'date' or 'mileage' based on whether scheduled entry is scheduled every
     n days or every n mileage \n
     repeating: bool - whether this Scheduled Entry is re-added after completion and scheduled for a new date \n
     frequency: int - number of days or mileage increment between TODAY and Scheduled Entry \n
@@ -171,16 +170,16 @@ class ScheduledLogEntry(LogEntry):
     the passed date string is empty then it will automatically turn to today's date
     """
 
-    schedule_rule: str = "date"
+    rule: str = "date"
     frequency: int = 1
-    repeating: bool = True
+    repeating: bool = False
     _schedule_obj: LogEntryScheduleRule = field(init=False, repr=False, default=None)
 
     def __post_init__(self):
         if self.date == "":
-            # If entry has specified date, it is treated as one-time only scheduled reminder
             self.date = TODAY
-            self.repeating = False
+            if self.rule == 'date':
+                self.repeating = True
 
         self._schedule_obj = self.create_schedule_rule_obj()
         self.repeat()
@@ -188,7 +187,7 @@ class ScheduledLogEntry(LogEntry):
     def create_schedule_rule_obj(self) -> LogEntryScheduleRule:
         new_obj = None
 
-        match self.schedule_rule:
+        match self.rule:
             case 'date': new_obj = DateScheduleRule(self.frequency, self)
             case 'mileage': new_obj = MileageScheduleRule(self.frequency, self)
 
@@ -208,3 +207,22 @@ class ScheduledLogEntry(LogEntry):
 
     def get_formatted_info(self) -> str:
         return self._schedule_obj.get_formatted_info()
+
+    def __dict__(self) -> dict:
+        d = {
+                'desc': self.desc,
+                'date': self.date,
+                'mileage': self.mileage,
+                'category': self.category.name,
+                'tags': self.tags,
+                'component': self.component.name,
+                'id': self.id,
+                'rule': self.rule,
+                'frequency': self.frequency,
+                'repeating': self.repeating,
+            }
+
+        for k, v in self.custom_info.items():
+            d[k] = v
+
+        return d

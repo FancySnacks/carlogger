@@ -164,6 +164,9 @@ class DirectoryManager:
         for entry in comp_data.get('log_entries'):
             component_ref.create_entry_from_file(entry)
 
+        for entry in comp_data.get('scheduled_log_entries'):
+            component_ref.create_scheduled_entry_from_file(entry)
+
 
     def _create_car_info_path(self, dir_path):
         a = dir_path.joinpath(f"{dir_path.name}.{self.data_manager.suffix}")

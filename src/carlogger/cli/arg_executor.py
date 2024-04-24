@@ -187,10 +187,10 @@ class AddArgExecutor(ArgExecutor):
         coll_name = self.parsed_args['collection']
         comp_name = self.parsed_args['component']
 
-        valid_entry_keys = [field.name for field in dataclasses.fields(ScheduledLogEntry)]
-        entry_data = {key: value for (key, value) in self.parsed_args.items() if key in valid_entry_keys}
+        entry_data = {key: value for (key, value) in self.parsed_args.items()}
 
         self.app_session.add_new_scheduled_entry(car_name, coll_name, comp_name, entry_data)
+        print(entry_data.get('repeating'))
 
     def _recognize_context(self) -> str:
         """What do we wish to create; car, collection, component or log entry?"""

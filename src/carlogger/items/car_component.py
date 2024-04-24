@@ -84,12 +84,37 @@ class CarComponent:
                                           component=self,
                                           _id=str(uuid.uuid1()),
                                           custom_info=entry_data.get('custom_info') or {},
-                                          frequency=0 if entry_data['date'] == "" and entry_data.get('rule') == 'date'
+                                          frequency=0 if entry_data['date'] != "" and entry_data.get('rule') == 'date'
                                           else entry_data['frequency'],
                                           repeating=entry_data['repeating'],
-                                          schedule_rule=entry_data.get('rule', 'date'))
+                                          rule=entry_data.get('rule', 'date'))
         except Exception as e:
-            Printer.print_msg(None, 'ADD_FAIL', name="new scheduled entry", relation=self.name, reason=f"reason={e}")
+            Printer.print_msg(ScheduledLogEntry, 'ADD_FAIL', name="loaded scheduled entry", relation=self.name,
+                              reason=f"reason={e}")
+        else:
+            self.scheduled_log_entries.append(new_entry)
+            self._add_search_tags_from_entry(new_entry)
+
+            return new_entry.id
+
+    def create_scheduled_entry_from_file(self, entry_data: dict) -> str:
+        """Creates a new scheduled entry adding it to the list and returns its unique id."""
+        try:
+            new_entry = ScheduledLogEntry(desc=entry_data['desc'],
+                                          date=entry_data['date'],
+                                          mileage=entry_data['mileage'],
+                                          category=EntryCategory(entry_data['category']),
+                                          tags=entry_data['tags'],
+                                          component=self,
+                                          _id=entry_data['id'],
+                                          custom_info=entry_data.get('custom_info') or {},
+                                          frequency=0 if entry_data['date'] != "" and entry_data.get('rule') == 'date'
+                                          else entry_data['frequency'],
+                                          repeating=entry_data['repeating'],
+                                          rule=entry_data.get('rule', 'date'))
+        except Exception as e:
+            Printer.print_msg(ScheduledLogEntry, 'ADD_FAIL', name="new scheduled entry", relation=self.name,
+                              reason=f"reason={e}")
         else:
             self.scheduled_log_entries.append(new_entry)
 
@@ -97,7 +122,6 @@ class CarComponent:
                               name=f"Scheduled entry of id '{new_entry.id}'", relation=self.name)
 
             self._add_search_tags_from_entry(new_entry)
-            self._update_current_part(new_entry)
 
             return new_entry.id
 
@@ -172,6 +196,7 @@ class CarComponent:
              'name': self.name,
              'current_part': self.current_part,
              'log_entries': [entry.to_json() for entry in self.log_entries],
+             'scheduled_log_entries': [entry.to_json() for entry in self.scheduled_log_entries],
              'search_tags': list(self.search_tags),
              }
 
