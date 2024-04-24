@@ -170,7 +170,10 @@ class AddSubparser(Subparser):
 
         self.add_car_parser.add_argument('--custom',
                                          action=ParseKwargs, type=str,
-                                         help='More car properties as defined by the user, stored into a dictionary.',
+                                         help="More entry properties as defined by the user, "
+                                              "stored into a dictionary.\n"
+                                              "Pass arguments as 'key=value' pairs, separated by spaces.\n"
+                                              "Example: --custom 'catalogue_number=450159' 'warranty=5 years'",
                                          metavar='OTHER CAR PROPERTIES',
                                          dest='custom_info',
                                          nargs='*',
@@ -263,7 +266,10 @@ class AddSubparser(Subparser):
         self.add_entry_parser.add_argument('--custom',
                                            action=ParseKwargs,
                                            type=str,
-                                           help='More entry properties as defined by the user, stored into a dictionary.',
+                                           help="More entry properties as defined by the user, "
+                                                "stored into a dictionary.\n"
+                                                "Pass arguments as 'key=value' pairs, separated by spaces.\n"
+                                                "Example: --custom 'catalogue_number=450159' 'warranty=5 years'",
                                            metavar='CUSTOM ENTRY PROPERTIES',
                                            dest='custom_info',
                                            nargs='*',
