@@ -151,7 +151,12 @@ class CarComponent:
         entry_to_delete = self.get_entry_by_id(entry_id)
 
         if entry_to_delete:
-            self.log_entries.remove(entry_to_delete)
+            match entry_to_delete.__class__.__name__:
+                case 'LogEntry':
+                    self.log_entries.remove(entry_to_delete)
+                case 'ScheduledLogEntry':
+                    self.scheduled_log_entries.remove(entry_to_delete)
+
             Printer.print_msg(entry_to_delete, 'DEL_SUCCESS',
                               name=f"Entry of id '{entry_to_delete.id}'", relation=self.name)
         else:

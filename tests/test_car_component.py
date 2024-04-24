@@ -131,6 +131,26 @@ def test_scheduled_log_entry_completion(mock_component, mock_log_entry, mock_sch
     assert len(c.log_entries) > 0
 
 
+def test_scheduled_log_entry_is_deleted_on_completion_if_not_repeating(mock_component):
+    c = mock_component
+
+    entry = {"desc": "Engine Checkup",
+             "date": "11-11-2011",
+             "mileage": 2380,
+             "category": 'swap',
+             "tags": [],
+             "repeating": False,
+             "frequency": 10,
+             "rule": "date",
+             }
+
+    c.create_scheduled_entry(entry)
+    entry = c.scheduled_log_entries[0]
+    c.mark_scheduled_entry_as_done(entry.id)
+
+    assert len(c.scheduled_log_entries) == 0
+
+
 def test_scheduled_log_entry_completion_refreshes(mock_component):
     c = mock_component
 
