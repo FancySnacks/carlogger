@@ -273,3 +273,10 @@ def test_scheduled_log_entry_is_too_late(mock_component):
     mock_component.create_entry(entry_data)
 
     assert entry.time_remaining_to_str() == "+2937"
+
+
+def test_scheduled_entry_removed_by_id(mock_scheduled_log_entry, mock_component):
+    entry_id = mock_component.create_scheduled_entry(mock_scheduled_log_entry)
+    mock_component.delete_entry_by_id(entry_id)
+
+    assert len(mock_component.scheduled_log_entries) == 0
