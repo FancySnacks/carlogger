@@ -84,10 +84,12 @@ class CarComponent:
                                           component=self,
                                           _id=str(uuid.uuid1()),
                                           custom_info=entry_data.get('custom_info') or {},
-                                          frequency=0 if entry_data['date'] != "" and entry_data.get('rule') == 'date'
-                                          else entry_data['frequency'],
+                                          frequency=entry_data['frequency'],
                                           repeating=entry_data['repeating'],
                                           rule=entry_data.get('rule', 'date'))
+
+            if entry_data['frequency'] <= 0 and entry_data['repeating'] is True:
+                raise ValueError("Frequency of scheduled entry cannot be 0 if it's supposed to be repeating!")
         except Exception as e:
             Printer.print_msg(ScheduledLogEntry, 'ADD_FAIL', name="new scheduled entry", relation=self.name,
                               reason=f"reason={e}")
@@ -98,6 +100,7 @@ class CarComponent:
             self._add_search_tags_from_entry(new_entry)
 
             return new_entry.id
+
 
     def create_scheduled_entry_from_file(self, entry_data: dict) -> str:
         """Creates a new scheduled entry adding it to the list and returns its unique id."""
@@ -110,10 +113,12 @@ class CarComponent:
                                           component=self,
                                           _id=entry_data['id'],
                                           custom_info=entry_data.get('custom_info') or {},
-                                          frequency=0 if entry_data['date'] != "" and entry_data.get('rule') == 'date'
-                                          else entry_data['frequency'],
+                                          frequency=entry_data['frequency'],
                                           repeating=entry_data['repeating'],
                                           rule=entry_data.get('rule', 'date'))
+
+            if entry_data['frequency'] <= 0 and entry_data['repeating'] is True:
+                raise ValueError("Frequency of scheduled entry cannot be 0 if it's supposed to be repeating!")
         except Exception as e:
             Printer.print_msg(ScheduledLogEntry, 'ADD_FAIL', name="loaded scheduled entry", relation=self.name,
                               reason=f"reason={e}")

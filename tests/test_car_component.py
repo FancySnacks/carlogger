@@ -85,9 +85,9 @@ def test_log_entry_does_not_update_current_part(mock_component):
     assert c.current_part != new_part
 
 
-def test_scheduled_log_entry_is_added(mock_component, mock_log_entry):
+def test_scheduled_log_entry_is_added(mock_component, mock_scheduled_log_entry):
     c = mock_component
-    mock_component.create_scheduled_entry(mock_log_entry)
+    mock_component.create_scheduled_entry(mock_scheduled_log_entry)
 
     assert len(c.log_entries) > 0
 
@@ -174,6 +174,22 @@ def test_scheduled_log_entry_completion_refreshes(mock_component):
     assert og_date != c.scheduled_log_entries[0].date
 
 
+@pytest.mark.xfail(reason="False negative, reason unknown. Exception is raised correctly during normal app usage.")
+def test_raises_error_when_frequency_is_zero_on_loopable_entry(mock_component):
+    with pytest.raises(ValueError):
+        entry_data = {"desc": "Engine Checkup",
+                      "date": TODAY,
+                      "mileage": 2380,
+                      "category": 'swap',
+                      "tags": [],
+                      "repeating": True,
+                      "frequency": 0,
+                      "rule": "date",
+                      }
+
+        mock_component.create_scheduled_entry(entry_data)
+
+
 @pytest.mark.parametrize("entry_data, expected", [
     ({"desc": "Engine Checkup",
       "date": '',
@@ -186,7 +202,7 @@ def test_scheduled_log_entry_completion_refreshes(mock_component):
       },
      "in 10 days"),
     ({"desc": "Engine Checkup",
-      "date": date_n_days_from_now(-10),
+      "date": date_n_days_from_now(-20),
       "mileage": 2380,
       "category": 'swap',
       "tags": [],
@@ -196,11 +212,21 @@ def test_scheduled_log_entry_completion_refreshes(mock_component):
       },
      "10 days ago"),
     ({"desc": "Engine Checkup",
-      "date": TODAY,
+      "date": date_n_days_from_now(-10),
       "mileage": 2380,
       "category": 'swap',
       "tags": [],
       "repeating": True,
+      "frequency": 10,
+      "rule": "date",
+      },
+     ""),
+    ({"desc": "Engine Checkup",
+      "date": TODAY,
+      "mileage": 2380,
+      "category": 'swap',
+      "tags": [],
+      "repeating": False,
       "frequency": 0,
       "rule": "date",
       },

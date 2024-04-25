@@ -180,9 +180,6 @@ class ScheduledLogEntry(LogEntry):
         if self.date == "":
             self.date = TODAY
 
-            if self.rule == 'date':
-                self.repeating = True
-
         self._schedule_obj = self.create_schedule_rule_obj()
         self.repeat()
 
