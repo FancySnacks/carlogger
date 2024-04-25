@@ -12,7 +12,19 @@ class ParseKwargs(argparse.Action):
         setattr(namespace, self.dest, dict())
         for value in values:
             key, value = value.split('=')
-            getattr(namespace, self.dest)[key] = value
+            getattr(namespace, self.dest)[key] = self.clamp_value(value)
+
+    def clamp_value(self, value) -> ...:
+        if value.lower() == "true":
+            return True
+
+        if value.lower() == "false":
+            return False
+
+        try:
+            return int(value)
+        except ValueError:
+            return value
 
 
 class Subparser(ABC):
@@ -510,6 +522,17 @@ class UpdateSubparser(Subparser):
                                             nargs='*',
                                             default=[])
 
+        self.update_car_parser.add_argument('--custom',
+                                            action=ParseKwargs, type=str,
+                                            help="More entry properties as defined by the user, "
+                                                 "stored into a dictionary.\n"
+                                                 "Pass arguments as 'key=value' pairs, separated by spaces.\n"
+                                                 "Example: --custom 'catalogue_number=450159' 'warranty=5 years'",
+                                            metavar='OTHER CAR PROPERTIES',
+                                            dest='custom_info',
+                                            nargs='*',
+                                            default=[])
+
         # ===== UPDATE COLLECTION ===== #
 
         self.update_collection_parser = self.update_subparsers.add_parser('collection')
@@ -586,5 +609,16 @@ class UpdateSubparser(Subparser):
         self.update_entry_parser.add_argument('--tags',
                                               type=str,
                                               help="Custom tags used for easier search and filtering.",
+                                              nargs='*',
+                                              default=[])
+
+        self.update_entry_parser.add_argument('--custom',
+                                              action=ParseKwargs, type=str,
+                                              help="More entry properties as defined by the user, "
+                                                   "stored into a dictionary.\n"
+                                                   "Pass arguments as 'key=value' pairs, separated by spaces.\n"
+                                                   "Example: --custom 'catalogue_number=450159' 'warranty=5 years'",
+                                              metavar='OTHER CAR PROPERTIES',
+                                              dest='custom_info',
                                               nargs='*',
                                               default=[])

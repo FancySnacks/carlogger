@@ -30,6 +30,9 @@ class CarComponent:
     def latest_entry(self) -> LogEntry:
         return self.log_entries[-1]
 
+    def get_all_entries(self) -> list[LogEntry | ScheduledLogEntry]:
+        return self.log_entries + self.scheduled_log_entries
+
     def create_entry(self, entry_data: dict) -> str:
         """Creates a new entry adding it to the list and returns its unique id."""
         try:
