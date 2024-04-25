@@ -101,7 +101,6 @@ class CarComponent:
 
             return new_entry.id
 
-
     def create_scheduled_entry_from_file(self, entry_data: dict) -> str:
         """Creates a new scheduled entry adding it to the list and returns its unique id."""
         try:
@@ -115,7 +114,8 @@ class CarComponent:
                                           custom_info=entry_data.get('custom_info') or {},
                                           frequency=entry_data['frequency'],
                                           repeating=entry_data['repeating'],
-                                          rule=entry_data.get('rule', 'date'))
+                                          rule=entry_data.get('rule', 'date'),
+                                          from_file=True)
 
             if entry_data['frequency'] <= 0 and entry_data['repeating'] is True:
                 raise ValueError("Frequency of scheduled entry cannot be 0 if it's supposed to be repeating!")
@@ -220,7 +220,11 @@ class CarComponent:
         result = f"{self.name} ({len(self.log_entries)}): \n"
 
         for entry in self.log_entries:
-            result += f"{entry.get_formatted_info()}\n"
+            result += f"{entry.get_formatted_info()}"
+
+        result += f"\nScheduled:\n"
+        for entry in self.scheduled_log_entries:
+            result += f"{entry.get_formatted_info()}"
 
         return result
 
