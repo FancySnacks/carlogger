@@ -226,3 +226,6 @@ class ScheduledLogEntry(LogEntry):
             d[k] = v
 
         return d
+
+    def __hash__(self):
+        return hash(self.id)
