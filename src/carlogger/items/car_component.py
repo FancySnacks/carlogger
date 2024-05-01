@@ -227,7 +227,7 @@ class CarComponent:
 
         result += f"\nScheduled:\n"
         for entry in self.scheduled_log_entries:
-            result += f"{entry.get_formatted_info()}"
+            result += f"{entry.get_formatted_info()}\n"
 
         return result
 

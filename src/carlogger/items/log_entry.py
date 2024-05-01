@@ -152,8 +152,8 @@ class MileageScheduleRule(LogEntryScheduleRule):
 
     def get_formatted_info(self) -> str:
         """Return well-formatted string representing data of this class."""
-        return f"[TBD] {self.parent_log_entry.desc} [Target Mileage: {self.parent_log_entry.mileage}] " \
-               f"[Current: {self.get_time_remaining()}] " \
+        return f"[Target Mileage: {self.parent_log_entry.mileage}] " \
+               f"{self.parent_log_entry.desc} " \
                f"[Type: {self.parent_log_entry.category}] [{self.parent_log_entry.id}]"
 
 
