@@ -18,7 +18,7 @@ from carlogger.items.car_component import CarComponent
 from carlogger.items.log_entry import LogEntry
 from carlogger.items.entryfilter import EntryFilter
 from carlogger.items.item_sorter import ItemSorter
-from carlogger.util import is_valid_entry_id
+from carlogger.util import is_valid_entry_id, sort_key_is_attrib
 
 
 class ArgExecutor(ABC):
@@ -242,10 +242,14 @@ class ReadArgExecutor(ArgExecutor):
             all_car_infos = [c.car_info for c in all_cars]
 
             if sort_key:
-                item_sorter = ItemSorter(items=all_car_infos, sort_method=sort_key)
-                all_car_infos = item_sorter.get_sorted_list()
-
-            print([car.name for car in all_car_infos])
+                if sort_key_is_attrib(sort_key, all_cars[0]):
+                    item_sorter = ItemSorter(items=all_car_infos, sort_method=sort_key)
+                    all_car_infos = item_sorter.get_sorted_list()
+                    print([car.name for car in all_car_infos])
+                else:
+                    item_sorter = ItemSorter(items=all_cars, sort_method=sort_key)
+                    results = item_sorter.get_sorted_list()
+                    print([car.car_info.name for car in results])
         else:
             car = self.app.get_car_by_name(car_name)
             self.print_car_info(car)

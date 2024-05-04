@@ -10,7 +10,12 @@ from pathlib import Path
 from carlogger.const import CARS_PATH, TODAY
 
 
-# ===== SAVING ===== #
+def sort_key_is_attrib(key: str, item) -> bool:
+    try:
+        getattr(item, key)
+        return True
+    except Exception as e:
+        return False
 
 def is_valid_entry_id(entry_id: str) -> bool:
     """Checks whether passed string is a valid entry id."""

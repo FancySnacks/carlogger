@@ -24,7 +24,6 @@ class Car:
         if self.path == "":
             self._create_path()
 
-
     def get_all_entry_logs(self) -> list[LogEntry]:
         """Get ALL log entries regarding this car.\n
         NOTE: it's a heavy operation, use it sparingly."""
