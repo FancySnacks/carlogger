@@ -15,8 +15,9 @@ from carlogger.items.car import Car
 from carlogger.items.car_info import CarInfo
 from carlogger.items.component_collection import ComponentCollection
 from carlogger.items.car_component import CarComponent
-from carlogger.items.log_entry import LogEntry, ScheduledLogEntry
+from carlogger.items.log_entry import LogEntry
 from carlogger.items.entryfilter import EntryFilter
+from carlogger.items.item_sorter import ItemSorter
 from carlogger.util import is_valid_entry_id
 
 
@@ -236,8 +237,15 @@ class ReadArgExecutor(ArgExecutor):
         car_name = self.args.get('name')
 
         if car_name == '*':
+            sort_key = self.args.get('sort')
             all_cars = self.app.directory_manager.load_all_car_dir()
-            print([c.car_info.name for c in all_cars])
+            all_car_infos = [c.car_info for c in all_cars]
+
+            if sort_key:
+                item_sorter = ItemSorter(items=all_car_infos, sort_method=sort_key)
+                all_car_infos = item_sorter.get_sorted_list()
+
+            print([car.name for car in all_car_infos])
         else:
             car = self.app.get_car_by_name(car_name)
             self.print_car_info(car)

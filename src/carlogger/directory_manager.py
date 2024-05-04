@@ -109,7 +109,10 @@ class DirectoryManager:
             for car in cars:
                 for coll in car.collections:
                     if coll.parent_collection != "":
-                        coll.parent_collection = new_car.get_collection_by_name(coll.parent_collection.split()[-2])
+                        try:
+                            coll.parent_collection = new_car.get_collection_by_name(coll.parent_collection.split()[-2])
+                        except Exception:
+                            pass
 
         return cars
 
