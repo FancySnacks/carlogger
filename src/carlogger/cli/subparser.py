@@ -41,6 +41,10 @@ class ReadSubparser(Subparser):
     def __init__(self, parser_parent):
         self.parser_parent = parser_parent
 
+    def add_sort_parser(self):
+        for sp_name, sp_obj in self.read_subparsers.choices.items():
+            sp_obj.add_argument('--sort', help='Sort returned items by a specific key.')
+
     def create_subparser(self):
         self.read_parser = self.parser_parent.subparsers.add_parser('read',
                                                                       help="Return car info, collection/component list  or "
@@ -125,6 +129,8 @@ class ReadSubparser(Subparser):
                                             metavar="CAR_NAME",
                                             help="Parent car name.",
                                             required=True)
+
+        self.add_sort_parser()
 
 
 class AddSubparser(Subparser):
