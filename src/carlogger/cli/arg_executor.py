@@ -247,9 +247,7 @@ class ReadArgExecutor(ArgExecutor):
                     all_car_infos = item_sorter.get_sorted_list()
                     print([car.name for car in all_car_infos])
                 else:
-                    item_sorter = ItemSorter(items=all_cars, sort_method=sort_key)
-                    results = item_sorter.get_sorted_list()
-                    print([car.car_info.name for car in results])
+                    print([c.name for c in all_car_infos])
         else:
             car = self.app.get_car_by_name(car_name)
             self.print_car_info(car)
@@ -265,8 +263,22 @@ class ReadArgExecutor(ArgExecutor):
         collection_name = self.args.get('name')
         car = self.app.get_car_by_name(car_name)
 
+        # Print ALL collections
         if collection_name == '*':
-            print(*car.collections)
+            sort_key = self.args.get('sort')
+            all_collections = car.collections
+
+            if sort_key:
+                if sort_key_is_attrib(sort_key, all_collections[0]):
+                    item_sorter = ItemSorter(items=all_collections, sort_method=sort_key)
+                    all_collections = item_sorter.get_sorted_list()
+                else:
+                    item_sorter = ItemSorter(items=all_collections, sort_method=sort_key)
+                    all_collections = item_sorter.get_sorted_list()
+
+            print(*all_collections)
+
+        # Print single collection via name
         else:
             collection = car.get_collection_by_name(collection_name)
             self.print_collection(collection)
@@ -282,9 +294,19 @@ class ReadArgExecutor(ArgExecutor):
         car = self.app.get_car_by_name(car_name)
 
         if component_name == '*':
+            sort_key = self.args.get('sort')
             components = [c.components for c in car.collections]
             all_components = []
             [all_components.extend(clist) for clist in components]
+
+            if sort_key:
+                if sort_key_is_attrib(sort_key, all_components[0]):
+                    item_sorter = ItemSorter(items=all_components, sort_method=sort_key)
+                    all_components = item_sorter.get_sorted_list()
+                else:
+                    item_sorter = ItemSorter(items=all_components, sort_method=sort_key)
+                    all_components = item_sorter.get_sorted_list()
+
             print(*all_components)
         else:
             component = car.get_component_by_name(component_name)
@@ -315,6 +337,15 @@ class ReadArgExecutor(ArgExecutor):
             loaded_entries.append(entry)
 
         loaded_entries = list(set(loaded_entries))
+
+        sort_key = self.args.get('sort')
+        if sort_key:
+            if sort_key_is_attrib(sort_key, loaded_entries[0]):
+                item_sorter = ItemSorter(items=loaded_entries, sort_method=sort_key)
+                loaded_entries = item_sorter.get_sorted_list()
+            else:
+                item_sorter = ItemSorter(items=loaded_entries, sort_method=sort_key)
+                loaded_entries = item_sorter.get_sorted_list()
 
         self.print_entries(loaded_entries)
 

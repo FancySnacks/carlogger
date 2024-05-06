@@ -49,7 +49,7 @@ class ComponentCollection:
         [e.extend(item) for item in n]
         return e + self.components
 
-    def get_all_log_entries(self) -> list[LogEntry]:
+    def get_all_entry_logs(self) -> list[LogEntry]:
         """Returns all log entries from components CarComponent objects from all components collections."""
         components = self.get_all_components()
         entries = [comp.get_all_entry_logs() for comp in components]
