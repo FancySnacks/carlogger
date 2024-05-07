@@ -6,6 +6,7 @@ import uuid
 from dataclasses import dataclass, field
 
 from carlogger.items.log_entry import LogEntry, ScheduledLogEntry
+from carlogger.items.part import Part
 from carlogger.items.entry_category import EntryCategory
 from carlogger.printer import Printer
 
@@ -17,7 +18,8 @@ class CarComponent:
     name: str
     log_entries: list[LogEntry] = field(init=False, default_factory=list)
     scheduled_log_entries: list[ScheduledLogEntry] = field(init=False, default_factory=list)
-    current_part: str = field(init=False, default="")
+    current_part: Part = field(init=False, default=None)
+    part_list: list[Part] = field(init=False, default_factory=list)
     current_mileage: int = field(init=False, default=0)
     search_tags: set[str] = field(init=False, default_factory=set)
     path: str = ""
@@ -206,13 +208,20 @@ class CarComponent:
         """Returns object properties as JSON-serializable dictionary."""
         d = {'type': 'component',
              'name': self.name,
-             'current_part': self.current_part,
+             'current_part': self._clamp_current_part(),
+             'part_list': [part.to_json() for part in self.part_list],
              'log_entries': [entry.to_json() for entry in self.log_entries],
              'scheduled_log_entries': [entry.to_json() for entry in self.scheduled_log_entries],
              'search_tags': list(self.search_tags),
              }
 
         return d
+
+    def _clamp_current_part(self):
+        if self.current_part is not None:
+            return self.current_part.to_json()
+        else:
+            return ''
 
     def get_target_path(self, extension: str) -> str:
         """Extension without the dot"""
@@ -240,9 +249,12 @@ class CarComponent:
 
     def _update_current_part(self, entry: LogEntry):
         if new_part := entry.custom_info.get('part'):
+
             if self.current_part != new_part:
                 if entry.category in (EntryCategory.swap, EntryCategory.fluid_change):
-                    self.current_part = new_part
+                    self.current_part = Part(new_part, entry.id)
+
+            self.part_list.append(self.current_part)
 
     def _update_mileage(self, entry: LogEntry):
         if entry.mileage > self.current_mileage:
