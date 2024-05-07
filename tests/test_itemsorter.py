@@ -1,5 +1,4 @@
 from carlogger.items.car import Car
-from carlogger.items.entry_category import EntryCategory
 from carlogger.items.item_sorter import ItemSorter
 from carlogger.items.car_info import CarInfo
 

@@ -1,6 +1,6 @@
 from carlogger.cli.arg_parser import ArgParser
 from carlogger.session import AppSession
-from carlogger.cli.arg_executor import AddArgExecutor, DeleteArgExecutor, UpdateArgExecutor
+from carlogger.cli.arg_executor import AddArgExecutor, DeleteArgExecutor, UpdateArgExecutor, ReadArgExecutor
 
 
 # ===== ADD ===== #

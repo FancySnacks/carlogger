@@ -57,23 +57,23 @@ class ReadSubparser(Subparser):
 
         self.read_car_parser = self.read_subparsers.add_parser('car')
 
-        self.read_car_parser.add_argument('-n',
-                                          '--name',
+        self.read_car_parser.add_argument('name',
                                           type=str,
                                           metavar="CAR_NAME",
-                                          help="Return car info via name.",
-                                          required=True)
+                                          help="Return car info via name."
+                                               "'*' (default) - returns all cars in a save directory.",
+                                          default='*')
 
         # ===== READ COLLECTION ===== #
 
         self.read_collection_parser = self.read_subparsers.add_parser('collection')
 
-        self.read_collection_parser.add_argument('-n',
-                                                 '--name',
-                                                 metavar="COLLECTION NAME",
-                                                 help="Return collection info via name.",
-                                                 type=str,
-                                                 required=True)
+        self.read_collection_parser.add_argument('name',
+                                          type=str,
+                                          metavar="COLLECTION_NAME",
+                                          help="Return collection via name."
+                                               "'*' (default) - returns all collections belonging to specified car.",
+                                          default='*')
 
         self.read_collection_parser.add_argument('--car',
                                                  type=str,
@@ -85,12 +85,12 @@ class ReadSubparser(Subparser):
 
         self.read_component_parser = self.read_subparsers.add_parser('component')
 
-        self.read_component_parser.add_argument('-n',
-                                                '--name',
-                                                type=str,
-                                                metavar="COMPONENT_NAME",
-                                                help="Return component via name.",
-                                                required=True)
+        self.read_component_parser.add_argument('name',
+                                          type=str,
+                                          metavar="COMPONENT_NAME",
+                                          help="Return component via name."
+                                               "'*' (default) - returns all components belonging to specified car.",
+                                          default='*')
 
         self.read_component_parser.add_argument('--car',
                                                 type=str,
@@ -102,8 +102,7 @@ class ReadSubparser(Subparser):
 
         self.read_entry_parser = self.read_subparsers.add_parser('entry')
 
-        self.read_entry_parser.add_argument('-d',
-                                            '--data',
+        self.read_entry_parser.add_argument('data',
                                             type=str,
                                             help="Return entry via name.\n"
                                                  "Accepts multiple string arguments as filters:\n"
@@ -122,7 +121,7 @@ class ReadSubparser(Subparser):
                                                  "before integer will show oldest to youngest instead\n",
                                             nargs='*',
                                             metavar='FILTER_OPTIONS',
-                                            required=False)
+                                            default='*')
 
         self.read_entry_parser.add_argument('--car',
                                             type=str,
