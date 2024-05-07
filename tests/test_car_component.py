@@ -62,7 +62,7 @@ def test_log_entry_updates_current_part(mock_component):
 
     c.create_entry(entry_data)
 
-    assert c.current_part == new_part
+    assert c.current_part.name == new_part
 
 
 def test_log_entry_does_not_update_current_part(mock_component):

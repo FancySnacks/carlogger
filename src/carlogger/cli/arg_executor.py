@@ -238,13 +238,14 @@ class ReadArgExecutor(ArgExecutor):
 
         if car_name == '*':
             sort_key = self.args.get('sort')
+            reverse_sort = self.args.get('reverse')
             all_cars = self.app.directory_manager.load_all_car_dir()
             all_car_infos = [c.car_info for c in all_cars]
 
             if sort_key:
                 if sort_key_is_attrib(sort_key, all_cars[0]):
                     item_sorter = ItemSorter(items=all_car_infos, sort_method=sort_key)
-                    all_car_infos = item_sorter.get_sorted_list()
+                    all_car_infos = item_sorter.get_sorted_list(reverse_order=reverse_sort)
                     print([car.name for car in all_car_infos])
                 else:
                     print([c.name for c in all_car_infos])
@@ -266,15 +267,16 @@ class ReadArgExecutor(ArgExecutor):
         # Print ALL collections
         if collection_name == '*':
             sort_key = self.args.get('sort')
+            reverse_sort = self.args.get('reverse')
             all_collections = car.collections
 
             if sort_key:
                 if sort_key_is_attrib(sort_key, all_collections[0]):
                     item_sorter = ItemSorter(items=all_collections, sort_method=sort_key)
-                    all_collections = item_sorter.get_sorted_list()
+                    all_collections = item_sorter.get_sorted_list(reverse_order=reverse_sort)
                 else:
                     item_sorter = ItemSorter(items=all_collections, sort_method=sort_key)
-                    all_collections = item_sorter.get_sorted_list()
+                    all_collections = item_sorter.get_sorted_list(reverse_order=reverse_sort)
 
             print(*all_collections)
 
@@ -295,6 +297,7 @@ class ReadArgExecutor(ArgExecutor):
 
         if component_name == '*':
             sort_key = self.args.get('sort')
+            reverse_sort = self.args.get('reverse')
             components = [c.components for c in car.collections]
             all_components = []
             [all_components.extend(clist) for clist in components]
@@ -302,10 +305,10 @@ class ReadArgExecutor(ArgExecutor):
             if sort_key:
                 if sort_key_is_attrib(sort_key, all_components[0]):
                     item_sorter = ItemSorter(items=all_components, sort_method=sort_key)
-                    all_components = item_sorter.get_sorted_list()
+                    all_components = item_sorter.get_sorted_list(reverse_order=reverse_sort)
                 else:
                     item_sorter = ItemSorter(items=all_components, sort_method=sort_key)
-                    all_components = item_sorter.get_sorted_list()
+                    all_components = item_sorter.get_sorted_list(reverse_order=reverse_sort)
 
             print(*all_components)
         else:
@@ -339,13 +342,14 @@ class ReadArgExecutor(ArgExecutor):
         loaded_entries = list(set(loaded_entries))
 
         sort_key = self.args.get('sort')
+        reverse_sort = self.args.get('reverse')
         if sort_key:
             if sort_key_is_attrib(sort_key, loaded_entries[0]):
                 item_sorter = ItemSorter(items=loaded_entries, sort_method=sort_key)
-                loaded_entries = item_sorter.get_sorted_list()
+                loaded_entries = item_sorter.get_sorted_list(reverse_order=reverse_sort)
             else:
                 item_sorter = ItemSorter(items=loaded_entries, sort_method=sort_key)
-                loaded_entries = item_sorter.get_sorted_list()
+                loaded_entries = item_sorter.get_sorted_list(reverse_order=reverse_sort)
 
         self.print_entries(loaded_entries)
 
