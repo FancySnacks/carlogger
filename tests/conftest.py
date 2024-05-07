@@ -8,6 +8,7 @@ from carlogger.items.component_collection import ComponentCollection
 from carlogger.items.entry_category import EntryCategory
 from carlogger.directory_manager import DirectoryManager
 from carlogger.filedata_manager import JSONFiledataManager
+from carlogger.const import TODAY
 
 
 with open(pathlib.Path.cwd().joinpath("tests/add_arg_test"), "r") as f:
@@ -63,6 +64,39 @@ def mock_car_info() -> dict:
 
 
 @pytest.fixture
+def mock_car_dict_list() -> list[dict]:
+    car_1 = {
+        'manufacturer': 'Fiat',
+        'model': '500',
+        'year': 2017,
+        'body': 'hatchback',
+        'length': 4140,
+        'mileage': 13500,
+        'weight': 1700,
+        'name': 'NewPurchase'
+    }
+
+    car_2 = {
+        'manufacturer': 'Toyota',
+        'model': 'Celica',
+        'year': 2003,
+        'body': 'coupe',
+        'length': 4140,
+        'mileage': 221387,
+        'weight': 1700,
+        'name': 'ProjectCar'
+    }
+
+    return [car_1, car_2]
+
+
+@pytest.fixture
+def mock_cars_full(mock_car_dict_list) -> list[Car]:
+    cars = [Car(CarInfo(**c)) for c in mock_car_dict_list]
+    return cars
+
+
+@pytest.fixture
 def mock_log_entry() -> dict:
     entry = {"desc": "Engine Checkup",
              "date": "09-03-1964",
@@ -72,6 +106,25 @@ def mock_log_entry() -> dict:
              }
 
     return entry
+
+
+@pytest.fixture
+def mock_entry_dict_list() -> list[dict]:
+    entry_1 = {"desc": "Engine Checkup",
+               "date": "09-03-1964",
+               "mileage": 1404,
+               "category": EntryCategory.check,
+               "tags": [],
+               }
+
+    entry_2 = {"desc": "Engine Checkup",
+               "date": TODAY,
+               "mileage": 1404,
+               "category": EntryCategory.check,
+               "tags": [],
+               }
+
+    return [entry_1, entry_2]
 
 
 @pytest.fixture
@@ -124,6 +177,16 @@ def mock_component_collection() -> ComponentCollection:
 def mock_car(mock_car_info) -> Car:
     car_info = CarInfo(**mock_car_info)
     car = Car(car_info)
+    return car
+
+
+@pytest.fixture
+def mock_car_full(mock_car_info, mock_log_entry) -> Car:
+    car_info = CarInfo(**mock_car_info)
+    car = Car(car_info)
+    coll = car.create_collection('TestCollection')
+    comp = coll.create_component('TestComponent')
+    comp.create_entry(**mock_log_entry)
     return car
 
 
