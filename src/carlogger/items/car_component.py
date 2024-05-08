@@ -184,6 +184,15 @@ class CarComponent:
                               name=f"entry'",
                               relation=self.name, reason=f"as it was not found  at index {entry_index}")
 
+    def delete_children(self, clear_parts=False):
+        """Delete all entry logs."""
+        self.log_entries.clear()
+        self.scheduled_log_entries.clear()
+
+        if clear_parts:
+            self.current_part = None
+            self.part_list = []
+
     def get_entry_by_id(self, entry_id: str) -> LogEntry | ScheduledLogEntry | None:
         """Return log entry by its unique id hash."""
         i = 0

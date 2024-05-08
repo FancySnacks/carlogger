@@ -378,6 +378,11 @@ class DeleteSubparser(Subparser):
     def __init__(self, parser_parent):
         self.parser_parent = parser_parent
 
+    def add_clear_parser(self):
+        for sp_name, sp_obj in list(self.delete_subparsers.choices.items())[:-1:]:
+            sp_obj.add_argument('--clear', action='store_true',
+                                help="Clear children inside of specified item, instead of deleting the item itself.")
+
     def create_subparser(self):
         self.delete_parser = self.parser_parent.subparsers.add_parser('delete',
                                                                       help="Delete specified car, collection, component or log entry.",
@@ -471,6 +476,8 @@ class DeleteSubparser(Subparser):
                                               metavar="COMPONENT_NAME",
                                               help="Not mandatory, only used when deleting entry by index number.",
                                               type=str)
+
+        self.add_clear_parser()
 
 
 class UpdateSubparser(Subparser):

@@ -95,6 +95,10 @@ class ComponentCollection:
         self.collections = []
 
     def delete_children(self):
+        """Clear all components, nested collections and entry logs."""
+        for comp in self.components:
+            comp.delete_children(clear_parts=True)
+
         self.delete_components()
         self.delete_collections()
 
