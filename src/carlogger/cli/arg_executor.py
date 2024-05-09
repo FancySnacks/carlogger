@@ -69,7 +69,7 @@ class DeleteArgExecutor(ArgExecutor):
         if self.parsed_args.get('clear'):
             car = self.app_session.get_car_by_name(car_name)
             coll_to_clear = car.get_collection_by_name(collection_name)
-            self.app_session.delete_collection_children(coll_to_clear, car_name)
+            self.app_session.delete_collection_children(car_name, coll_to_clear)
         elif any([self._check_if_collection_is_empty(collection_name, car_name),
                 self.parsed_args.get('forced')]):
             self.app_session.delete_collection(car_name, collection_name)
@@ -84,9 +84,9 @@ class DeleteArgExecutor(ArgExecutor):
         if self.parsed_args.get('clear'):
             car = self.app_session.get_car_by_name(car_name)
             comp_to_clear = car.get_component_by_name(component_name)
-            self.app_session.delete_item_children(comp_to_clear, car)
+            self.app_session.delete_component_children(comp_to_clear, car)
         elif any([self._check_if_component_is_empty(component_name, car_name),
-                self.parsed_args.get('forced')]):
+            self.parsed_args.get('forced')]):
             self.app_session.delete_component(car_name, collection_name, component_name)
         else:
             print(f"ERROR: '{component_name}' cannot be removed because it's not empty!")

@@ -84,12 +84,6 @@ class ComponentCollection:
         if collection_to_remove:
             self.collections.remove(collection_to_remove)
 
-    def delete_components(self):
-        self.components = []
-
-    def delete_collections(self):
-        self.collections = []
-
     def _check_for_nested_collection_duplicates(self, name: str):
         if name in [ch.name for ch in self.components]:
             Printer.print_msg(self, 'ADD_FAIL', name=name, relation=self)

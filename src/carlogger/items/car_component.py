@@ -188,6 +188,7 @@ class CarComponent:
         """Delete all entry logs."""
         self.log_entries.clear()
         self.scheduled_log_entries.clear()
+        self.search_tags.clear()
 
         if clear_parts:
             self.current_part = None
