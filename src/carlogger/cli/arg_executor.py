@@ -53,7 +53,10 @@ class DeleteArgExecutor(ArgExecutor):
     def delete_car(self):
         car_name = self.parsed_args['name']
 
-        if any([self._check_if_car_is_empty(car_name),
+        if self.parsed_args.get('clear'):
+            car = self.app_session.get_car_by_name(car_name)
+            self.app_session.delete_item_children(car, car)
+        elif any([self._check_if_car_is_empty(car_name),
                 self.parsed_args.get('forced')]):
             self.app_session.delete_car(car_name)
         else:
@@ -63,7 +66,11 @@ class DeleteArgExecutor(ArgExecutor):
         car_name = self.parsed_args['car']
         collection_name = self.parsed_args['name']
 
-        if any([self._check_if_collection_is_empty(collection_name, car_name),
+        if self.parsed_args.get('clear'):
+            car = self.app_session.get_car_by_name(car_name)
+            coll_to_clear = car.get_collection_by_name(collection_name)
+            self.app_session.delete_collection_children(coll_to_clear, car_name)
+        elif any([self._check_if_collection_is_empty(collection_name, car_name),
                 self.parsed_args.get('forced')]):
             self.app_session.delete_collection(car_name, collection_name)
         else:
@@ -74,7 +81,11 @@ class DeleteArgExecutor(ArgExecutor):
         collection_name = self.parsed_args['collection']
         component_name = self.parsed_args['name']
 
-        if any([self._check_if_component_is_empty(component_name, car_name),
+        if self.parsed_args.get('clear'):
+            car = self.app_session.get_car_by_name(car_name)
+            comp_to_clear = car.get_component_by_name(component_name)
+            self.app_session.delete_item_children(comp_to_clear, car)
+        elif any([self._check_if_component_is_empty(component_name, car_name),
                 self.parsed_args.get('forced')]):
             self.app_session.delete_component(car_name, collection_name, component_name)
         else:

@@ -85,22 +85,10 @@ class ComponentCollection:
             self.collections.remove(collection_to_remove)
 
     def delete_components(self):
-        for child in self.components:
-            self.delete_component(child.name)
         self.components = []
 
     def delete_collections(self):
-        for child in self.collections:
-            self.delete_collection(child.name)
         self.collections = []
-
-    def delete_children(self):
-        """Clear all components, nested collections and entry logs."""
-        for comp in self.components:
-            comp.delete_children(clear_parts=True)
-
-        self.delete_components()
-        self.delete_collections()
 
     def _check_for_nested_collection_duplicates(self, name: str):
         if name in [ch.name for ch in self.components]:

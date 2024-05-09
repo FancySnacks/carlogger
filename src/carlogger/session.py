@@ -6,6 +6,7 @@ from carlogger.items.car_info import CarInfo
 from carlogger.cli.arg_executor import ArgExecutor, AddArgExecutor, ReadArgExecutor, DeleteArgExecutor, \
     UpdateArgExecutor
 from carlogger.items.component_collection import ComponentCollection
+from carlogger.items.car_component import CarComponent
 
 
 class AppSession:
@@ -87,7 +88,11 @@ class AppSession:
                 self.delete_collection(car_name, ch.name)
             else:
                 self.delete_component(car_name, collection.name, ch.name)
-        collection.delete_children()
+
+    def delete_component_children(self, car_name: str, component_name: str):
+        car = self.get_car_by_name(car_name)
+        component = car.get_component_by_name(component_name)
+        component.delete_children()
 
     def add_new_component(self, car_name: str, collection_name: str, component_name: str):
         """Add new collection to specified car and update save directory."""
