@@ -81,9 +81,9 @@ class Car:
         else:
             Printer.print_msg(ComponentCollection, 'DEL_FAIL', name=name, relation=self.car_info.name)
 
-    def delete_children(self, session):
+    def delete_children(self):
         """Clear all collections, components and entry logs."""
-        pass
+
 
     def _check_for_collection_duplicates(self, name):
         if name in [coll.name for coll in self.collections]:

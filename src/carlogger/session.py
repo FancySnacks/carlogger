@@ -93,6 +93,12 @@ class AppSession:
         component.delete_children(self)
         self.directory_manager.update_car_directory(car)
 
+    def delete_car_children(self, car: Car):
+        for ch in car.collections:
+            if len(ch.children) > 0:
+                self.delete_collection_children(car.car_info.name, ch)
+            self.delete_collection(car.car_info.name, ch.name)
+
     def add_new_component(self, car_name: str, collection_name: str, component_name: str):
         """Add new collection to specified car and update save directory."""
         car = self.get_car_by_name(car_name)

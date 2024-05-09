@@ -55,7 +55,7 @@ class DeleteArgExecutor(ArgExecutor):
 
         if self.parsed_args.get('clear'):
             car = self.app_session.get_car_by_name(car_name)
-            self.app_session.delete_item_children(car, car)
+            self.app_session.delete_car_children(car)
         elif any([self._check_if_car_is_empty(car_name),
                 self.parsed_args.get('forced')]):
             self.app_session.delete_car(car_name)
@@ -71,7 +71,7 @@ class DeleteArgExecutor(ArgExecutor):
             coll_to_clear = car.get_collection_by_name(collection_name)
             self.app_session.delete_collection_children(car_name, coll_to_clear)
         elif any([self._check_if_collection_is_empty(collection_name, car_name),
-                self.parsed_args.get('forced')]):
+            self.parsed_args.get('forced')]):
             self.app_session.delete_collection(car_name, collection_name)
         else:
             print(f"ERROR: '{collection_name}' cannot be removed because it's not empty!")
