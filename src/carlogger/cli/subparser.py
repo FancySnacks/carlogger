@@ -47,11 +47,19 @@ class ReadSubparser(Subparser):
             sp_obj.add_argument('--reverse', action='store_true',
                                 help="Sort returned items in reversed way, does nothing without '--sort' flag.")
 
+    def add_export_parser(self):
+        for sp_name, sp_obj in list(self.read_subparsers.choices.items())[:-1:]:
+            sp_obj.add_argument('--export',
+                                metavar="SAVE_LOCATION",
+                                help="Path to save the item as file to."
+                                     "When passing the path specify the file extension: [.json, .txt, .csv]",
+                                type=str,)
+
     def create_subparser(self):
         self.read_parser = self.parser_parent.subparsers.add_parser('read',
-                                                                      help="Return car info, collection/component list  or "
-                                                                           "log entries by specifying the car.\n",
-                                                                      formatter_class=argparse.RawTextHelpFormatter)
+                                                                    help="Return car info, collection/component list"
+                                                                         " or log entries by specifying the car.\n",
+                                                                    formatter_class=argparse.RawTextHelpFormatter)
 
         self.read_subparsers = self.read_parser.add_subparsers(help="Choose item type to read.\n")
 
@@ -132,6 +140,7 @@ class ReadSubparser(Subparser):
                                             required=True)
 
         self.add_sort_parser()
+        self.add_export_parser()
 
 
 class AddSubparser(Subparser):
@@ -636,3 +645,70 @@ class UpdateSubparser(Subparser):
                                               dest='custom_info',
                                               nargs='*',
                                               default=[])
+
+
+class ImportSubparser(Subparser):
+    def __init__(self, parser_parent):
+        self.parser_parent = parser_parent
+
+    def add_path_arg(self):
+        for sp_name, sp_obj in list(self.import_parsers.choices.items())[:-1:]:
+            sp_obj.add_argument('path',
+                                metavar="SAVE_LOCATION",
+                                help="System path leading to file that you want to import. "
+                                     "Valid formats: [.json, .txt, .csv]",
+                                type=str)
+
+    def create_subparser(self):
+        self.import_parser = self.parser_parent.subparsers.add_parser('import',
+                                                                      help="Import file nd save as new item.",
+                                                                      formatter_class=argparse.RawTextHelpFormatter)
+
+        self.import_parsers = self.import_parser.add_subparsers(help="Choose which item to import.")
+
+        # ===== Export Car ===== #
+
+        self.import_car_parser = self.import_parsers.add_parser('car')
+
+        self.import_car_parser.add_argument('-n',
+                                            '--name',
+                                            metavar="CAR_NAME",
+                                            type=str,
+                                            required=True)
+
+        # ===== Export Collection ===== #
+
+        self.import_collection_parser = self.import_parsers.add_parser('collection')
+
+        self.import_collection_parser.add_argument('-n',
+                                                   '--name',
+                                                   metavar="COLLECTION_NAME",
+                                                   type=str,
+                                                   required=True)
+
+        self.import_collection_parser.add_argument('--car',
+                                                   metavar="PARENT_CAR_NAME",
+                                                   type=str,
+                                                   required=True)
+
+        # ===== Export Component ===== #
+
+        self.import_component_parser = self.import_parsers.add_parser('component')
+
+        self.import_component_parser.add_argument('-n',
+                                                  '--name',
+                                                  metavar="COMPONENT_NAME",
+                                                  type=str,
+                                                  required=True)
+
+        self.import_component_parser.add_argument('--car',
+                                                  metavar="PARENT_CAR_NAME",
+                                                  type=str,
+                                                  required=True)
+
+        self.import_component_parser.add_argument('--collection',
+                                                  metavar="PARENT_COLLECTION_NAME",
+                                                  type=str,
+                                                  required=True)
+
+        self.add_path_arg()

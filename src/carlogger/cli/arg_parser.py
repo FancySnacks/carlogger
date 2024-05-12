@@ -2,7 +2,8 @@
 
 import argparse
 
-from carlogger.cli.subparser import Subparser, AddSubparser, ReadSubparser, DeleteSubparser, UpdateSubparser
+from carlogger.cli.subparser import Subparser, AddSubparser, ReadSubparser, DeleteSubparser, UpdateSubparser, \
+    ImportSubparser
 
 
 class ArgParser:
@@ -22,7 +23,7 @@ class ArgParser:
     def setup_args(self):
         self.parser.add_argument('--gui',
                                  action='store_true',
-                                 help="Open graphical user interface for the app.")
+                                 help="Open graphical user interface for this app.")
 
         self.parser.add_argument('--printargs',
                                  action='store_true',
@@ -35,6 +36,7 @@ class ArgParser:
         self.add_subparser(ReadSubparser(self))
         self.add_subparser(DeleteSubparser(self))
         self.add_subparser(UpdateSubparser(self))
+        self.add_subparser(ImportSubparser(self))
 
     def add_subparser(self, subparser):
         self.subparser_obj.append(subparser)
