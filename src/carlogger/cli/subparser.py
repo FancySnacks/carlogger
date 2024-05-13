@@ -710,7 +710,7 @@ class ExportSubparser(Subparser):
         self.parser_parent = parser_parent
 
     def add_path_arg(self):
-        for sp_name, sp_obj in list(self.export_parsers.choices.items())[:-1:]:
+        for sp_name, sp_obj in list(self.export_parsers.choices.items()):
             sp_obj.add_argument('path',
                                 metavar="SAVE_LOCATION",
                                 help="System path leading to file that you want to export. "
@@ -728,8 +728,7 @@ class ExportSubparser(Subparser):
 
         self.export_car_parser = self.export_parsers.add_parser('car')
 
-        self.export_car_parser.add_argument('-n',
-                                            '--name',
+        self.export_car_parser.add_argument('--name',
                                             metavar="CAR_NAME",
                                             type=str,
                                             required=True)
@@ -738,8 +737,7 @@ class ExportSubparser(Subparser):
 
         self.export_collection_parser = self.export_parsers.add_parser('collection')
 
-        self.export_collection_parser.add_argument('-n',
-                                                   '--name',
+        self.export_collection_parser.add_argument('--name',
                                                    metavar="COLLECTION_NAME",
                                                    type=str,
                                                    required=True)
@@ -753,8 +751,7 @@ class ExportSubparser(Subparser):
 
         self.export_component_parser = self.export_parsers.add_parser('component')
 
-        self.export_component_parser.add_argument('-n',
-                                                  '--name',
+        self.export_component_parser.add_argument('--name',
                                                   metavar="COMPONENT_NAME",
                                                   type=str,
                                                   required=True)

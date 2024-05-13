@@ -468,3 +468,58 @@ class UpdateArgExecutor(ArgExecutor):
             case 'collection': return 'collection'
             case 'component': return 'component'
             case 'entry': return 'entry'
+
+
+class ExportArgExecutor(ArgExecutor):
+    """Handles 'export' subparser for exporting item into a file."""
+    def __init__(self, parsed_args: dict, app_session: AppSession, raw_args: list[str]):
+        self.parsed_args = parsed_args
+        self.app_session = app_session
+        self.raw_args = raw_args[1::]
+
+        self.arg_func_map = {'car': self.export_car,
+                             'collection': self.export_collection,
+                             'component': self.export_component}
+
+    def evaluate_args(self):
+        """Execute mapped functions based on passed args."""
+        context = self._recognize_context()
+        self.arg_func_map.get(context)()
+
+    def export_car(self):
+        save_path = self.parsed_args['path']
+        car_name = self.parsed_args['name']
+        car = self.app_session.get_car_by_name(car_name)
+        self.app_session.export_item_to_file(car.car_info, save_path)
+
+    def export_collection(self):
+        save_path = self.parsed_args['path']
+        coll_name = self.parsed_args['name']
+        car_name = self.parsed_args['car']
+
+        car = self.app_session.get_car_by_name(car_name)
+        collection = car.get_collection_by_name(coll_name)
+
+        self.app_session.export_item_to_file(collection, save_path)
+
+    def export_component(self):
+        save_path = self.parsed_args['path']
+        comp_name = self.parsed_args['name']
+        coll_name = self.parsed_args['collection']
+        car_name = self.parsed_args['car']
+
+        car = self.app_session.get_car_by_name(car_name)
+        collection = car.get_collection_by_name(coll_name)
+        component = collection.get_component_by_name(comp_name)
+
+        self.app_session.export_item_to_file(component, save_path)
+
+    def _recognize_context(self) -> str:
+        """Which item to export; car, collection or component?"""
+        match self.raw_args[1]:
+            case 'car': return 'car'
+            case 'collection': return 'collection'
+            case 'component': return 'component'
+
+
+

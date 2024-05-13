@@ -4,7 +4,7 @@ from carlogger.directory_manager import DirectoryManager
 from carlogger.items.car import Car
 from carlogger.items.car_info import CarInfo
 from carlogger.cli.arg_executor import ArgExecutor, AddArgExecutor, ReadArgExecutor, DeleteArgExecutor, \
-    UpdateArgExecutor
+    UpdateArgExecutor, ExportArgExecutor, ImportArgExecutor
 from carlogger.items.component_collection import ComponentCollection
 from carlogger.items.car_component import CarComponent
 
@@ -29,6 +29,10 @@ class AppSession:
                 self.arg_executor = DeleteArgExecutor(parsed_args, self, raw_args)
             case 'update':
                 self.arg_executor = UpdateArgExecutor(parsed_args, self, raw_args)
+            case 'import':
+                self.arg_executor = ImportArgExecutor(parsed_args, self, raw_args)
+            case 'export':
+                self.arg_executor = ExportArgExecutor(parsed_args, self, raw_args)
             case _:
                 return
 
@@ -173,6 +177,9 @@ class AppSession:
             setattr(entry, key, value)
 
         self.directory_manager.update_car_directory(parent_car)
+
+    def export_item_to_file(self, item, path):
+        self.directory_manager.data_manager.save_file(item, path)
 
     def get_car_by_name(self, car_name: str) -> Car:
         """Find car by name. If it's not found, attempt loading the car from save directory and check again."""

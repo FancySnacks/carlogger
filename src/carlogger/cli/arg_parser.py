@@ -59,3 +59,9 @@ class ArgParser:
 
         if 'update' in argv:
             return 'update'
+
+        if 'import' in argv:
+            return 'import'
+
+        if 'export' in argv:
+            return 'export'
