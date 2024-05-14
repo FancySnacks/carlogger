@@ -228,13 +228,16 @@ class CarComponent:
         return d
 
     def _clamp_current_part(self):
-        if self.current_part is not None:
+        if self.current_part:
             return self.current_part.to_json()
         else:
             return ''
 
     def get_target_path(self, extension: str) -> str:
         """Extension without the dot"""
+        if '.' in self.path.suffix:
+            return self.path
+
         return self.path.joinpath(f"{self.name.replace(' ', '_')}.{extension}")
 
     def get_formatted_info(self) -> str:
@@ -251,7 +254,7 @@ class CarComponent:
         return result
 
     def _add_search_tags_from_entry(self, entry: LogEntry):
-        self._search_tags = []
+        self.search_tags = set()
         string_tags = entry.desc, *entry.tags, entry.component.name, entry.category, entry.date
 
         for tag in string_tags:

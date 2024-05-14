@@ -60,23 +60,25 @@ class ComponentCollection:
 
     def create_component(self, name: str) -> CarComponent:
         """Create new car component, add it to the list and return object reference."""
-        self._check_for_component_duplicates(name)
-        new_component = CarComponent(name, path=self.path.parent.joinpath('components'))
-        self.components.append(new_component)
+        if not self._check_for_component_duplicates(name):
+            new_component = CarComponent(name, path=self.path.parent.joinpath('components'))
+            self.components.append(new_component)
 
-        Printer.print_msg(new_component,
-                          'ADD_SUCCESS', name=new_component.name, relation=f"{self.car.car_info.name}->{self.name}")
+            Printer.print_msg(new_component,
+                              'ADD_SUCCESS', name=new_component.name, relation=f"{self.car.car_info.name}->{self.name}")
 
-        return new_component
+            return new_component
 
     def delete_component(self, name: str):
         component_to_remove = self.get_component_by_name(name)
 
         if component_to_remove:
             self.components.remove(component_to_remove)
-            Printer.print_msg(component_to_remove, 'DEL_SUCCESS', name=component_to_remove.name, relation=self)
+            Printer.print_msg(component_to_remove, 'DEL_SUCCESS', name=component_to_remove.name,
+                              relation=f"{self.car.car_info.name}->{self.name}")
         else:
-            Printer.print_msg(component_to_remove, 'DEL_FAIL', name=component_to_remove.name, relation=self)
+            Printer.print_msg(component_to_remove, 'DEL_FAIL', name=component_to_remove.name,
+                              relation=f"{self.car.car_info.name}->{self.name}")
 
     def delete_collection(self, name: str):
         collection_to_remove = self.get_collection_by_name(name)
@@ -86,11 +88,17 @@ class ComponentCollection:
 
     def _check_for_nested_collection_duplicates(self, name: str):
         if name in [ch.name for ch in self.components]:
-            Printer.print_msg(self, 'ADD_FAIL', name=name, relation=self)
+            Printer.print_msg(self, 'ADD_FAIL', name=name,
+                              relation=f"{self.car.car_info.name}->{self.name}")
 
-    def _check_for_component_duplicates(self, name: str):
+    def _check_for_component_duplicates(self, name: str) -> bool:
         if name in [ch.name for ch in self.components]:
-            Printer.print_msg(self, 'ADD_FAIL', name=name, relation=self)
+            Printer.print_msg(self, 'ADD_FAIL', name=name,
+                              relation=f"{self.car.car_info.name}->{self.name}",
+                              reason="as component of the same name already exists")
+            return True
+
+        return False
 
     def get_component_by_name(self, name: str) -> CarComponent:
         """Find and return car component of this collection by name."""
@@ -98,7 +106,7 @@ class ComponentCollection:
             if comp.name == name:
                 return comp
 
-        Printer.print_msg(comp, 'READ_FAIL', name=name, relation=self)
+        Printer.print_msg(comp, 'READ_FAIL', name=name, relation=f"{self.car.car_info.name}->{self.name}")
 
     def get_collection_by_name(self, name: str) -> ComponentCollection:
         """Find and return nested component collection by name."""
@@ -106,7 +114,7 @@ class ComponentCollection:
             if child.name == name:
                 return child
 
-        Printer.print_msg(child, 'READ_FAIL', name=name, relation=self)
+        Printer.print_msg(child, 'READ_FAIL', name=name, relation=f"{self.car.car_info.name}->{self.name}")
     
     def to_json(self) -> dict:
         d = {'name': self.name,
@@ -126,8 +134,21 @@ class ComponentCollection:
         return {'name': obj.name, 'path': str(obj.get_target_path(extension))}
 
     def _create_child_collection_reference(self, obj: ComponentCollection, extension: str) -> dict:
-        return {'name': obj.name,
-                'path': str(obj.get_target_path(extension))}
+        info = self._clamp_vague_info(obj, extension)
+
+        return {'name': info[0],
+                'path': info[1]}
+
+    def _clamp_vague_info(self, obj: ComponentCollection | dict, extension: str):
+        match obj.__class__.__name__:
+            case 'ComponentCollection':
+                name = obj.name
+                path = str(obj.get_target_path(extension))
+            case _:
+                name = obj.get('name')
+                path = obj.get('path')
+
+        return name, path
 
     def get_target_path(self, extension: str) -> str:
         """Extension without the dot"""

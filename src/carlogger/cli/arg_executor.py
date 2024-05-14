@@ -522,4 +522,42 @@ class ExportArgExecutor(ArgExecutor):
             case 'component': return 'component'
 
 
+class ImportArgExecutor(ArgExecutor):
+    """Handles 'import' subparser for importing item into a file."""
+    def __init__(self, parsed_args: dict, app_session: AppSession, raw_args: list[str]):
+        self.parsed_args = parsed_args
+        self.app_session = app_session
+        self.raw_args = raw_args[1::]
 
+        self.arg_func_map = {'car': self.import_car,
+                             'collection': self.import_collection,
+                             'component': self.import_component}
+
+    def evaluate_args(self):
+        """Execute mapped functions based on passed args."""
+        context = self._recognize_context()
+        self.arg_func_map.get(context)()
+
+    def import_car(self):
+        load_path = self.parsed_args['path']
+        self.app_session.import_item_from_file('car', load_path)
+
+    def import_collection(self):
+        load_path = self.parsed_args['path']
+        car_name = self.parsed_args['car']
+
+        self.app_session.import_item_from_file('collection', load_path, car=car_name)
+
+    def import_component(self):
+        load_path = self.parsed_args['path']
+        coll_name = self.parsed_args['collection']
+        car_name = self.parsed_args['car']
+
+        self.app_session.import_item_from_file('component', load_path, car=car_name, collection=coll_name)
+
+    def _recognize_context(self) -> str:
+        """Which item to import; car, collection or component?"""
+        match self.raw_args[1]:
+            case 'car': return 'car'
+            case 'collection': return 'collection'
+            case 'component': return 'component'

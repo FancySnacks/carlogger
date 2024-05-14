@@ -181,6 +181,48 @@ class AppSession:
     def export_item_to_file(self, item, path):
         self.directory_manager.data_manager.save_file(item, path)
 
+    def import_item_from_file(self, item_class_name: str, path, **parents):
+        match item_class_name:
+            case 'car':
+                data = self.directory_manager.data_manager.load_file(path)
+                self.add_new_car(data)
+            case 'collection':
+                car_name = parents.get('car')
+                car = self.get_car_by_name(car_name)
+                data = self.directory_manager.data_manager.load_file(path)
+                self._collection_from_file(data, car)
+                self.directory_manager.update_car_directory(car)
+            case 'component':
+                data = self.directory_manager.data_manager.load_file(path)
+                car_name = parents.get('car')
+                collection_name = parents.get('collection')
+
+                car = self.get_car_by_name(car_name)
+                collection = car.get_collection_by_name(collection_name)
+                new_comp = collection.create_component(data['name'])
+
+                if not new_comp:
+                    return
+
+                for entry in data['log_entries']:
+                    new_entry = new_comp.create_entry(entry)
+
+                self.directory_manager.update_car_directory(car)
+
+    def _collection_from_file(self, data: dict, car: Car):
+        car.create_collection(data['name'])
+        self.directory_manager.update_car_directory(car)
+        collection = car.get_collection_by_name(data['name'])
+
+        for k in data.keys():
+            setattr(collection, k, data.get(k))
+
+        comps = []
+        for comp in data['components']:
+            new_comp = CarComponent(**comp)
+            comps.append(new_comp)
+        setattr(collection, 'components', comps)
+
     def get_car_by_name(self, car_name: str) -> Car:
         """Find car by name. If it's not found, attempt loading the car from save directory and check again."""
         try:
