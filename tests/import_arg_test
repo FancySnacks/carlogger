@@ -1,0 +1,7 @@
+carlogger import car "./exported_car.json"
+carlogger import collection --car "CarTestPytest" "./engine.json"
+carlogger delete component --name "Spark_Plug" --collection "Engine" --car "CarTestPytest"
+carlogger import component --collection "Engine" --car "CarTestPytest" "./spark_plug.json"
+rm ./exported_car.json
+rm ./engine.json
+rm ./spark_plug.json
