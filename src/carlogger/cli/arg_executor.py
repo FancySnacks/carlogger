@@ -500,6 +500,10 @@ class ExportArgExecutor(ArgExecutor):
         car = self.app_session.get_car_by_name(car_name)
         collection = car.get_collection_by_name(coll_name)
 
+        if self.parsed_args.get('nochildren'):
+            collection.collections = []
+            collection.components = []
+
         self.app_session.export_item_to_file(collection, save_path)
 
     def export_component(self):
@@ -511,6 +515,11 @@ class ExportArgExecutor(ArgExecutor):
         car = self.app_session.get_car_by_name(car_name)
         collection = car.get_collection_by_name(coll_name)
         component = collection.get_component_by_name(comp_name)
+
+        if self.parsed_args.get('nochildren'):
+            component.log_entries = []
+            component.part_list = []
+            component.scheduled_log_entries = []
 
         self.app_session.export_item_to_file(component, save_path)
 

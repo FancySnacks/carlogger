@@ -650,6 +650,12 @@ class ImportSubparser(Subparser):
                                      "Valid formats: [.json, .txt, .csv]",
                                 type=str)
 
+    def add_nochild_arg(self):
+        for sp_name, sp_obj in list(self.import_parsers.choices.items())[1:]:
+            sp_obj.add_argument('--nochildren',
+                                help="Import item without child elements.",
+                                action='store_true')
+
     def create_subparser(self):
         self.import_parser = self.parser_parent.subparsers.add_parser('import',
                                                                       help="Import file and save as new item.",
@@ -685,6 +691,7 @@ class ImportSubparser(Subparser):
                                                   required=True)
 
         self.add_path_arg()
+        self.add_nochild_arg()
         
 
 class ExportSubparser(Subparser):
@@ -698,6 +705,12 @@ class ExportSubparser(Subparser):
                                 help="System path leading to file that you want to export. "
                                      "Valid formats: [.json, .txt, .csv]",
                                 type=str)
+
+    def add_nochild_arg(self):
+        for sp_name, sp_obj in list(self.export_parsers.choices.items())[1:]:
+            sp_obj.add_argument('--nochildren',
+                                help="Import item without child elements.",
+                                action='store_true')
 
     def create_subparser(self):
         self.export_parser = self.parser_parent.subparsers.add_parser('export',
@@ -749,3 +762,4 @@ class ExportSubparser(Subparser):
                                                   required=True)
 
         self.add_path_arg()
+        self.add_nochild_arg()
