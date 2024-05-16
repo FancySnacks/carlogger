@@ -554,15 +554,18 @@ class ImportArgExecutor(ArgExecutor):
     def import_collection(self):
         load_path = self.parsed_args['path']
         car_name = self.parsed_args['car']
+        no_children = self.parsed_args.get('nochildren', False)
 
-        self.app_session.import_item_from_file('collection', load_path, car=car_name)
+        self.app_session.import_item_from_file('collection', load_path, car=car_name, no_children=bool(no_children))
 
     def import_component(self):
         load_path = self.parsed_args['path']
         coll_name = self.parsed_args['collection']
         car_name = self.parsed_args['car']
+        no_children = self.parsed_args.get('nochildren', False)
 
-        self.app_session.import_item_from_file('component', load_path, car=car_name, collection=coll_name)
+        self.app_session.import_item_from_file('component', load_path, car=car_name,
+                                               collection=coll_name, no_children=bool(no_children))
 
     def _recognize_context(self) -> str:
         """Which item to import; car, collection or component?"""

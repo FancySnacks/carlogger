@@ -131,7 +131,9 @@ class ComponentCollection:
             return ""
 
     def _create_child_reference(self, obj: CarComponent | ComponentCollection, extension: str) -> dict:
-        return {'name': obj.name, 'path': str(obj.get_target_path(extension))}
+        info = self._clamp_vague_info(obj, extension)
+        return {'name': info[0],
+                'path': info[1]}
 
     def _create_child_collection_reference(self, obj: ComponentCollection, extension: str) -> dict:
         info = self._clamp_vague_info(obj, extension)
@@ -142,6 +144,9 @@ class ComponentCollection:
     def _clamp_vague_info(self, obj: ComponentCollection | dict, extension: str):
         match obj.__class__.__name__:
             case 'ComponentCollection':
+                name = obj.name
+                path = str(obj.get_target_path(extension))
+            case 'CarComponent':
                 name = obj.name
                 path = str(obj.get_target_path(extension))
             case _:

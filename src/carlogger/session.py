@@ -181,7 +181,7 @@ class AppSession:
     def export_item_to_file(self, item, path):
         self.directory_manager.data_manager.save_file(item, path)
 
-    def import_item_from_file(self, item_class_name: str, path, **parents):
+    def import_item_from_file(self, item_class_name: str, path, no_children=False, **parents):
         match item_class_name:
             case 'car':
                 data = self.directory_manager.data_manager.load_file(path)
@@ -190,7 +190,7 @@ class AppSession:
                 car_name = parents.get('car')
                 car = self.get_car_by_name(car_name)
                 data = self.directory_manager.data_manager.load_file(path)
-                self._collection_from_file(data, car)
+                self._collection_from_file(data, car, no_children=no_children)
                 self.directory_manager.update_car_directory(car)
             case 'component':
                 data = self.directory_manager.data_manager.load_file(path)
@@ -204,12 +204,16 @@ class AppSession:
                 if not new_comp:
                     return
 
-                for entry in data['log_entries']:
-                    new_entry = new_comp.create_entry(entry)
+                if not no_children:
+                    for entry in data['log_entries']:
+                        new_comp.create_entry(entry)
+
+                    for entry in data['scheduled_log_entries']:
+                        new_comp.create_scheduled_entry(entry)
 
                 self.directory_manager.update_car_directory(car)
 
-    def _collection_from_file(self, data: dict, car: Car):
+    def _collection_from_file(self, data: dict, car: Car, no_children=False):
         car.create_collection(data['name'])
         self.directory_manager.update_car_directory(car)
         collection = car.get_collection_by_name(data['name'])
@@ -217,11 +221,15 @@ class AppSession:
         for k in data.keys():
             setattr(collection, k, data.get(k))
 
-        comps = []
-        for comp in data['components']:
-            new_comp = CarComponent(**comp)
-            comps.append(new_comp)
-        setattr(collection, 'components', comps)
+        if not no_children:
+            comps = []
+            for comp in data['components']:
+                new_comp = CarComponent(**comp)
+                comps.append(new_comp)
+            setattr(collection, 'components', comps)
+        else:
+            setattr(collection, 'collections', [])
+            setattr(collection, 'components', [])
 
     def get_car_by_name(self, car_name: str) -> Car:
         """Find car by name. If it's not found, attempt loading the car from save directory and check again."""
