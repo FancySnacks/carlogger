@@ -1,13 +1,14 @@
 """General utility functions"""
 import datetime
 import os
+import pathlib
 import time
 import re
 import uuid
 
 from pathlib import Path
 
-from carlogger.const import CARS_PATH, TODAY
+from carlogger.const import CARS_PATH, TODAY, ITEM_FILE_EXTENSIONS, InvalidFileExtension, INVALID_FILE_EXTENSION_MESSAGE
 
 
 def sort_key_is_attrib(key: str, item) -> bool:
@@ -39,6 +40,20 @@ def get_car_dirs(cars_save_path=CARS_PATH) -> list[str]:
     car_dirs = filter(lambda x: os.path.isdir(cars_save_path.joinpath(x)),
                       os.listdir(cars_save_path))
     return list(car_dirs)
+
+
+def is_valid_file_extension(path: pathlib.Path | str) -> bool:
+    clamped_path = pathlib.Path(path)
+    extension = clamped_path.suffix
+    return extension in ITEM_FILE_EXTENSIONS
+
+
+def check_file_extension_validity(path: pathlib.Path | str):
+    clamped_path = pathlib.Path(path)
+    extension = clamped_path.suffix
+
+    if extension not in ITEM_FILE_EXTENSIONS:
+        raise InvalidFileExtension(INVALID_FILE_EXTENSION_MESSAGE.format(extension, ITEM_FILE_EXTENSIONS), extension)
 
 
 # ===== DATE ===== #

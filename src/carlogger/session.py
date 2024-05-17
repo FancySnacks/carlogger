@@ -1,4 +1,5 @@
 """Class that combines everything together, the heart of the program"""
+import pathlib
 
 from carlogger.directory_manager import DirectoryManager
 from carlogger.items.car import Car
@@ -7,6 +8,7 @@ from carlogger.cli.arg_executor import ArgExecutor, AddArgExecutor, ReadArgExecu
     UpdateArgExecutor, ExportArgExecutor, ImportArgExecutor
 from carlogger.items.component_collection import ComponentCollection
 from carlogger.items.car_component import CarComponent
+from carlogger.util import check_file_extension_validity
 
 
 class AppSession:
@@ -179,9 +181,12 @@ class AppSession:
         self.directory_manager.update_car_directory(parent_car)
 
     def export_item_to_file(self, item, path):
+        check_file_extension_validity(path)
         self.directory_manager.data_manager.save_file(item, path)
 
     def import_item_from_file(self, item_class_name: str, path, no_children=False, **parents):
+        check_file_extension_validity(path)
+
         match item_class_name:
             case 'car':
                 data = self.directory_manager.data_manager.load_file(path)
