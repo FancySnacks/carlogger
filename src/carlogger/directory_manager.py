@@ -5,7 +5,7 @@ import pathlib
 import shutil
 
 from carlogger.items.car import Car
-from carlogger.filedata_manager import FiledataManager
+from carlogger.filedata_manager import FiledataManager, JSONFiledataManager, TxtFiledataManager
 from carlogger.items.component_collection import ComponentCollection
 from carlogger.items.car_component import CarComponent
 from carlogger.items.car_info import CarInfo
@@ -170,7 +170,15 @@ class DirectoryManager:
         for entry in comp_data.get('scheduled_log_entries'):
             component_ref.create_scheduled_entry_from_file(entry)
 
-
     def _create_car_info_path(self, dir_path):
         a = dir_path.joinpath(f"{dir_path.name}.{self.data_manager.suffix}")
         return a
+
+    def match_extension_to_filedata_manager(self, path: str | pathlib.Path) -> FiledataManager:
+        extension = pathlib.Path(path).suffix
+
+        match extension:
+            case '.txt':
+                return TxtFiledataManager()
+            case '.json':
+                return JSONFiledataManager()

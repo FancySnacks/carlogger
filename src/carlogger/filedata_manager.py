@@ -60,3 +60,27 @@ class JSONFiledataManager(FiledataManager):
     def delete_file(self, obj: JSONSerializableObject):
         """Remove target savefile from the system."""
         os.remove(obj.get_target_path(self.suffix))
+
+
+class TxtFiledataManager(FiledataManager):
+    suffix = "txt"
+
+    def load_file(self, filepath) -> list[str]:
+        """Load data from target txt file."""
+        with open(filepath, "r") as file:
+            return file.readlines()
+
+    def save_file(self, obj, filepath=None):
+        """Save item to target path as a txt file."""
+        data_to_save: dict = obj.to_json()
+
+        if filepath is None:
+            filepath = obj.get_target_path(self.suffix)
+
+        with open(filepath, "w+") as file:
+            file.write(str(data_to_save))
+
+    def delete_file(self, obj):
+        """Remove target savefile from the system."""
+        os.remove(obj.get_target_path(self.suffix))
+
