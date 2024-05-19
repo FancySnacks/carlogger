@@ -1,6 +1,9 @@
+import os
+import pathlib
 from carlogger.cli.arg_parser import ArgParser
 from carlogger.session import AppSession
-from carlogger.cli.arg_executor import AddArgExecutor, DeleteArgExecutor, UpdateArgExecutor, ReadArgExecutor
+from carlogger.cli.arg_executor import AddArgExecutor, DeleteArgExecutor, \
+    UpdateArgExecutor, ExportArgExecutor, ImportArgExecutor
 
 
 # ===== ADD ===== #
@@ -80,6 +83,54 @@ def test_arg_executor_creates_new_entry(directory_manager, add_cmd):
     component = collection.get_component_by_name(comp_name)
 
     assert len(component.log_entries) > 0
+
+
+# ===== Export ===== #
+
+
+def test_arg_executor_exports_car(directory_manager, export_cmd):
+    args = export_cmd['car']
+
+    session = AppSession(directory_manager)
+    parser = ArgParser()
+    parser.setup_args()
+
+    parsed_args = parser.parse_args(args[1::])
+
+    arg_executor = ExportArgExecutor(parsed_args, session, args)
+    arg_executor.export_car()
+
+    assert 'exported_car.json' in os.listdir(pathlib.Path(os.curdir))
+
+
+def test_arg_executor_exports_collection(directory_manager, export_cmd):
+    args = export_cmd['collection']
+
+    session = AppSession(directory_manager)
+    parser = ArgParser()
+    parser.setup_args()
+
+    parsed_args = parser.parse_args(args[1::])
+
+    arg_executor = ExportArgExecutor(parsed_args, session, args)
+    arg_executor.export_collection()
+
+    assert 'engine.json' in os.listdir(pathlib.Path(os.curdir))
+
+
+def test_arg_executor_exports_collection(directory_manager, export_cmd):
+    args = export_cmd['component']
+
+    session = AppSession(directory_manager)
+    parser = ArgParser()
+    parser.setup_args()
+
+    parsed_args = parser.parse_args(args[1::])
+
+    arg_executor = ExportArgExecutor(parsed_args, session, args)
+    arg_executor.export_component()
+
+    assert 'spark_plug.json' in os.listdir(pathlib.Path(os.curdir))
 
 
 # ===== UPDATE ===== #
@@ -242,3 +293,51 @@ def test_arg_executor_deletes_car(directory_manager, delete_cmd):
     arg_executor.delete_car()
 
     assert len(session.cars) == 0
+
+
+# ===== Import ===== #
+
+
+def test_arg_executor_imports_car(directory_manager, import_cmd):
+    args = import_cmd['car']
+
+    session = AppSession(directory_manager)
+    parser = ArgParser()
+    parser.setup_args()
+
+    parsed_args = parser.parse_args(args[1::])
+
+    arg_executor = ImportArgExecutor(parsed_args, session, args)
+    arg_executor.import_car()
+
+    assert len(session.cars) > 0
+
+
+def test_arg_executor_imports_collection(directory_manager, import_cmd):
+    args = import_cmd['collection']
+
+    session = AppSession(directory_manager)
+    parser = ArgParser()
+    parser.setup_args()
+
+    parsed_args = parser.parse_args(args[1::])
+
+    arg_executor = ImportArgExecutor(parsed_args, session, args)
+    arg_executor.import_collection()
+
+    assert len(session.selected_car.collections) > 0
+
+
+def test_arg_executor_imports_component(directory_manager, import_cmd):
+    args = import_cmd['component']
+
+    session = AppSession(directory_manager)
+    parser = ArgParser()
+    parser.setup_args()
+
+    parsed_args = parser.parse_args(args[1::])
+
+    arg_executor = ImportArgExecutor(parsed_args, session, args)
+    arg_executor.import_component()
+
+    assert len(session.selected_car.get_collection_by_name('Engine').components) > 0

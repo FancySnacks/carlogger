@@ -32,6 +32,20 @@ with open(pathlib.Path.cwd().joinpath("tests/update_arg_test"), "r") as f:
 
 UPDATE_ARGS = {k: v for k, v in args}
 
+with open(pathlib.Path.cwd().joinpath("tests/export_arg_test"), "r") as f:
+    commands = [c.replace("\n", "").replace('"', "").split() for c in f.readlines()]
+    keys = ['car', 'collection', 'component']
+    args = list(zip(keys, commands[1:-1:]))
+
+EXPORT_ARGS = {k: v for k, v in args}
+
+with open(pathlib.Path.cwd().joinpath("tests/import_arg_test"), "r") as f:
+    commands = [c.replace("\n", "").replace('"', "").split() for c in f.readlines()]
+    keys = ['car', 'collection', 'cmp', 'component']
+    args = list(zip(keys, commands[:-3:]))
+
+IMPORT_ARGS = {k: v for k, v in args}
+
 
 @pytest.fixture
 def add_cmd() -> dict:
@@ -42,9 +56,20 @@ def add_cmd() -> dict:
 def delete_cmd() -> dict:
     return DEL_ARGS
 
+
 @pytest.fixture
 def update_cmd() -> dict:
     return UPDATE_ARGS
+
+
+@pytest.fixture
+def export_cmd() -> dict:
+    return EXPORT_ARGS
+
+
+@pytest.fixture
+def import_cmd() -> dict:
+    return IMPORT_ARGS
 
 
 @pytest.fixture(scope="session")
