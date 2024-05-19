@@ -1,5 +1,7 @@
+import pytest
 import os
 import pathlib
+
 from carlogger.cli.arg_parser import ArgParser
 from carlogger.session import AppSession
 from carlogger.cli.arg_executor import AddArgExecutor, DeleteArgExecutor, \
@@ -118,7 +120,7 @@ def test_arg_executor_exports_collection(directory_manager, export_cmd):
     assert 'engine.json' in os.listdir(pathlib.Path(os.curdir))
 
 
-def test_arg_executor_exports_collection(directory_manager, export_cmd):
+def test_arg_executor_exports_component(directory_manager, export_cmd):
     args = export_cmd['component']
 
     session = AppSession(directory_manager)

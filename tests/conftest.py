@@ -17,6 +17,9 @@ with open(pathlib.Path.cwd().joinpath("tests/add_arg_test"), "r") as f:
     args = list(zip(keys, commands))
 
 ADD_ARGS = {k: v for k, v in args}
+ADD_ARGS['entry'] = ['carlogger', 'add', 'entry', '--car', 'CarTestPytest', '--collection', 'Engine',
+                     '--component', 'Spark_Plug', '--desc', 'Replaced all spark plugs.',
+                     '--mileage', '198000', '--category', 'swap', '--custom', 'part=Bosch Double Iridium']
 
 with open(pathlib.Path.cwd().joinpath("tests/delete_arg_test"), "r") as f:
     commands = [c.replace("\n", "").replace('"', "").split() for c in f.readlines()]
