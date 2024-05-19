@@ -11,4 +11,6 @@ then
   exit 1
 fi
 
+source "$(pwd)/dev/teardown_tests.sh"
+
 echo "===== pre-commit: Success! Committing... ====="
