@@ -28,6 +28,13 @@ with open(pathlib.Path.cwd().joinpath("tests/delete_arg_test"), "r") as f:
 
 DEL_ARGS = {k: v for k, v in args}
 
+with open(pathlib.Path.cwd().joinpath("tests/read_arg_test"), "r") as f:
+    commands = [c.replace("\n", "").replace('"', "").split() for c in f.readlines()]
+    keys = ['car', 'collection', 'nested_coll', 'component', 'coll_all', 'comp_all', 'entry']
+    args = list(zip(keys, commands))
+
+READ_ARGS = {k: v for k, v in args}
+
 with open(pathlib.Path.cwd().joinpath("tests/update_arg_test"), "r") as f:
     commands = [c.replace("\n", "").replace('"', "").split() for c in f.readlines()]
     keys = ['component', 'collection', 'car']
@@ -58,6 +65,11 @@ def add_cmd() -> dict:
 @pytest.fixture
 def delete_cmd() -> dict:
     return DEL_ARGS
+
+
+@pytest.fixture
+def read_cmd() -> dict:
+    return READ_ARGS
 
 
 @pytest.fixture

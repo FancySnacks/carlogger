@@ -4,8 +4,9 @@ import pathlib
 
 from carlogger.cli.arg_parser import ArgParser
 from carlogger.session import AppSession
-from carlogger.cli.arg_executor import AddArgExecutor, DeleteArgExecutor, \
+from carlogger.cli.arg_executor import AddArgExecutor, ReadArgExecutor, DeleteArgExecutor, \
     UpdateArgExecutor, ExportArgExecutor, ImportArgExecutor
+from carlogger.const import TODAY
 
 
 # ===== ADD ===== #
@@ -85,6 +86,47 @@ def test_arg_executor_creates_new_entry(directory_manager, add_cmd):
     component = collection.get_component_by_name(comp_name)
 
     assert len(component.log_entries) > 0
+
+
+# ===== Read ===== #
+
+def test_arg_executor_outputs_car(capsys, directory_manager, read_cmd):
+    expected_out = """\n=== CarTestPytest ===\nmanufacturer: Skoda \nmodel: Roomster \nyear: 2002 \nmileage: 198000 \nbody: Hatchback \nlength: 4200 \nweight: 1800 \nname: CarTestPytest \ncustom_info: [] \n\n[COLLECTION]
+ Engine (1 Components | 0 Nested Collections)\n\n"""
+
+    args = read_cmd['car']
+
+    session = AppSession(directory_manager)
+    parser = ArgParser()
+    parser.setup_args()
+
+    parsed_args = parser.parse_args(args[1::])
+
+    arg_executor = ReadArgExecutor(parsed_args, session, args)
+    arg_executor.get_car()
+
+    stdout, stderr = capsys.readouterr()
+
+    assert stdout.replace('\n', '').strip() == expected_out.replace('\n', '').strip()
+
+
+def test_arg_executor_outputs_collection(capsys, directory_manager, read_cmd):
+    expected_out = "Engine (1): Spark_Plug"
+
+    args = read_cmd['collection']
+
+    session = AppSession(directory_manager)
+    parser = ArgParser()
+    parser.setup_args()
+
+    parsed_args = parser.parse_args(args[1::])
+
+    arg_executor = ReadArgExecutor(parsed_args, session, args)
+    arg_executor.get_collection()
+
+    stdout, stderr = capsys.readouterr()
+
+    assert stdout.replace('\n', '').strip() == expected_out.replace('\n', '').strip()
 
 
 # ===== Export ===== #
