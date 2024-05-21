@@ -6,7 +6,7 @@
 
 # Misc Project Files
 info.md
-gui_todo.md
+todo_gui.md
 .pushkey*
 
 *.pytest_cache
@@ -175,3 +175,5 @@ cython_debug/
 .idea/
 !/gui_todo.md
 !/gui_todo.md
+!/todo_gui.md
+/todo_gui.md
