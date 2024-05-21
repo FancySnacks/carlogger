@@ -24,6 +24,11 @@ class AppSession:
     def create_gui(self, gui: RootWindow):
         self.gui = gui
         self.gui.session = self
+        self.cars = self.directory_manager.load_all_car_dir()
+
+        for car in self.cars:
+            self.gui.car_list.add_car(car)
+
         self.gui.start_mainloop()
 
     def execute_console_args(self, subparser_type: str, parsed_args: dict, raw_args: list[str]):

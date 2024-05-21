@@ -6,6 +6,7 @@
 
 # Misc Project Files
 info.md
+gui_todo.md
 .pushkey*
 
 *.pytest_cache
@@ -172,3 +173,5 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea
 .idea/
+!/gui_todo.md
+!/gui_todo.md
