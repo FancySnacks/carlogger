@@ -1,5 +1,4 @@
 """Class that combines everything together, the heart of the program"""
-import pathlib
 
 from carlogger.directory_manager import DirectoryManager
 from carlogger.items.car import Car
