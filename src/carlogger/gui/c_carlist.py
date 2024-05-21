@@ -1,7 +1,6 @@
 class CarList:
     def __init__(self, widget):
         self.widget = widget
-        self.widget.grid(row=0, column=0, sticky="nsew")
         self.cars: list = []
 
     def add_car(self, car):
