@@ -2,6 +2,7 @@
 
 import sys
 
+from carlogger.gui.root_window import RootWindow
 from carlogger.session import AppSession
 from carlogger.cli.arg_parser import ArgParser
 from carlogger.directory_manager import DirectoryManager
@@ -21,6 +22,9 @@ def main(argv: list[str] = None) -> int:
     app = AppSession(directory_manager)
 
     app.execute_console_args(parser.get_subparser_type(raw_args), parsed_args, raw_args)
+
+    if parsed_args.get('gui'):
+        app.create_gui(RootWindow())
 
     if parsed_args.get('printargs'):
         print(parsed_args)

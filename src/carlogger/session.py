@@ -1,5 +1,6 @@
 """Class that combines everything together, the heart of the program"""
 
+from carlogger.gui.root_window import RootWindow
 from carlogger.directory_manager import DirectoryManager
 from carlogger.items.car import Car
 from carlogger.items.car_info import CarInfo
@@ -15,9 +16,15 @@ class AppSession:
     def __init__(self, directory_manager: DirectoryManager):
         self.directory_manager = directory_manager
         self.arg_executor: ArgExecutor = ...
+        self.gui = None
 
         self.cars: list[Car] = []
         self.selected_car: Car = ...
+
+    def create_gui(self, gui: RootWindow):
+        self.gui = gui
+        self.gui.session = self
+        self.gui.start_mainloop()
 
     def execute_console_args(self, subparser_type: str, parsed_args: dict, raw_args: list[str]):
         """Create ArgExecutor object based on subparser in use and execute console arguments."""
