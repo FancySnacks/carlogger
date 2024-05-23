@@ -61,6 +61,7 @@ class EntryFilter:
                             "date_younger": (self.filter_by_younger_date, 'date'),
                             "mileage_gt": (self.filter_by_gt_mileage, 'mileage'),
                             "mileage_lt": (self.filter_by_lt_mileage, 'mileage'),
+                            "mileage_range": (self.filter_by_mileage_range, 'mileage'),
                             }
 
     def apply_filters_to_entry_list(self, args: list[str], entry_list: list[LogEntry]) -> list[LogEntry]:
@@ -135,6 +136,10 @@ class EntryFilter:
             """Show entries made at lesser mileage than specified."""
             return FilterWorker(arg, *self.filter_dict['mileage_lt'])
 
+        if re.fullmatch(r'^\d+-\d+$', arg):
+            """Show entries within mileage range."""
+            return FilterWorker(arg, *self.filter_dict['mileage_range'])
+
         return FilterWorker(arg, *self.filter_dict['desc'])
     
     def _add_filter(self, filterclass: FilterWorker):
@@ -179,6 +184,12 @@ class EntryFilter:
 
     def filter_by_category(self, entry: LogEntry, filter_key: str) -> bool:
         return entry.category == filter_key
+
+    def filter_by_mileage_range(self, entry: LogEntry, filter_key: str) -> bool:
+        mileage_range = filter_key.split('-')
+        mileage_range = [int(cap) for cap in mileage_range]
+        mileage_range = range(mileage_range[0], mileage_range[1]+1)
+        return entry.mileage in mileage_range
 
     def filter_by_gt_mileage(self, entry: LogEntry, filter_key: str) -> bool:
         return entry.mileage > int(filter_key[1::])

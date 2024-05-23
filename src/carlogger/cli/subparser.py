@@ -117,6 +117,7 @@ class ReadSubparser(Subparser):
                                                  "fluid_add', 'other']\n"
                                                  "'<mileage' - return entries assigned to a lesser mileage\n"
                                                  "'>mileage' - return entries assigned to a greater mileage\n"
+                                                 "'mileage-mileage' - show entries created in this mileage range\n"
                                                  "'DD-MM-YYYY' - show entries made on specific date\n"
                                                  "'<DD-MM-YYYY' - show entries younger than specified date\n"
                                                  "'>DD-MM-YYYY' - show entries older than specified date\n"
