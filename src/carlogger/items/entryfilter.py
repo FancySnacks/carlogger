@@ -7,7 +7,7 @@ from typing import Callable, Optional
 from datetime import datetime
 
 from carlogger.items.log_entry import LogEntry
-from carlogger.util import is_date, format_date_string_to_tuple
+from carlogger.util import is_date, format_date_string_to_tuple, is_date_range, is_date_in_range
 from carlogger.items.entry_category import EntryCategory
 
 
@@ -57,6 +57,7 @@ class EntryFilter:
                             "category": (self.filter_by_category, 'category'),
                             "date": (self.filter_by_date, 'date'),
                             "date_older": (self.filter_by_older_date, 'date'),
+                            "date_range": (self.filter_by_date_range, 'date'),
                             "date_younger": (self.filter_by_younger_date, 'date'),
                             "mileage_gt": (self.filter_by_gt_mileage, 'mileage'),
                             "mileage_lt": (self.filter_by_lt_mileage, 'mileage'),
@@ -112,6 +113,9 @@ class EntryFilter:
         if is_date(arg):
             return FilterWorker(arg, *self.filter_dict['date'])
 
+        if is_date_range(arg):
+            return FilterWorker(arg, *self.filter_dict['date_range'])
+
         if is_date(arg[1::]) and arg[0] == "<":
             """Show entries older than specified date"""
             return FilterWorker(arg, *self.filter_dict['date_older'])
@@ -155,6 +159,9 @@ class EntryFilter:
 
     def filter_by_date(self, entry: LogEntry, filter_key: str) -> bool:
         return entry.date == filter_key
+
+    def filter_by_date_range(self, entry: LogEntry, filter_key: str) -> bool:
+        return is_date_in_range(entry.date, filter_key)
 
     def filter_by_older_date(self, entry: LogEntry, filter_key: str) -> bool:
         d_gt = format_date_string_to_tuple(filter_key[1:])

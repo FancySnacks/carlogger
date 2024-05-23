@@ -108,17 +108,20 @@ class ReadSubparser(Subparser):
                                             type=str,
                                             help="Return entry via name.\n"
                                                  "Accepts multiple string arguments as filters:\n"
-                                                 "By default if no arg is present shows all entries in a given relation\n"
+                                                 "By default if no arg is present shows all entries in "
+                                                 "a given relation\n"
                                                  "'*' - (default) shows all entries\n"
                                                  "'entry id' - return entry of this id, trumps all other filters\n"
                                                  "'category' - returns entries of this category"
-                                                 "['check', 'part swap', 'repair', 'fluid change', 'fluid_add', 'other']\n"
+                                                 "['check', 'part swap', 'repair', 'fluid change', '"
+                                                 "fluid_add', 'other']\n"
                                                  "'<mileage' - return entries assigned to a lesser mileage\n"
                                                  "'>mileage' - return entries assigned to a greater mileage\n"
                                                  "'DD-MM-YYYY' - show entries made on specific date\n"
                                                  "'<DD-MM-YYYY' - show entries younger than specified date\n"
                                                  "'>DD-MM-YYYY' - show entries older than specified date\n"
-                                                 "'DD-MM-YYYY-DD-MM-YYYY' - show entries created in this date range\n"
+                                                 "'DD-MM-YYYY-DD-MM-YYYY' - show entries created in this "
+                                                 "date range (inclusive)\n"
                                                  "'[-]n' - show 'n' amount of entries from youngest to oldest, '-' "
                                                  "before integer will show oldest to youngest instead\n",
                                             nargs='*',

@@ -87,6 +87,21 @@ def is_date(date: str) -> bool:
     return regex is not None
 
 
+def is_date_range(date: str) -> bool:
+    """NOTE: this is a soft check, it only checks whether passed string is a date of 'xx-xx-xxxx' format,
+    it does NOT check for validity of day, month and year numbers!"""
+    regex = re.fullmatch(r'^(0[1-9]|[12]\d|3[01])-(0[1-9]|1[0-2])-(\d{4})-'
+                         r'(0[1-9]|[12]\d|3[01])-(0[1-9]|1[0-2])-(\d{4})$', date)
+    return regex is not None
+
+
+def is_date_in_range(date: str, date_range: str) -> bool:
+    date = date_string_to_date(date)
+    upper = date_string_to_date(date_range[:10:])
+    lower = date_string_to_date(date_range[11::])
+    return lower >= date >= upper
+
+
 def days_between_date_strings(date: str, date2: str) -> int:
     """Takes two date strings formatted as 'xx-xx-xxx' and returns number od days between them"""
     date = date_string_to_date(date)
