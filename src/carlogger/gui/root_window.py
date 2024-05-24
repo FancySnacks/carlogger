@@ -5,6 +5,7 @@ from carlogger.gui.c_carlist import CarList
 from carlogger.gui.w_carframe import CarFrame
 from carlogger.gui.w_navigation import NavigationBar
 from carlogger.gui.w_itemlist import ItemContainer
+from carlogger.gui.c_itemlist import ItemList
 
 
 class RootWindow(CTk):
@@ -36,3 +37,7 @@ class RootWindow(CTk):
 
     def start_mainloop(self):
         self.mainloop()
+
+    def create_items(self, items, parent):
+        self.item_list = ItemList(items, parent, widget=self.item_container)
+        self.item_container.parent = self.item_list

@@ -29,6 +29,7 @@ class AppSession:
         for car in self.cars:
             self.gui.car_list.add_car(car)
 
+        self.gui.create_items(self.cars[0].collections, self.cars[0])
         self.gui.start_mainloop()
 
     def execute_console_args(self, subparser_type: str, parsed_args: dict, raw_args: list[str]):
