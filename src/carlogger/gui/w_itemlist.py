@@ -18,7 +18,6 @@ class ItemContainer(CTkFrame):
         self.item_frame.pack(expand=True, fill='both', padx=10, pady=10)
 
         self.add_sort_button('name')
-        self.add_sort_button('date')
 
     def sort_items(self, sort_key: str, reverse: bool):
         self.parent.update_items(sort_key, reverse)
@@ -48,6 +47,19 @@ class ItemContainer(CTkFrame):
     def is_sort_method_already_used(self, sort_method: str) -> bool:
         items = [button.sort_method for button in self.sort_buttons]
         return sort_method in items
+
+    def update_items(self, items: list):
+        self.clear_items()
+
+        c = 0
+        for item in items:
+            i = CTkLabel(self.item_frame, text=item.name, font=('Lato', 17))
+            i.grid(row=c, column=0)
+            c += 1
+
+    def clear_items(self):
+        for child in self.item_frame.winfo_children():
+            child.destroy()
 
 
 class SortButton(CTkButton):
