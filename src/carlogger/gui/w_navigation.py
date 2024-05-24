@@ -62,14 +62,14 @@ class NavItem(CTkButton):
         super().__init__(master, **kwargs)
         self.id = id
 
-        self.button3 = CTkButton(master=widget_master,
+        self.button = CTkButton(master=widget_master,
                                  text=name,
                                  width=100,
                                  height=30,
                                  font=('Lato', 17),
                                  command=self.go_to_page,
                                  **kwargs)
-        self.button3.grid(row=0, column=column, padx=5, pady=5)
+        self.button.grid(row=0, column=column, padx=5, pady=5)
 
     def go_to_page(self):
         self.master.go_to_previous_page(self)
