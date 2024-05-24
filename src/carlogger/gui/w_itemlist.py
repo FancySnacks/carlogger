@@ -1,4 +1,4 @@
-from customtkinter import CTkFrame, CTkButton, CTkLabel
+from customtkinter import CTkFrame, CTkButton, CTkLabel, StringVar
 
 from carlogger.gui.c_itemlist import ItemList
 
@@ -11,6 +11,8 @@ class ItemContainer(CTkFrame):
         self.sort_buttons: list[SortButton] = []
         self._children_buttons: list = []
 
+        self.active_sort_button: SortButton = None
+
         self.buttons_frame = CTkFrame(master=self, height=35, fg_color="cyan")
         self.buttons_frame.pack(expand=True, fill='both', padx=10, pady=10)
 
@@ -19,7 +21,11 @@ class ItemContainer(CTkFrame):
 
         self.add_sort_button('name')
 
-    def sort_items(self, sort_key: str, reverse: bool):
+    def sort_items(self, sort_key: str, button_ref, reverse: bool):
+        if self.active_sort_button and self.active_sort_button != button_ref:
+            self.active_sort_button.unfocus()
+        self.active_sort_button = button_ref
+
         self.parent.update_items(sort_key, reverse)
         self.master.update_idletasks()
 
@@ -81,7 +87,10 @@ class SortButton(CTkButton):
     def call_sort_method(self):
         self.reverse = not self.reverse
         self.format_button_text()
-        self.parent.sort_items(self.sort_method, reverse=self.reverse)
+        self.parent.sort_items(self.sort_method, self, reverse=self.reverse)
 
     def format_button_text(self):
-        self.text = f"{self.sort_method.upper()}{'v' if self.reverse else '^'}"
+        self.configure(text=f"{self.sort_method.upper()} {'v' if self.reverse else '^'}")
+
+    def unfocus(self):
+        self.configure(text=self.sort_method.upper())
