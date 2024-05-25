@@ -72,26 +72,37 @@ class ItemContainer(CTkFrame):
         self.items = []
         self.scheduled_items = []
 
+        c = 0
         for item in items:
             match item.__class__.__name__:
                 case 'ScheduledLogEntry':
-                    new_item = self.create_item(self.scheduled_item_frame, item, scheduled=True)
+                    new_item = self.create_item(self.scheduled_item_frame, item, row=c, scheduled=True)
                     self.scheduled_items.append(new_item)
                 case _:
-                    new_item = self.create_item(self.item_frame, item)
+                    new_item = self.create_item(self.item_frame, item, row=-1)
                     self.items.append(new_item)
+            c += 1
 
-    def create_item(self, master, item_obj, scheduled=False):
+    def create_item(self, master, item_obj, row=-1, scheduled=False):
+        if row == -1:
+            if scheduled:
+                row = len(self.scheduled_items)
+            else:
+                row = len(self.items)
+
         new_item = Item(master=master,
                         parent=self,
                         item_ref=item_obj,
-                        row=len(self.items),
+                        row=row,
                         scheduled=scheduled)
 
         return new_item
 
     def clear_items(self):
         for child in self.item_frame.winfo_children():
+            child.destroy()
+
+        for child in self.scheduled_item_frame.winfo_children():
             child.destroy()
 
 
