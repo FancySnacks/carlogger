@@ -33,6 +33,12 @@ class Car:
 
         return sorted(entries_joined, key=lambda entry: format_date_string_to_tuple(entry.date))
 
+    def get_all_components(self) -> list[CarComponent]:
+        comps = [coll.components for coll in self.collections]
+        comps_joined = []
+        [comps_joined.extend(complist) for complist in comps]
+        return comps_joined
+
     def create_collection(self, name: str) -> ComponentCollection:
         """Create new collection, add it to the list and return object reference."""
         try:

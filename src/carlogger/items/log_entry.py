@@ -91,6 +91,10 @@ class LogEntryScheduleRule(ABC):
     def get_formatted_info(self) -> str:
         pass
 
+    @abstractmethod
+    def get_schedule_rule(self) -> str:
+        return self.__name__
+
 
 @dataclass
 class DateScheduleRule(LogEntryScheduleRule):
@@ -125,6 +129,9 @@ class DateScheduleRule(LogEntryScheduleRule):
         return f"[{self.parent_log_entry.date}] [{self.time_remaining_to_str()}] " \
                f"{self.parent_log_entry.desc} [Type: {self.parent_log_entry.category}] [{self.parent_log_entry.id}]\n"
 
+    def get_schedule_rule(self) -> str:
+        return 'date'
+
 
 @dataclass
 class MileageScheduleRule(LogEntryScheduleRule):
@@ -156,6 +163,9 @@ class MileageScheduleRule(LogEntryScheduleRule):
                f"{self.parent_log_entry.desc} " \
                f"[Type: {self.parent_log_entry.category}] [{self.parent_log_entry.id}]"
 
+    def get_schedule_rule(self) -> str:
+        return 'mileage'
+
 
 @dataclass(order=True)
 class ScheduledLogEntry(LogEntry):
@@ -183,6 +193,9 @@ class ScheduledLogEntry(LogEntry):
 
         self._schedule_obj = self.create_schedule_rule_obj()
         if not self.from_file: self.repeat()
+
+    def get_schedule_rule(self) -> str:
+        return self._schedule_obj.get_schedule_rule()
 
     def create_schedule_rule_obj(self) -> LogEntryScheduleRule:
         new_obj = None
