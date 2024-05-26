@@ -20,9 +20,8 @@ class CarInfo:
         if self.name == "":
             self.name = self.get_full_name()
 
-    @staticmethod
-    def filter_options() -> list[str]:
-        return ['name', 'manufacturer', 'model', 'year', 'mileage', 'log #', 'latest']
+    def filter_options(self) -> list[str]:
+        return ['name', 'manufacturer', 'model', 'year', 'mileage', 'log #', 'latest'] + list(self.custom_info.keys())
 
     def get_full_name(self) -> str:
         return f"{self.manufacturer} {self.model}"

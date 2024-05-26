@@ -27,7 +27,13 @@ class ItemSorter:
         return method
 
     def sort_by_attrib(self, items: list, attrib_name: str, reverse_order=False) -> list:
-        return sorted(items, key=lambda item: getattr(item, attrib_name), reverse=reverse_order)
+        return sorted(items, key=lambda item: self._attrib_sort(item, attrib_name), reverse=reverse_order)
+
+    def _attrib_sort(self, item, attrib_name: str):
+        try:
+            return getattr(item, attrib_name)
+        except AttributeError:
+            return item.custom_info.get(attrib_name)
 
     def sort_by_latest_entry(self, items: list) -> list:
         if items[0].__class__.__name__ in ('LogEntry', 'ScheduledLogEntry'):
