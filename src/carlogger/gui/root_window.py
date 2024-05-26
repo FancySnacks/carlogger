@@ -32,14 +32,16 @@ class RootWindow(CTk):
 
         self.car_list = CarList(self.car_frame)
 
+        self.item_list = None
+
         self.item_container = ItemContainer(self.main_frame)
         self.item_container.grid(row=2, column=0, sticky="nsew")
 
     def start_mainloop(self):
         self.mainloop()
 
-    def create_items(self, items, parent):
-        self.item_list = ItemList(items, type(items[0]), parent, widget=self.item_container)
-        self.item_container.parent = self.item_list
-        self.item_list.create_sort_buttons()
-        self.item_list.update_items()
+    def create_items(self, items, parent, header):
+        if not self.item_list:
+            self.item_list = ItemList(parent, widget=self.item_container)
+            self.item_container.parent = self.item_list
+        self.item_list.create_items(items, header)

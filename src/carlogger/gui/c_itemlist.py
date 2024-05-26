@@ -1,31 +1,29 @@
 from carlogger.items.item_sorter import ItemSorter
-from carlogger.util import get_all_class_properties
 
 
 class ItemList:
-    def __init__(self, items: list, item_class, parent, widget):
-        self.items = items
-        self.item_class = item_class
+    def __init__(self, parent, widget):
+        self.items = []
         self.parent = parent
         self.widget = widget
-        self.item_sorter = ItemSorter(self.items, '')
 
-    def sort_items(self, sort_method: str, reverse: bool = False) -> list:
-        self.item_sorter.sort_method = sort_method
-        return self.item_sorter.get_sorted_list(reverse)
+    def sort_items(self, items, sort_method: str, reverse: bool = False) -> list:
+        item_sorter = ItemSorter(items, '')
+        item_sorter.sort_method = sort_method
+        return item_sorter.get_sorted_list(reverse)
 
-    def update_items(self, sort_key: str = '*', reverse: bool = False):
+    def create_items(self, items: list, header: str):
+        self.items.append(items)
+        self.widget.create_items(items, header, self._get_sort_methods(items))
+
+    def update_items(self, index: int, sort_key: str = '*', reverse: bool = False):
         if sort_key != "*":
-            self.widget.update_items(self.sort_items(sort_key, reverse))
+            self.widget.update_items(self.sort_items(self.items[index], sort_key, reverse), index)
         else:
-            self.widget.update_items(self.items)
+            self.widget.update_items(self.items[index], index)
 
-    def create_sort_buttons(self):
-        for sort_method in self._get_sort_methods():
-            self.widget.add_sort_button(sort_method)
-
-    def _get_sort_methods(self) -> list[str]:
-        class_attrib: list[str] = self.item_class.filter_options()
+    def _get_sort_methods(self, items) -> list[str]:
+        class_attrib: list[str] = items[0].filter_options()
         return self._move_id_sort_button_to_front(class_attrib)
 
     def _move_id_sort_button_to_front(self, sort_funcs: list[str]) -> list[str]:

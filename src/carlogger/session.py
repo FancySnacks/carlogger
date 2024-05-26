@@ -30,7 +30,8 @@ class AppSession:
             self.gui.car_list.add_car(car)
 
         if self.cars:
-            self.gui.create_items(self.cars[0].get_all_entry_logs(), self.cars[0])
+            self.gui.create_items(self.cars[0].get_all_scheduled_entry_logs(), self.cars[0], 'Scheduled Log Entries')
+            self.gui.create_items(self.cars[0].get_all_entry_logs(), self.cars[0], 'Log Entries')
 
         self.gui.start_mainloop()
 

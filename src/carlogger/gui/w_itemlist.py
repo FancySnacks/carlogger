@@ -8,36 +8,54 @@ class ItemContainer(CTkFrame):
         super().__init__(master, **values)
         self.parent: ItemList = ...
 
+        self.item_list_widgets: list[SortableItemList] = []
+
+    def create_items(self, items: list, header: str, filter_opts: list[str]):
+        new_sortable_item_list = SortableItemList(self, self, header, items, len(self.item_list_widgets))
+        self.item_list_widgets.append(new_sortable_item_list)
+        self.add_sort_buttons(filter_opts, new_sortable_item_list)
+
+    def update_items(self, items: list, index: int):
+        sortable_item_list = self.item_list_widgets[index]
+        sortable_item_list.update_items(items)
+
+    def add_sort_buttons(self, sort_methods: list[str], item_list):
+        for s in sort_methods:
+            item_list.add_sort_button(s)
+
+
+class SortableItemList(CTkFrame):
+    def __init__(self, master, parent: ItemContainer, header: str, items: list, index: int, **values):
+        super().__init__(master, **values)
+        self.parent: ItemContainer = parent
+        self.header = header
+        self.index = index
+
         self.sort_buttons: list[SortButton] = []
         self.active_sort_button: SortButton = None
         self._children_buttons: list = []
 
-        self.items: list[Item] = []
-        self.scheduled_items: list[Item] = []
+        self.items: list[Item] = items
 
         # ===== Widgets ==== #
 
-        self.buttons_frame = CTkFrame(master=self, height=35, fg_color="cyan")
-        self.buttons_frame.pack(expand=True, fill='both', padx=10, pady=10)
-
-        self.scheduled_item_label = CTkLabel(self, text='Scheduled Log Entries', font=('Lato', 20), anchor='w')
-        self.scheduled_item_label.pack(expand=True, fill='x', padx=10, pady=5)
-
-        self.scheduled_item_frame = CTkFrame(master=self, fg_color="skyblue")
-        self.scheduled_item_frame.pack(expand=True, fill='both', padx=10, pady=10)
-
-        self.item_label = CTkLabel(self, text='Log Entries', font=('Lato', 20), anchor='w')
+        self.item_label = CTkLabel(self.parent, text=header, font=('Lato', 20), anchor='w')
         self.item_label.pack(expand=True, fill='x', padx=10, pady=5)
 
-        self.item_frame = CTkFrame(master=self, fg_color="turquoise")
+        self.buttons_frame = CTkFrame(master=self.parent, height=35, fg_color="cyan")
+        self.buttons_frame.pack(expand=True, fill='both', padx=10, pady=10)
+
+        self.item_frame = CTkFrame(master=self.parent, fg_color="skyblue")
         self.item_frame.pack(expand=True, fill='both', padx=10, pady=10)
+
+        self.update_items(self.items)
 
     def sort_items(self, sort_key: str, button_ref, reverse: bool):
         if self.active_sort_button and self.active_sort_button != button_ref:
             self.active_sort_button.unfocus()
         self.active_sort_button = button_ref
 
-        self.parent.update_items(sort_key, reverse)
+        self.parent.parent.update_items(self.index, sort_key, reverse)
         self.master.update_idletasks()
 
     def add_sort_button(self, sort_method: str, **kwargs):
@@ -68,39 +86,26 @@ class ItemContainer(CTkFrame):
     def update_items(self, items: list):
         self.clear_items()
         self.items = []
-        self.scheduled_items = []
 
         c = 0
         for item in items:
-            match item.__class__.__name__:
-                case 'ScheduledLogEntry':
-                    new_item = self.create_item(self.scheduled_item_frame, item, row=c, scheduled=True)
-                    self.scheduled_items.append(new_item)
-                case _:
-                    new_item = self.create_item(self.item_frame, item, row=-1)
-                    self.items.append(new_item)
+            new_item = self.create_item(self.item_frame, item, row=-1)
+            self.items.append(new_item)
             c += 1
 
-    def create_item(self, master, item_obj, row=-1, scheduled=False):
+    def create_item(self, master, item_obj, row=-1):
         if row == -1:
-            if scheduled:
-                row = len(self.scheduled_items)
-            else:
-                row = len(self.items)
+            row = len(self.items)
 
         new_item = Item(master=master,
                         parent=self,
                         item_ref=item_obj,
-                        row=row,
-                        scheduled=scheduled)
+                        row=row)
 
         return new_item
 
     def clear_items(self):
         for child in self.item_frame.winfo_children():
-            child.destroy()
-
-        for child in self.scheduled_item_frame.winfo_children():
             child.destroy()
 
 
@@ -133,7 +138,7 @@ class SortButton(CTkButton):
 
 
 class Item(CTkFrame):
-    def __init__(self, master, parent: ItemContainer, item_ref, row: int = 0, scheduled=False, **kwargs):
+    def __init__(self, master, parent: SortableItemList, item_ref, row: int = 0, scheduled=False, **kwargs):
         super().__init__(master,
                          height=100,
                          fg_color='blue',

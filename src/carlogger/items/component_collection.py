@@ -13,7 +13,7 @@ from dataclasses import dataclass, field
 
 from carlogger.items.car_component import CarComponent
 from carlogger.printer import Printer
-from carlogger.items.log_entry import LogEntry
+from carlogger.items.log_entry import LogEntry, ScheduledLogEntry
 
 
 @dataclass
@@ -56,7 +56,16 @@ class ComponentCollection:
     def get_all_entry_logs(self) -> list[LogEntry]:
         """Returns all log entries from components CarComponent objects from all components collections."""
         components = self.get_all_components()
-        entries = [comp.get_all_entry_logs() for comp in components]
+        entries = [comp.log_entries for comp in components]
+        joined_entries = []
+        [joined_entries.extend(e) for e in entries]
+
+        return joined_entries
+
+    def get_all_scheduled_entry_logs(self) -> list[ScheduledLogEntry]:
+        """Returns all scheduled log entries from components CarComponent objects from all components collections."""
+        components = self.get_all_components()
+        entries = [comp.scheduled_log_entries for comp in components]
         joined_entries = []
         [joined_entries.extend(e) for e in entries]
 

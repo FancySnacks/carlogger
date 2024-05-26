@@ -10,7 +10,7 @@ from carlogger.util import format_date_string_to_tuple, create_car_dir_path
 from carlogger.items.car_info import CarInfo
 from carlogger.items.component_collection import ComponentCollection
 from carlogger.items.car_component import CarComponent
-from carlogger.items.log_entry import LogEntry
+from carlogger.items.log_entry import LogEntry, ScheduledLogEntry
 
 
 @dataclass
@@ -28,6 +28,15 @@ class Car:
         """Get ALL log entries regarding this car.\n
         NOTE: it's a heavy operation, use it sparingly."""
         entries = [collection.get_all_entry_logs() for collection in self.collections]
+        entries_joined = []
+        [entries_joined.extend(entry_list) for entry_list in entries]
+
+        return sorted(entries_joined, key=lambda entry: format_date_string_to_tuple(entry.date))
+
+    def get_all_scheduled_entry_logs(self) -> list[ScheduledLogEntry]:
+        """Get ALL scheduled log entries regarding this car.\n
+        NOTE: it's a heavy operation, use it sparingly."""
+        entries = [collection.get_all_scheduled_entry_logs() for collection in self.collections]
         entries_joined = []
         [entries_joined.extend(entry_list) for entry_list in entries]
 
