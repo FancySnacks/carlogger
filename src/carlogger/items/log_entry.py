@@ -184,7 +184,7 @@ class ScheduledLogEntry(LogEntry):
     rule: str = "date"
     frequency: int = 1
     repeating: bool = False
-    from_file: bool = False
+    _from_file: bool = False
     _schedule_obj: LogEntryScheduleRule = field(init=False, repr=False, default=None)
 
     def __post_init__(self):
@@ -192,7 +192,7 @@ class ScheduledLogEntry(LogEntry):
             self.date = TODAY
 
         self._schedule_obj = self.create_schedule_rule_obj()
-        if not self.from_file: self.repeat()
+        if not self._from_file: self.repeat()
 
     def get_schedule_rule(self) -> str:
         return self._schedule_obj.get_schedule_rule()

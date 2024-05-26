@@ -27,6 +27,11 @@ def is_valid_entry_id(entry_id: str) -> bool:
         return False
 
 
+def get_all_class_properties(item_instance) -> list[str]:
+    """Returns list of names of all instance variables except magic and private ones."""
+    return [attr for attr in dir(item_instance) if
+            not callable(getattr(item_instance, attr)) and not attr.startswith("__") and not attr.startswith("_")]
+
 
 # ===== SAVING ===== #
 

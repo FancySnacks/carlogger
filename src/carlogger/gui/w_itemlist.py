@@ -32,8 +32,6 @@ class ItemContainer(CTkFrame):
         self.item_frame = CTkFrame(master=self, fg_color="turquoise")
         self.item_frame.pack(expand=True, fill='both', padx=10, pady=10)
 
-        self.add_sort_button('name')
-
     def sort_items(self, sort_key: str, button_ref, reverse: bool):
         if self.active_sort_button and self.active_sort_button != button_ref:
             self.active_sort_button.unfocus()

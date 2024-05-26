@@ -120,7 +120,7 @@ class CarComponent:
                                           frequency=entry_data['frequency'],
                                           repeating=entry_data['repeating'],
                                           rule=entry_data.get('rule', 'date'),
-                                          from_file=True)
+                                          _from_file=True)
 
             if entry_data['frequency'] <= 0 and entry_data['repeating'] is True:
                 raise ValueError("Frequency of scheduled entry cannot be 0 if it's supposed to be repeating!")

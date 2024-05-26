@@ -39,7 +39,7 @@ class RootWindow(CTk):
         self.mainloop()
 
     def create_items(self, items, parent):
-        self.item_list = ItemList(items, parent, widget=self.item_container)
+        self.item_list = ItemList(items, type(items[0]), parent, widget=self.item_container)
         self.item_container.parent = self.item_list
         self.item_list.create_sort_buttons()
         self.item_list.update_items()
