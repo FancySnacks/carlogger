@@ -25,10 +25,8 @@ class ItemList:
             self.widget.add_sort_button(sort_method)
 
     def _get_sort_methods(self) -> list[str]:
-        class_attrib = get_all_class_properties(self.item_class)
-        funcs = self.item_sorter.sort_method_map.keys()
-        joined_lists = list(class_attrib) + list(funcs)
-        return self._move_id_sort_button_to_front(joined_lists)
+        class_attrib: list[str] = self.item_class.filter_options()
+        return self._move_id_sort_button_to_front(class_attrib)
 
     def _move_id_sort_button_to_front(self, sort_funcs: list[str]) -> list[str]:
         for index, identifier in enumerate(sort_funcs):

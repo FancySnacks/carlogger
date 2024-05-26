@@ -32,6 +32,10 @@ class CarComponent:
     def latest_entry(self) -> LogEntry:
         return self.log_entries[-1]
 
+    @staticmethod
+    def filter_options() -> list[str]:
+        return ['name', 'log #', 'scheduled logs', 'latest', 'oldest']
+
     def get_all_entry_logs(self) -> list[LogEntry | ScheduledLogEntry]:
         return self.log_entries + self.scheduled_log_entries
 

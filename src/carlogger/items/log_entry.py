@@ -32,6 +32,10 @@ class LogEntry:
     def id(self) -> str:
         return self._id
 
+    @staticmethod
+    def filter_options() -> list[str]:
+        return ['id', 'desc', 'date', 'mileage', 'category']
+
     def to_json(self) -> dict:
         return self.__dict__()
 
