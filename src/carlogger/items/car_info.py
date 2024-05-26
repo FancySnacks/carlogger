@@ -22,7 +22,7 @@ class CarInfo:
 
     @staticmethod
     def filter_options() -> list[str]:
-        return ['name', 'manufacturer', 'model', 'year', 'mileage', 'log #']
+        return ['name', 'manufacturer', 'model', 'year', 'mileage', 'log #', 'latest']
 
     def get_full_name(self) -> str:
         return f"{self.manufacturer} {self.model}"

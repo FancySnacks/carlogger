@@ -34,7 +34,7 @@ class CarComponent:
 
     @staticmethod
     def filter_options() -> list[str]:
-        return ['name', 'log #', 'scheduled logs', 'latest', 'oldest']
+        return ['name', 'log #', 'scheduled logs', 'latest']
 
     def get_all_entry_logs(self) -> list[LogEntry | ScheduledLogEntry]:
         return self.log_entries + self.scheduled_log_entries
