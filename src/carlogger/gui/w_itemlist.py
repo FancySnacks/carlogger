@@ -144,6 +144,8 @@ class Item(CTkFrame):
         self.id = row
         self.item_ref = item_ref
 
+        # ===== Widget ===== #
+
         self.grid(row=row, column=0, sticky="we", padx=2, pady=2)
 
         self.date_label = CTkLabel(self, text=self._get_time_remaining(), font=('Lato', 17), width=100)
@@ -168,6 +170,15 @@ class Item(CTkFrame):
                                       justify='left',
                                       anchor='w')
         self.mileage_label.grid(row=0, column=3, padx=5, pady=2)
+
+        for index, item in enumerate(self.item_ref.custom_info.items()):
+            self.new_label = CTkLabel(self,
+                                      text=item[1],
+                                      font=('Lato', 17),
+                                      width=150,
+                                      justify='left',
+                                      anchor='w')
+            self.new_label.grid(row=0, column=index + 4, padx=5, pady=2)
 
     def _get_item_name(self) -> str:
         properties = self.item_ref.to_json().get('name', ''), self.item_ref.to_json().get('desc', ''), ''
