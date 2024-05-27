@@ -11,7 +11,7 @@ from carlogger.items.entry_category import EntryCategory
 from carlogger.printer import Printer
 
 
-@dataclass
+@dataclass(order=True)
 class CarComponent:
     """A certain car component or part that has maintenance logs."""
 
@@ -23,10 +23,12 @@ class CarComponent:
     current_mileage: int = field(init=False, default=0)
     search_tags: set[str] = field(init=False, default_factory=set)
     path: str = ""
+    _sort_index: str = field(init=False, repr=False, default='')
 
     def __post_init__(self):
         self.search_tags.add(self.name)
         self.path = pathlib.Path(self.path)
+        self._sort_index = self.name
 
     @property
     def latest_entry(self) -> LogEntry:

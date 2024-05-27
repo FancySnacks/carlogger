@@ -138,14 +138,13 @@ class SortButton(CTkButton):
 
 
 class Item(CTkFrame):
-    def __init__(self, master, parent: SortableItemList, item_ref, row: int = 0, scheduled=False, **kwargs):
+    def __init__(self, master, parent: SortableItemList, item_ref, row: int = 0, **kwargs):
         super().__init__(master,
                          height=100,
                          fg_color='blue',
                          corner_radius=0,
                          **kwargs)
         self.parent = parent
-        self.scheduled = scheduled
         self.id = row
         self.item_ref = item_ref
 
@@ -165,8 +164,16 @@ class Item(CTkFrame):
                                    anchor='w')
         self.desc_label.grid(row=0, column=1, padx=5, pady=2)
 
+        self.parent_label = CTkLabel(self,
+                                     text=self.item_ref.component.name.capitalize(),
+                                     font=('Lato', 17),
+                                     width=150,
+                                     justify='left',
+                                     anchor='w')
+        self.parent_label.grid(row=0, column=2, padx=5, pady=2)
+
         self.category_label = CTkLabel(self, text=self.item_ref.category.capitalize(), font=('Lato', 17), width=100)
-        self.category_label.grid(row=0, column=2, padx=5, pady=2)
+        self.category_label.grid(row=0, column=3, padx=5, pady=2)
 
         self.mileage_label = CTkLabel(self,
                                       text=self._get_mileage_remaining(),
@@ -174,7 +181,7 @@ class Item(CTkFrame):
                                       width=150,
                                       justify='left',
                                       anchor='w')
-        self.mileage_label.grid(row=0, column=3, padx=5, pady=2)
+        self.mileage_label.grid(row=0, column=4, padx=5, pady=2)
 
         for index, item in enumerate(self.item_ref.custom_info.items()):
             self.new_label = CTkLabel(self,
@@ -183,23 +190,25 @@ class Item(CTkFrame):
                                       width=150,
                                       justify='left',
                                       anchor='w')
-            self.new_label.grid(row=0, column=index + 4, padx=5, pady=2)
+            self.new_label.grid(row=0, column=index + 5, padx=5, pady=2)
 
     def _get_item_name(self) -> str:
         properties = self.item_ref.to_json().get('name', ''), self.item_ref.to_json().get('desc', ''), ''
-
         return sorted(properties, reverse=True)[0]
 
     def _get_time_remaining(self) -> str:
-        if self.scheduled and self.item_ref.get_schedule_rule() == 'date':
+        if self.is_scheduled_item() and self.item_ref.get_schedule_rule() == 'date':
             return f"{self.item_ref.date}\n" \
                    f"({self.item_ref.time_remaining_to_str()})"
 
         return self.item_ref.date
 
     def _get_mileage_remaining(self):
-        if self.scheduled and self.item_ref.get_schedule_rule() == 'mileage':
+        if self.is_scheduled_item() and self.item_ref.get_schedule_rule() == 'mileage':
             return f"{self.item_ref.mileage} km\n" \
                    f"(in {abs(self.item_ref.get_time_remaining())} km)"
 
         return f"{self.item_ref.mileage} km"
+
+    def is_scheduled_item(self) -> bool:
+        return self.item_ref.__class__.__name__ == 'ScheduledLogEntry'
