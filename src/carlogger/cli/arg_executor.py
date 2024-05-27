@@ -343,7 +343,7 @@ class ReadArgExecutor(ArgExecutor):
         entry_filter = EntryFilter()
         entries = self._clamp_cli_entries(entries)
 
-        all_car_entries = car.get_all_entry_logs()
+        all_car_entries = car.get_all_entry_logs(include_scheduled=True)
         filtered_entries = entry_filter.apply_filters_to_entry_list(entries, all_car_entries)
         #print(entry_filter.filters)
 
@@ -352,7 +352,7 @@ class ReadArgExecutor(ArgExecutor):
 
         loaded_entries = list(set(loaded_entries))
 
-        sort_key = self.args.get('sort')
+        sort_key = self.args.get('sort') or 'latest'
         reverse_sort = self.args.get('reverse')
         if sort_key:
             if sort_key_is_attrib(sort_key, loaded_entries[0]):

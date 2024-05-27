@@ -53,10 +53,15 @@ class ComponentCollection:
         [e.extend(item) for item in n]
         return e + self.components
 
-    def get_all_entry_logs(self) -> list[LogEntry]:
+    def get_all_entry_logs(self, include_scheduled=False) -> list[LogEntry]:
         """Returns all log entries from components CarComponent objects from all components collections."""
         components = self.get_all_components()
-        entries = [comp.log_entries for comp in components]
+
+        if include_scheduled:
+            entries = [comp.get_all_entry_logs() for comp in components]
+        else:
+            entries = [comp.log_entries for comp in components]
+
         joined_entries = []
         [joined_entries.extend(e) for e in entries]
 

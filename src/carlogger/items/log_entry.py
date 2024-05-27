@@ -41,7 +41,7 @@ class LogEntry:
     def get_formatted_info(self) -> str:
         """Return well-formatted string representing data of this class."""
         return f"[{self.date}] {self.desc} [Mileage: {self.mileage}] " \
-               f"[Type: {self.category}] [{self.id}]\n"
+               f"[Type: {self.category}] [{self.id}]"
 
     def __dict__(self) -> dict:
         d = {
@@ -130,7 +130,7 @@ class DateScheduleRule(LogEntryScheduleRule):
     def get_formatted_info(self) -> str:
         """Return well-formatted string representing data of this class"""
         return f"[{self.parent_log_entry.date}] [{self.time_remaining_to_str()}] " \
-               f"{self.parent_log_entry.desc} [Type: {self.parent_log_entry.category}] [{self.parent_log_entry.id}]\n"
+               f"{self.parent_log_entry.desc} [Type: {self.parent_log_entry.category}] [{self.parent_log_entry.id}]"
 
     def get_schedule_rule(self) -> str:
         return 'date'
@@ -195,7 +195,8 @@ class ScheduledLogEntry(LogEntry):
             self.date = TODAY
 
         self._schedule_obj = self.create_schedule_rule_obj()
-        if not self._from_file: self.repeat()
+        if not self._from_file:
+            self.repeat()
 
     def get_schedule_rule(self) -> str:
         return self._schedule_obj.get_schedule_rule()

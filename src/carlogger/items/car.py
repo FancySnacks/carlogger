@@ -24,10 +24,10 @@ class Car:
         if self.path == "":
             self._create_path()
 
-    def get_all_entry_logs(self) -> list[LogEntry]:
+    def get_all_entry_logs(self, include_scheduled=False) -> list[LogEntry]:
         """Get ALL log entries regarding this car.\n
         NOTE: it's a heavy operation, use it sparingly."""
-        entries = [collection.get_all_entry_logs() for collection in self.collections]
+        entries = [collection.get_all_entry_logs(include_scheduled) for collection in self.collections]
         entries_joined = []
         [entries_joined.extend(entry_list) for entry_list in entries]
 
