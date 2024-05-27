@@ -198,6 +198,9 @@ class ScheduledLogEntry(LogEntry):
         if not self._from_file:
             self.repeat()
 
+    def filter_options(self) -> list[str]:
+        return ['id', 'desc', 'date', 'mileage', 'category', 'frequency'] + list(self.custom_info.keys())
+
     def get_schedule_rule(self) -> str:
         return self._schedule_obj.get_schedule_rule()
 
