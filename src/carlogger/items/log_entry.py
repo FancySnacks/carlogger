@@ -33,7 +33,7 @@ class LogEntry:
         return self._id
 
     def filter_options(self) -> list[str]:
-        return ['id', 'desc', 'date', 'component', 'mileage', 'category'] + list(self.custom_info.keys())
+        return ['id', 'desc', 'date', 'component', 'category', 'mileage'] + list(self.custom_info.keys())
 
     def to_json(self) -> dict:
         return self.__dict__()
@@ -199,7 +199,7 @@ class ScheduledLogEntry(LogEntry):
             self.repeat()
 
     def filter_options(self) -> list[str]:
-        return ['id', 'desc', 'date', 'component', 'mileage', 'category', 'frequency'] + list(self.custom_info.keys())
+        return ['id', 'desc', 'date', 'component', 'category', 'mileage', 'frequency'] + list(self.custom_info.keys())
 
     def get_schedule_rule(self) -> str:
         return self._schedule_obj.get_schedule_rule()
