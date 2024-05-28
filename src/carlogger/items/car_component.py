@@ -147,6 +147,11 @@ class CarComponent:
         if not entry.repeating:
             self.delete_entry_by_id(entry_id)
         else:
+            Printer.print_msg(ScheduledLogEntry,
+                              'ADD_SUCCESS',
+                              name=f"Entry '{entry.desc}' has been renewed for "
+                                   f"{entry.date} ({entry.time_remaining_to_str()}) and",
+                              relation=self.name)
             entry.repeat()
 
     def update_entry(self, entry_id: str, changes: dict):

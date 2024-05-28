@@ -8,6 +8,7 @@ from carlogger.cli.arg_executor import ArgExecutor, AddArgExecutor, ReadArgExecu
     UpdateArgExecutor, ExportArgExecutor, ImportArgExecutor
 from carlogger.items.component_collection import ComponentCollection
 from carlogger.items.car_component import CarComponent
+from carlogger.items.log_entry import ScheduledLogEntry
 from carlogger.util import check_file_extension_validity
 
 
@@ -193,6 +194,11 @@ class AppSession:
         for key, value in updated_data.items():
             setattr(entry, key, value)
 
+        self.directory_manager.update_car_directory(parent_car)
+
+    def set_scheduled_entry_as_done(self, parent_car: Car, entry: ScheduledLogEntry):
+        """Update values of target entry and update the save file."""
+        entry.component.mark_scheduled_entry_as_done(entry.id)
         self.directory_manager.update_car_directory(parent_car)
 
     def export_item_to_file(self, item, path):

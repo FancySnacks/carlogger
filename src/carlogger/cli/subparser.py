@@ -630,6 +630,11 @@ class UpdateSubparser(Subparser):
                                               nargs='*',
                                               default=[])
 
+        self.update_entry_parser.add_argument('--complete',
+                                              help="Scheduled Log Entries only: set log as complete and add to history.",
+                                              action='store_true',
+                                              default=False)
+
         self.update_entry_parser.add_argument('--custom',
                                               action=ParseKwargs, type=str,
                                               help="More entry properties as defined by the user, "

@@ -435,6 +435,10 @@ class UpdateArgExecutor(ArgExecutor):
         entry = car.get_entry_by_id(entry_id)
 
         new_entry_data = self._clamp_updated_values(entry)
+
+        if self.parsed_args.get('complete'):
+            self.app_session.set_scheduled_entry_as_done(car, entry)
+
         self.app_session.update_entry(car, entry, new_entry_data)
 
     def _clamp_updated_values(self, item: CarInfo | ComponentCollection | CarComponent | LogEntry) -> dict:

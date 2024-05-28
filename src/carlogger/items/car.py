@@ -122,8 +122,8 @@ class Car:
 
         Printer.print_msg(CarComponent, 'READ_FAIL', name=name, relation=self.car_info.name)
 
-    def get_entry_by_id(self, entry_id: str) -> LogEntry | None:
-        entries = self.get_all_entry_logs()
+    def get_entry_by_id(self, entry_id: str) -> LogEntry | ScheduledLogEntry | None:
+        entries = self.get_all_entry_logs(include_scheduled=True)
         for entry in entries:
             if entry.id == entry_id:
                 return entry
