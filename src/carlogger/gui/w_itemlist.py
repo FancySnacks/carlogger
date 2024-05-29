@@ -23,6 +23,11 @@ class ItemContainer(CTkFrame):
         for s in sort_methods:
             item_list.add_sort_button(s)
 
+    def collapse_widget(self):
+        for child in self.winfo_children():
+            child.destroy()
+        self.item_list_widgets = []
+
 
 class SortableItemList(CTkFrame):
     def __init__(self, master, parent: ItemContainer, header: str, items: list, index: int, **values):
@@ -93,14 +98,22 @@ class SortableItemList(CTkFrame):
             self.items.append(new_item)
             c += 1
 
+    def refresh_items(self):
+        self.parent.parent.request_item_update()
+
     def create_item(self, master, item_obj, row=-1):
         if row == -1:
             row = len(self.items)
-
-        new_item = Item(master=master,
-                        parent=self,
-                        item_ref=item_obj,
-                        row=row)
+        if item_obj.__class__.__name__ == 'ScheduledLogEntry':
+            new_item = ScheduledLogEntryItem(master=master,
+                                             parent=self,
+                                             item_ref=item_obj,
+                                             row=row)
+        else:
+            new_item = Item(master=master,
+                            parent=self,
+                            item_ref=item_obj,
+                            row=row)
 
         return new_item
 
@@ -150,9 +163,9 @@ class Item(CTkFrame):
 
         # ===== Widget ===== #
 
-        self.grid(row=row, column=0, sticky="we", padx=2, pady=2)
+        self.pack(expand=True, fill='x', padx=10, pady=5)
 
-        self.date_label = CTkLabel(self, text=self._get_time_remaining(), font=('Lato', 17), width=100)
+        self.date_label = CTkLabel(self, text=self._get_date(), font=('Lato', 17), width=100)
         self.date_label.grid(row=0, column=0, padx=5, pady=2)
 
         self.desc_label = CTkLabel(self,
@@ -176,7 +189,7 @@ class Item(CTkFrame):
         self.category_label.grid(row=0, column=3, padx=5, pady=2)
 
         self.mileage_label = CTkLabel(self,
-                                      text=self._get_mileage_remaining(),
+                                      text=self._get_mileage(),
                                       font=('Lato', 17),
                                       width=150,
                                       justify='left',
@@ -196,19 +209,44 @@ class Item(CTkFrame):
         properties = self.item_ref.to_json().get('name', ''), self.item_ref.to_json().get('desc', ''), ''
         return sorted(properties, reverse=True)[0]
 
-    def _get_time_remaining(self) -> str:
-        if self.is_scheduled_item() and self.item_ref.get_schedule_rule() == 'date':
+    def _get_date(self):
+        return self.item_ref.date
+
+    def _get_mileage(self):
+        return f"{self.item_ref.mileage} km"
+
+
+class ScheduledLogEntryItem(Item):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.columnconfigure(8, weight=1)
+
+        self.complete_button = CTkButton(self,
+                                         text='+',
+                                         font=('Lato', 20),
+                                         width=35,
+                                         command=self.mark_entry_as_complete)
+        self.complete_button.grid(row=0, column=8, sticky="nse")
+
+    def _get_item_name(self) -> str:
+        properties = self.item_ref.to_json().get('name', ''), self.item_ref.to_json().get('desc', ''), ''
+        return sorted(properties, reverse=True)[0]
+
+    def _get_date(self) -> str:
+        if self.item_ref.get_schedule_rule() == 'date':
             return f"{self.item_ref.date}\n" \
                    f"({self.item_ref.time_remaining_to_str()})"
 
         return self.item_ref.date
 
-    def _get_mileage_remaining(self):
-        if self.is_scheduled_item() and self.item_ref.get_schedule_rule() == 'mileage':
+    def _get_mileage(self):
+        if self.item_ref.get_schedule_rule() == 'mileage':
             return f"{self.item_ref.mileage} km\n" \
                    f"(in {abs(self.item_ref.get_time_remaining())} km)"
 
         return f"{self.item_ref.mileage} km"
 
-    def is_scheduled_item(self) -> bool:
-        return self.item_ref.__class__.__name__ == 'ScheduledLogEntry'
+    def mark_entry_as_complete(self):
+        self.item_ref.component.mark_scheduled_entry_as_done(self.item_ref.id)
+        self.parent.refresh_items()

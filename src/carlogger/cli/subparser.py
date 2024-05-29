@@ -631,7 +631,8 @@ class UpdateSubparser(Subparser):
                                               default=[])
 
         self.update_entry_parser.add_argument('--complete',
-                                              help="Scheduled Log Entries only: set log as complete and add to history.",
+                                              help="Scheduled Log Entries only: use to set log as complete and add to "
+                                                   "history. If entry is repeating it will be renewed and scheduled.",
                                               action='store_true',
                                               default=False)
 

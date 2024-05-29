@@ -24,7 +24,7 @@ class AppSession:
 
     def create_gui(self, gui: RootWindow):
         self.gui = gui
-        self.gui.session = self
+        self.gui.app_session = self
         self.cars = self.directory_manager.load_all_car_dir()
 
         for car in self.cars:
@@ -35,6 +35,18 @@ class AppSession:
             self.gui.create_items(self.cars[0].get_all_entry_logs(), self.cars[0], 'Log Entries')
 
         self.gui.start_mainloop()
+
+    def request_item_update(self):
+        self.reload_cars()
+        self.gui.reset_item_list_widget()
+        self.gui.create_items(self.cars[0].get_all_scheduled_entry_logs(), self.cars[0], 'Scheduled Log Entries')
+        self.gui.create_items(self.cars[0].get_all_entry_logs(), self.cars[0], 'Log Entries')
+
+    def reload_cars(self):
+        for car in self.cars:
+            self.save_car(car.car_info.name)
+
+        self.cars = self.directory_manager.load_all_car_dir()
 
     def execute_console_args(self, subparser_type: str, parsed_args: dict, raw_args: list[str]):
         """Create ArgExecutor object based on subparser in use and execute console arguments."""

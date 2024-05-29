@@ -9,6 +9,7 @@ from carlogger.items.log_entry import LogEntry, ScheduledLogEntry
 from carlogger.items.part import Part
 from carlogger.items.entry_category import EntryCategory
 from carlogger.printer import Printer
+from carlogger.const import TODAY
 
 
 @dataclass(order=True)
@@ -142,6 +143,7 @@ class CarComponent:
 
     def mark_scheduled_entry_as_done(self, entry_id: str):
         entry = self.get_entry_by_id(entry_id)
+        entry.date = TODAY
         self.create_entry(entry.to_json())
 
         if not entry.repeating:
@@ -150,7 +152,7 @@ class CarComponent:
             Printer.print_msg(ScheduledLogEntry,
                               'ADD_SUCCESS',
                               name=f"Entry '{entry.desc}' has been renewed for "
-                                   f"{entry.date} ({entry.time_remaining_to_str()}) and",
+                                   f"{entry.get_new_date()} and",
                               relation=self.name)
             entry.repeat()
 
