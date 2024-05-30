@@ -155,7 +155,7 @@ def test_scheduled_log_entry_completion_refreshes(mock_component):
     c = mock_component
 
     entry = {"desc": "Engine Checkup",
-             "date": "",
+             "date": "23-03-2001",
              "mileage": 2380,
              "category": 'swap',
              "tags": [],
