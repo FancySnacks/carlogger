@@ -4,9 +4,11 @@ from carlogger.gui.c_itemlist import ItemList
 
 
 class ItemContainer(CTkFrame):
-    def __init__(self, master, **values):
+    def __init__(self, master,  parent_car, **values):
         super().__init__(master, **values)
         self.parent: ItemList = ...
+        self.app_session = ...
+        self.parent_car = parent_car
 
         self.item_list_widgets: list[SortableItemList] = []
 
@@ -92,30 +94,54 @@ class SortableItemList(CTkFrame):
         self.clear_items()
         self.items = []
 
-        c = 0
         for item in items:
-            new_item = self.create_item(self.item_frame, item, row=-1)
-            self.items.append(new_item)
-            c += 1
+            self.create_item(item)
 
     def refresh_items(self):
         self.parent.parent.request_item_update()
 
-    def create_item(self, master, item_obj, row=-1):
+    def create_item(self, item_obj, row=-1):
+        if item_obj.__class__.__name__ == 'ScheduledLogEntry':
+            self.create_scheduled_entry(item_obj, row)
+        else:
+            self.create_log_entry(item_obj, row)
+
+    def create_log_entry(self, item_obj, row: int = -1):
         if row == -1:
             row = len(self.items)
-        if item_obj.__class__.__name__ == 'ScheduledLogEntry':
-            new_item = ScheduledLogEntryItem(master=master,
-                                             parent=self,
-                                             item_ref=item_obj,
-                                             row=row)
-        else:
-            new_item = Item(master=master,
-                            parent=self,
-                            item_ref=item_obj,
-                            row=row)
 
-        return new_item
+        new_item = Item(master=self.item_frame,
+                        parent=self,
+                        item_ref=item_obj,
+                        row=row)
+        self.items.append(new_item)
+
+    def create_scheduled_entry(self, item_obj, row: int = -1):
+        if row == -1:
+            row = len(self.items)
+
+        new_item = ScheduledLogEntryItem(master=self.item_frame,
+                                         parent=self,
+                                         item_ref=item_obj,
+                                         row=row)
+        self.items.append(new_item)
+
+    def update_item(self, item, item_ref, data_to_update: list[str]):
+        item.item_ref = item_ref
+
+        if 'all' in data_to_update:
+            item.update_all_info()
+
+        mapping = {'desc': item.update_desc,
+                   'date': item.update_date,
+                   'component': item.update_component,
+                   'category': item.update_category,
+                   'mileage': item.update_mileage,
+                   'custom_info': item.update_custom_info
+                   }
+
+        for data in data_to_update:
+            mapping.get(data)()
 
     def clear_items(self):
         for child in self.item_frame.winfo_children():
@@ -161,6 +187,8 @@ class Item(CTkFrame):
         self.id = row
         self.item_ref = item_ref
 
+        self.custom_info_labels = []
+
         # ===== Widget ===== #
 
         self.pack(expand=True, fill='x', padx=10, pady=5)
@@ -196,14 +224,7 @@ class Item(CTkFrame):
                                       anchor='w')
         self.mileage_label.grid(row=0, column=4, padx=5, pady=2)
 
-        for index, item in enumerate(self.item_ref.custom_info.items()):
-            self.new_label = CTkLabel(self,
-                                      text=item[1],
-                                      font=('Lato', 17),
-                                      width=150,
-                                      justify='left',
-                                      anchor='w')
-            self.new_label.grid(row=0, column=index + 5, padx=5, pady=2)
+        self.create_custom_info()
 
         self.columnconfigure(8, weight=1)
 
@@ -217,6 +238,45 @@ class Item(CTkFrame):
                                      font=('Lato', 17),
                                      width=35)
         self.edit_button.grid(row=0, column=0, sticky="nse", padx=3)
+
+    def create_custom_info(self):
+        for index, item in enumerate(self.item_ref.custom_info.items()):
+            new_label = CTkLabel(self,
+                                 text=item[1],
+                                 font=('Lato', 17),
+                                 width=150,
+                                 justify='left',
+                                 anchor='w')
+            new_label.grid(row=0, column=index + 5, padx=5, pady=2)
+
+            self.custom_info_labels.append(new_label)
+
+    def update_date(self):
+        self.date_label.configure(text=self._get_date())
+
+    def update_desc(self):
+        self.desc_label.configure(text=self.item_ref.desc)
+
+    def update_component(self):
+        self.parent_label.configure(text=self.item_ref.component.name)
+
+    def update_category(self):
+        self.category_label.configure(text=self.item_ref.category)
+
+    def update_mileage(self):
+        self.mileage_label.configure(text=self._get_mileage())
+
+    def update_custom_info(self):
+        for info, label in zip(self.item_ref.custom_info.values(), self.custom_info_labels):
+            label.configure(text=info)
+
+    def update_all_info(self):
+        self.update_desc()
+        self.update_date()
+        self.update_component()
+        self.update_category()
+        self.update_mileage()
+        self.update_custom_info()
 
     def _get_item_name(self) -> str:
         properties = self.item_ref.to_json().get('name', ''), self.item_ref.to_json().get('desc', ''), ''
@@ -259,5 +319,8 @@ class ScheduledLogEntryItem(Item):
         return f"{self.item_ref.mileage} km"
 
     def mark_entry_as_complete(self):
-        self.item_ref.component.mark_scheduled_entry_as_done(self.item_ref.id)
-        self.parent.refresh_items()
+        entry = self.parent.parent.app_session.set_scheduled_entry_as_done(self.parent.parent.parent_car, self.item_ref)
+        self.parent.update_item(self, entry, ['date', 'mileage'])
+
+        new_entry = self.item_ref.component.latest_entry
+        self.parent.parent.item_list_widgets[1].create_log_entry(new_entry)

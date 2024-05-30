@@ -210,8 +210,9 @@ class AppSession:
 
     def set_scheduled_entry_as_done(self, parent_car: Car, entry: ScheduledLogEntry):
         """Update values of target entry and update the save file."""
-        entry.component.mark_scheduled_entry_as_done(entry.id)
+        repeated_entry = entry.component.mark_scheduled_entry_as_done(entry.id)
         self.directory_manager.update_car_directory(parent_car)
+        return repeated_entry
 
     def export_item_to_file(self, item, path):
         check_file_extension_validity(path)

@@ -32,7 +32,7 @@ class RootWindow(CTk):
 
         self.car_list = CarList(self.car_frame)
 
-        self.item_container = ItemContainer(self.main_frame)
+        self.item_container = ItemContainer(self.main_frame, parent_car=None)
         self.item_container.grid(row=2, column=0, sticky="nsew")
 
         self.item_list = None
@@ -43,6 +43,8 @@ class RootWindow(CTk):
     def create_items(self, items, parent, header):
         self.item_list = ItemList(parent, widget=self.item_container, app_session=self.app_session)
         self.item_container.parent = self.item_list
+        self.item_container.app_session = self.app_session
+        self.item_container.parent_car = parent
         self.item_list.create_items(items, header)
 
     def reset_item_list_widget(self):

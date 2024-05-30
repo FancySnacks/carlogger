@@ -155,6 +155,7 @@ class CarComponent:
                                    f"{entry.get_new_date()} and",
                               relation=self.name)
             entry.repeat()
+            return entry
 
     def update_entry(self, entry_id: str, changes: dict):
         """Update values of log entry with specified unique id hash. \n
