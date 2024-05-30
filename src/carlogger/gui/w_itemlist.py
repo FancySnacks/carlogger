@@ -205,6 +205,19 @@ class Item(CTkFrame):
                                       anchor='w')
             self.new_label.grid(row=0, column=index + 5, padx=5, pady=2)
 
+        self.columnconfigure(8, weight=1)
+
+        self.option_buttons_frame = CTkFrame(self, fg_color='transparent')
+        self.option_buttons_frame.grid(row=0, column=8, sticky="nse", padx=3, pady=5)
+
+        self.option_buttons_frame.rowconfigure(0, weight=1)
+
+        self.edit_button = CTkButton(self.option_buttons_frame,
+                                     text='Edit',
+                                     font=('Lato', 17),
+                                     width=35)
+        self.edit_button.grid(row=0, column=0, sticky="nse", padx=3)
+
     def _get_item_name(self) -> str:
         properties = self.item_ref.to_json().get('name', ''), self.item_ref.to_json().get('desc', ''), ''
         return sorted(properties, reverse=True)[0]
@@ -220,14 +233,12 @@ class ScheduledLogEntryItem(Item):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.columnconfigure(8, weight=1)
-
-        self.complete_button = CTkButton(self,
-                                         text='+',
-                                         font=('Lato', 20),
+        self.complete_button = CTkButton(self.option_buttons_frame,
+                                         text='➕',
+                                         font=('Lato', 17),
                                          width=35,
                                          command=self.mark_entry_as_complete)
-        self.complete_button.grid(row=0, column=8, sticky="nse")
+        self.complete_button.grid(row=0, column=1, sticky="nse", padx=3)
 
     def _get_item_name(self) -> str:
         properties = self.item_ref.to_json().get('name', ''), self.item_ref.to_json().get('desc', ''), ''
