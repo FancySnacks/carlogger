@@ -34,6 +34,7 @@ class AppSession:
             self.gui.create_items(self.cars[0].get_all_scheduled_entry_logs(), self.cars[0], 'Scheduled Log Entries')
             self.gui.create_items(self.cars[0].get_all_entry_logs(), self.cars[0], 'Log Entries')
 
+        self.selected_car = self.cars[0]
         self.gui.start_mainloop()
 
     def request_item_update(self):

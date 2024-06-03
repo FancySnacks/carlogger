@@ -1,14 +1,16 @@
-from customtkinter import CTkFrame, CTkButton, CTkLabel
+from customtkinter import CTkFrame, CTkButton, CTkLabel, CTk
 
 from carlogger.gui.c_itemlist import ItemList
 
 
 class ItemContainer(CTkFrame):
-    def __init__(self, master,  parent_car, **values):
+    def __init__(self, master, parent_car, root: CTk, **values):
         super().__init__(master, **values)
+        self.root = root
+        self.parent_car = parent_car
+
         self.parent: ItemList = ...
         self.app_session = ...
-        self.parent_car = parent_car
 
         self.item_list_widgets: list[SortableItemList] = []
 
@@ -147,6 +149,9 @@ class SortableItemList(CTkFrame):
         for child in self.item_frame.winfo_children():
             child.destroy()
 
+    def open_entry_edit_window(self, item_ref):
+        self.parent.root.open_entry_edit_window(item_ref)
+
 
 class SortButton(CTkButton):
     def __init__(self, master, parent, sort_method: str = 'SortOption', column: int = 0, **kwargs):
@@ -228,6 +233,8 @@ class Item(CTkFrame):
 
         self.columnconfigure(8, weight=1)
 
+        # ===== Settings Buttons ===== #
+
         self.option_buttons_frame = CTkFrame(self, fg_color='transparent')
         self.option_buttons_frame.grid(row=0, column=8, sticky="nse", padx=3, pady=5)
 
@@ -236,7 +243,8 @@ class Item(CTkFrame):
         self.edit_button = CTkButton(self.option_buttons_frame,
                                      text='Edit',
                                      font=('Lato', 17),
-                                     width=35)
+                                     width=35,
+                                     command=self.open_entry_edit_window)
         self.edit_button.grid(row=0, column=0, sticky="nse", padx=3)
 
     def create_custom_info(self):
@@ -287,6 +295,9 @@ class Item(CTkFrame):
 
     def _get_mileage(self):
         return f"{self.item_ref.mileage} km"
+
+    def open_entry_edit_window(self):
+        self.parent.open_entry_edit_window(self.item_ref)
 
 
 class ScheduledLogEntryItem(Item):

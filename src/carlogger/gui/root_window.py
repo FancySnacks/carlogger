@@ -6,6 +6,7 @@ from carlogger.gui.w_carframe import CarFrame
 from carlogger.gui.w_navigation import NavigationBar
 from carlogger.gui.w_itemlist import ItemContainer
 from carlogger.gui.c_itemlist import ItemList
+from carlogger.gui.w_editentry import EditEntryPopup
 
 
 class RootWindow(CTk):
@@ -32,7 +33,7 @@ class RootWindow(CTk):
 
         self.car_list = CarList(self.car_frame)
 
-        self.item_container = ItemContainer(self.main_frame, parent_car=None)
+        self.item_container = ItemContainer(self.main_frame, parent_car=None, root=self)
         self.item_container.grid(row=2, column=0, sticky="nsew")
 
         self.item_list = None
@@ -49,3 +50,6 @@ class RootWindow(CTk):
 
     def reset_item_list_widget(self):
         self.item_container.collapse_widget()
+
+    def open_entry_edit_window(self, item_ref):
+        self.edit_entry_popup = EditEntryPopup(self.main_frame, self, item_ref)
