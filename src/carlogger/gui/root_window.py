@@ -1,4 +1,5 @@
-from customtkinter import CTk
+from customtkinter import CTk, CTkScrollbar, CTkFrame
+from tkinter import Canvas
 
 from carlogger.gui.w_frame import Frame
 from carlogger.gui.c_carlist import CarList
@@ -20,23 +21,51 @@ class RootWindow(CTk):
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        self.main_frame = Frame(master=self, corner_radius=0, fg_color="transparent")
+        self.main_frame = CTkFrame(master=self, corner_radius=0, fg_color="transparent")
         self.main_frame.grid(row=0, column=0, sticky="nsew")
 
         self.main_frame.grid_columnconfigure(0, weight=1)
+        self.main_frame.grid_rowconfigure(1, weight=1)
 
         self.navigation = NavigationBar(master=self.main_frame)
         self.navigation.grid(row=0, column=0, sticky='ew')
 
-        self.car_frame = CarFrame(self.main_frame)
-        self.car_frame.grid(row=1, column=0, sticky='nsew')
+        # Create a canvas to allow for scrolling
+        self.canvas = Canvas(self.main_frame, bg="white")
+        self.canvas.grid(row=1, column=0, sticky="nsew")
+
+        self.scrollbar = CTkScrollbar(self.main_frame, orientation='vertical', command=self.canvas.yview)
+        self.scrollbar.grid(row=1, column=1, sticky='ns')
+
+        self.canvas.configure(yscrollcommand=self.scrollbar.set)
+        self.canvas.bind('<Configure>', lambda e: self.canvas.configure(scrollregion=self.canvas.bbox('all')))
+
+        # Bind mouse scroll to the canvas
+        self.canvas.bind_all("<MouseWheel>", self._on_mousewheel)
+        self.canvas.bind_all("<Button-4>", self._on_mousewheel)  # For Linux systems
+        self.canvas.bind_all("<Button-5>", self._on_mousewheel)  # For Linux systems
+
+        self.scrollable_frame = CTkFrame(self.canvas, corner_radius=0, fg_color="transparent")
+        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor='nw', width=self.canvas.winfo_screenwidth())
+
+        self.scrollable_frame.grid_columnconfigure(0, weight=1)
+        self.scrollable_frame.grid_rowconfigure(0, weight=1)
+
+        self.car_frame = CarFrame(self.scrollable_frame)
+        self.car_frame.grid(row=0, column=0, sticky='nsew')
 
         self.car_list = CarList(self.car_frame)
 
-        self.item_container = ItemContainer(self.main_frame, parent_car=None, root=self)
-        self.item_container.grid(row=2, column=0, sticky="nsew")
+        self.item_container = ItemContainer(self.scrollable_frame, parent_car=None, root=self)
+        self.item_container.grid(row=1, column=0, sticky="nsew")
 
         self.item_list = None
+
+    def _on_mousewheel(self, event):
+        if event.num == 5 or event.delta == -120:
+            self.canvas.yview_scroll(1, "units")
+        elif event.num == 4 or event.delta == 120:
+            self.canvas.yview_scroll(-1, "units")
 
     def start_mainloop(self):
         self.mainloop()
