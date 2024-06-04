@@ -236,7 +236,7 @@ class CarComponent:
              'part_list': [part.to_json() for part in self.part_list],
              'log_entries': [entry.to_json() for entry in self.log_entries],
              'scheduled_log_entries': [entry.to_json() for entry in self.scheduled_log_entries],
-             'search_tags': list(self.search_tags),
+             'search_tags': list(self.search_tags)
              }
 
         return d

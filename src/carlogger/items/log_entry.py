@@ -51,11 +51,9 @@ class LogEntry:
             'category': self.category.name,
             'tags': self.tags,
             'component': self.component.name,
-            'id': self.id
+            'id': self.id,
+            'custom_info': self.custom_info
         }
-
-        for k, v in self.custom_info.items():
-            d[k] = v
 
         return d
 
