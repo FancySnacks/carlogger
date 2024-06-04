@@ -278,10 +278,9 @@ class CarComponent:
         if new_part := entry.custom_info.get('part'):
 
             if self.current_part != new_part:
-                if entry.category in (EntryCategory.swap, EntryCategory.fluid_change):
-                    self.current_part = Part(new_part, entry.id)
+                self.current_part = Part(new_part, entry.id)
 
-            self.part_list.append(self.current_part)
+                self.part_list.append(self.current_part)
 
     def _update_mileage(self, entry: LogEntry):
         if entry.mileage > self.current_mileage:
