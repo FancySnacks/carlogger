@@ -14,6 +14,7 @@ class ItemList:
         return item_sorter.get_sorted_list(reverse)
 
     def create_items(self, items: list, header: str):
+        items = self.sort_items(items, 'latest')
         self.items.append(items)
         self.widget.create_items(items, header, self._get_sort_methods(items))
 

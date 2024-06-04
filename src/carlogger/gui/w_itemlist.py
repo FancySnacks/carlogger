@@ -213,6 +213,7 @@ class Item(CTkFrame):
         self.parent_label = CTkLabel(self,
                                      text=self.item_ref.component.name.capitalize(),
                                      font=('Lato', 17),
+                                     wraplength=135,
                                      width=150,
                                      justify='left',
                                      anchor='w')
@@ -252,6 +253,7 @@ class Item(CTkFrame):
             new_label = CTkLabel(self,
                                  text=item[1],
                                  font=('Lato', 17),
+                                 wraplength=135,
                                  width=150,
                                  justify='left',
                                  anchor='w')
