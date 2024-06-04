@@ -10,6 +10,7 @@ from carlogger.items.component_collection import ComponentCollection
 from carlogger.items.car_component import CarComponent
 from carlogger.items.car_info import CarInfo
 from carlogger.const import CARS_PATH
+from carlogger.items.item_sorter import ItemSorter
 from carlogger.printer import Printer
 from carlogger.util import get_car_dirs
 
@@ -70,6 +71,11 @@ class DirectoryManager:
 
     def update_components_files(self, comp_list: list[CarComponent]):
         for comp in comp_list:
+
+            if len(comp.log_entries)> 0:
+                item_sorter = ItemSorter(comp.log_entries, 'latest')
+                comp.log_entries = item_sorter.get_sorted_list()
+
             self.data_manager.save_file(comp, comp.get_target_path(self.data_manager.suffix))
 
     def load_car_dir(self, car_name: str):
