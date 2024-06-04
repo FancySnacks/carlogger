@@ -1,7 +1,6 @@
 from customtkinter import CTk, CTkScrollbar, CTkFrame
 from tkinter import Canvas
 
-from carlogger.gui.w_frame import Frame
 from carlogger.gui.c_carlist import CarList
 from carlogger.gui.w_carframe import CarFrame
 from carlogger.gui.w_navigation import NavigationBar
@@ -31,10 +30,19 @@ class RootWindow(CTk):
         self.navigation.grid(row=0, column=0, sticky='ew')
 
         # Create a canvas to allow for scrolling
-        self.canvas = Canvas(self.main_frame, bg="white")
+        self.canvas = Canvas(self.main_frame,
+                             bg="black",
+                             background='black',
+                             bd=0,
+                             border=0,
+                             borderwidth=0,
+                             highlightthickness=0)
         self.canvas.grid(row=1, column=0, sticky="nsew")
 
-        self.scrollbar = CTkScrollbar(self.main_frame, orientation='vertical', command=self.canvas.yview)
+        self.scrollbar = CTkScrollbar(self.main_frame,
+                                      orientation='vertical',
+                                      command=self.canvas.yview,
+                                      bg_color='transparent')
         self.scrollbar.grid(row=1, column=1, sticky='ns')
 
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
@@ -46,7 +54,10 @@ class RootWindow(CTk):
         self.canvas.bind_all("<Button-5>", self._on_mousewheel)  # For Linux systems
 
         self.scrollable_frame = CTkFrame(self.canvas, corner_radius=0, fg_color="transparent")
-        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor='nw', width=self.canvas.winfo_screenwidth())
+        self.canvas.create_window((0.0, 0.0),
+                                  window=self.scrollable_frame,
+                                  anchor='nw',
+                                  width=self.canvas.winfo_screenwidth())
 
         self.scrollable_frame.grid_columnconfigure(0, weight=1)
         self.scrollable_frame.grid_rowconfigure(0, weight=1)
