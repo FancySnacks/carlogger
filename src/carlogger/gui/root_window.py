@@ -82,10 +82,11 @@ class RootWindow(CTk):
         self.mainloop()
 
     def create_items(self, items, parent, header):
-        self.item_list = ItemList(parent, widget=self.item_container, app_session=self.app_session)
-        self.item_container.parent = self.item_list
-        self.item_container.app_session = self.app_session
-        self.item_container.parent_car = parent
+        if not self.item_list:
+            self.item_list = ItemList(parent, widget=self.item_container, app_session=self.app_session)
+            self.item_container.parent = self.item_list
+            self.item_container.app_session = self.app_session
+            self.item_container.parent_car = parent
         self.item_list.create_items(items, header)
 
     def reset_item_list_widget(self):

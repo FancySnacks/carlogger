@@ -65,7 +65,6 @@ class SortableItemList(CTkFrame):
         self.active_sort_button = button_ref
 
         self.parent.parent.update_items(self.index, sort_key, reverse)
-        self.master.update_idletasks()
 
     def add_sort_button(self, sort_method: str, **kwargs):
         if not self.is_sort_method_already_used(sort_method):

@@ -32,6 +32,9 @@ class ItemSorter:
 
     def _attrib_sort(self, item, attrib_name: str):
         try:
+            if attrib_name == 'date':
+                return date_string_to_date(getattr(item, attrib_name))
+
             return getattr(item, attrib_name)
         except AttributeError:
             return item.custom_info.get(attrib_name, None)
