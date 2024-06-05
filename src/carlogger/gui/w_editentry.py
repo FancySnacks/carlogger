@@ -71,13 +71,37 @@ class EditEntryPopup:
         self.desc_entry.insert(END, self.item_ref.desc)
         self.desc_entry.grid(row=1, column=0, sticky='w')
 
-        # ===== Component ===== #
+        # ===== Parents ===== #
+
+        # Car
+
+        self.car_frame = CTkFrame(self.edit_left_frame, fg_color='transparent')
+        self.car_frame.grid(row=2, column=0, sticky='w', pady=10)
+
+        self.car_label = CTkLabel(self.car_frame, text="Parent", font=('Lato', 20))
+        self.car_label.grid(row=0, column=0, sticky='w')
+
+        self.car_menu = CTkOptionMenu(self.car_frame,
+                                      values=[car.car_info.name for car in
+                                              self.root.app_session.cars])
+        self.car_menu.set(self.item_ref.component.parent.car.car_info.name)
+        self.car_menu.grid(row=1, column=0, sticky='w')
+
+        # Collection
+
+        self.collection_frame = CTkFrame(self.edit_left_frame, fg_color='transparent')
+        self.collection_frame.grid(row=3, column=0, sticky='w', pady=10)
+
+        self.collection_menu = CTkOptionMenu(self.collection_frame,
+                                             values=[collection.name for collection in
+                                                     self.root.app_session.selected_car.collections])
+        self.collection_menu.set(self.item_ref.component.parent.name)
+        self.collection_menu.grid(row=1, column=0, sticky='w')
+
+        # Component
 
         self.component_frame = CTkFrame(self.edit_left_frame, fg_color='transparent')
-        self.component_frame.grid(row=2, column=0, sticky='w', pady=10)
-
-        self.component_label = CTkLabel(self.component_frame, text="Parent Component", font=('Lato', 20))
-        self.component_label.grid(row=0, column=0, sticky='w')
+        self.component_frame.grid(row=4, column=0, sticky='w', pady=10)
 
         self.component_menu = CTkOptionMenu(self.component_frame,
                                             values=[comp.name for comp in
@@ -88,7 +112,7 @@ class EditEntryPopup:
         # ===== Category ===== #
 
         self.category_frame = CTkFrame(self.edit_left_frame, fg_color='transparent')
-        self.category_frame.grid(row=3, column=0, sticky='w', pady=10)
+        self.category_frame.grid(row=5, column=0, sticky='w', pady=10)
 
         self.category_label = CTkLabel(self.category_frame, text="Category", font=('Lato', 20))
         self.category_label.grid(row=0, column=0, sticky='w')
@@ -101,7 +125,7 @@ class EditEntryPopup:
         # ===== Mileage ===== #
 
         self.mileage_frame = CTkFrame(self.edit_left_frame, fg_color='transparent')
-        self.mileage_frame.grid(row=4, column=0, sticky='w', pady=10)
+        self.mileage_frame.grid(row=6, column=0, sticky='w', pady=10)
 
         self.mileage_label = CTkLabel(self.mileage_frame, text="Mileage", font=('Lato', 20))
         self.mileage_label.grid(row=0, column=0, sticky='w')

@@ -80,6 +80,7 @@ class ComponentCollection:
         """Create new car component, add it to the list and return object reference."""
         if not self._check_for_component_duplicates(name):
             new_component = CarComponent(name, path=self.path.parent.joinpath('components'))
+            new_component.parent = self
             self.components.append(new_component)
 
             Printer.print_msg(new_component,

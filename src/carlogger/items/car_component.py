@@ -1,15 +1,21 @@
 """A certain car component or part that has maintenance logs."""
 
+from __future__ import annotations
+
 import pathlib
 import uuid
 
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
 from carlogger.items.log_entry import LogEntry, ScheduledLogEntry
 from carlogger.items.part import Part
 from carlogger.items.entry_category import EntryCategory
 from carlogger.printer import Printer
 from carlogger.const import TODAY
+
+if TYPE_CHECKING:
+    from carlogger.items.component_collection import ComponentCollection
 
 
 @dataclass(order=True)
@@ -23,6 +29,7 @@ class CarComponent:
     part_list: list[Part] = field(init=False, default_factory=list)
     current_mileage: int = field(init=False, default=0)
     search_tags: set[str] = field(init=False, default_factory=set)
+    parent: ComponentCollection = field(init=False, default=None)
     path: str = ""
     _sort_index: str = field(init=False, repr=False, default='')
 

@@ -162,6 +162,7 @@ class DirectoryManager:
                 if "collections" not in child['path']:
                     item_data: dict = self.data_manager.load_file(child['path'])
                     c = CarComponent(item_data['name'], collection.path.parent.joinpath('components'))
+                    c.parent = collection
                     self._add_entries_to_component(item_data, c)
                     coms.append(c)
 

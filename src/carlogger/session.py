@@ -141,7 +141,8 @@ class AppSession:
         """Add new collection to specified car and update save directory."""
         car = self.get_car_by_name(car_name)
         collection = car.get_collection_by_name(collection_name)
-        collection.create_component(component_name)
+        new_comp = collection.create_component(component_name)
+        new_comp.parent = collection
         self.directory_manager.update_car_directory(car)
 
     def delete_component(self, car_name: str, collection_name: str, component_name: str):
