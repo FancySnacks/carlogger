@@ -67,18 +67,21 @@ class EditEntryPopup:
         self.desc_label = CTkLabel(self.desc_frame, text="Description", font=('Lato', 20))
         self.desc_label.grid(row=0, column=0, sticky='w')
 
-        self.desc_entry = CTkTextbox(self.desc_frame, font=('Lato', 20), width=450, height=100)
+        self.desc_entry = CTkTextbox(self.desc_frame, font=('Lato', 20), width=580, height=100)
         self.desc_entry.insert(END, self.item_ref.desc)
         self.desc_entry.grid(row=1, column=0, sticky='w')
 
         # ===== Parents ===== #
 
+        self.parent_frame = CTkFrame(self.edit_left_frame, fg_color='transparent')
+        self.parent_frame.grid(row=2, column=0, sticky='w', pady=10, columnspan=3)
+
         # Car
 
-        self.car_frame = CTkFrame(self.edit_left_frame, fg_color='transparent')
-        self.car_frame.grid(row=2, column=0, sticky='w', pady=10)
+        self.car_frame = CTkFrame(self.parent_frame, fg_color='transparent')
+        self.car_frame.grid(row=0, column=0, sticky='w', pady=10)
 
-        self.car_label = CTkLabel(self.car_frame, text="Parent", font=('Lato', 20))
+        self.car_label = CTkLabel(self.car_frame, text="Car", font=('Lato', 20))
         self.car_label.grid(row=0, column=0, sticky='w')
 
         self.car_menu = CTkOptionMenu(self.car_frame,
@@ -87,10 +90,16 @@ class EditEntryPopup:
         self.car_menu.set(self.item_ref.component.parent.car.car_info.name)
         self.car_menu.grid(row=1, column=0, sticky='w')
 
+        separator = CTkLabel(self.car_frame, text="->", font=('Lato', 20))
+        separator.grid(row=1, column=1, sticky='w', padx=10)
+
         # Collection
 
-        self.collection_frame = CTkFrame(self.edit_left_frame, fg_color='transparent')
-        self.collection_frame.grid(row=3, column=0, sticky='w', pady=10)
+        self.collection_frame = CTkFrame(self.parent_frame, fg_color='transparent')
+        self.collection_frame.grid(row=0, column=1, sticky='w', pady=10)
+
+        self.collection_label = CTkLabel(self.collection_frame, text="Collection", font=('Lato', 20))
+        self.collection_label.grid(row=0, column=0, sticky='w')
 
         self.collection_menu = CTkOptionMenu(self.collection_frame,
                                              values=[collection.name for collection in
@@ -98,10 +107,16 @@ class EditEntryPopup:
         self.collection_menu.set(self.item_ref.component.parent.name)
         self.collection_menu.grid(row=1, column=0, sticky='w')
 
+        separator = CTkLabel(self.collection_frame, text="->", font=('Lato', 20))
+        separator.grid(row=1, column=1, sticky='w', padx=10)
+
         # Component
 
-        self.component_frame = CTkFrame(self.edit_left_frame, fg_color='transparent')
-        self.component_frame.grid(row=4, column=0, sticky='w', pady=10)
+        self.component_frame = CTkFrame(self.parent_frame, fg_color='transparent')
+        self.component_frame.grid(row=0, column=2, sticky='w', pady=10)
+
+        self.component_label = CTkLabel(self.component_frame, text="Component", font=('Lato', 20))
+        self.component_label.grid(row=0, column=0, sticky='w')
 
         self.component_menu = CTkOptionMenu(self.component_frame,
                                             values=[comp.name for comp in
