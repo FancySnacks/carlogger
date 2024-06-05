@@ -32,12 +32,20 @@ class ItemSorter:
 
     def _attrib_sort(self, item, attrib_name: str):
         try:
-            if attrib_name == 'date':
-                return date_string_to_date(getattr(item, attrib_name))
-
-            return getattr(item, attrib_name)
+            return self._clamp_attrib(item, attrib_name)
         except AttributeError:
             return item.custom_info.get(attrib_name, None)
+
+    def _clamp_attrib(self, item, attrib_name: str) -> Any:
+        if attrib_name == 'date':
+            return date_string_to_date(getattr(item, attrib_name))
+
+        atb = getattr(item, attrib_name)
+
+        if type(atb) not in (int, float, str):
+            return str(atb)
+        else:
+            return atb
 
     def _filter_item_list_via_custom_attrib(self, items, attrib) -> list:
         return list(filter(lambda item: self._attrib_exists(item, attrib), items))
