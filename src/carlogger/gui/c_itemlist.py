@@ -13,8 +13,9 @@ class ItemList:
         item_sorter.sort_method = sort_method
         return item_sorter.get_sorted_list(reverse)
 
-    def create_items(self, items: list, header: str):
-        items = self.sort_items(items, 'latest')
+    def create_items(self, items: list, header: str, sort_key: str = '*'):
+        items = self.sort_items(items,
+                                'latest' if sort_key == '*' else sort_key)
         self.items.append(items)
         self.widget.create_items(items, header, self._get_sort_methods(items))
 

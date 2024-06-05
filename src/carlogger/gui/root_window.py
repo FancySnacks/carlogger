@@ -81,13 +81,13 @@ class RootWindow(CTk):
     def start_mainloop(self):
         self.mainloop()
 
-    def create_items(self, items, parent, header):
+    def create_items(self, items, parent, header, sort_key: str = '*'):
         if not self.item_list:
             self.item_list = ItemList(parent, widget=self.item_container, app_session=self.app_session)
             self.item_container.parent = self.item_list
             self.item_container.app_session = self.app_session
             self.item_container.parent_car = parent
-        self.item_list.create_items(items, header)
+        self.item_list.create_items(items, header, sort_key)
 
     def reset_item_list_widget(self):
         self.item_container.collapse_widget()

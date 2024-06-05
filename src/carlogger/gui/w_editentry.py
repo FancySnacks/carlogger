@@ -46,9 +46,12 @@ class EditEntryPopup:
         self.date_label = CTkLabel(self.date_frame, text="Date", font=('Lato', 20))
         self.date_label.grid(row=0, column=0, sticky='w')
 
-        self.date_entry = CTkEntry(self.date_frame, font=('Lato', 20), placeholder_text='Enter date (DD-MM-YYYY')
+        self.date_entry = CTkEntry(self.date_frame, font=('Lato', 20), placeholder_text='Enter date (DD-MM-YYYY)')
         self.date_entry.insert(0, self.item_ref.date)
         self.date_entry.grid(row=1, column=0, sticky='w')
+
+        self.date_hint_label = CTkLabel(self.date_frame, text="format: DD-MM-YYYY", font=('Lato', 12))
+        self.date_hint_label.grid(row=2, column=0, sticky='w', pady=3)
 
         # ===== Desc ===== #
 
@@ -89,6 +92,21 @@ class EditEntryPopup:
         self.category_menu.set(self.item_ref.category)
         self.category_menu.grid(row=1, column=0, sticky='w')
         
+        # ===== Mileage ===== #
+
+        self.mileage_frame = CTkFrame(self.edit_container, fg_color='transparent')
+        self.mileage_frame.grid(row=4, column=0, sticky='w', pady=5)
+
+        self.mileage_label = CTkLabel(self.mileage_frame, text="Mileage", font=('Lato', 20))
+        self.mileage_label.grid(row=0, column=0, sticky='w')
+
+        self.mileage_entry = CTkEntry(self.mileage_frame, font=('Lato', 20), placeholder_text='Enter mileage (km)')
+        self.mileage_entry.insert(0, self.item_ref.mileage)
+        self.mileage_entry.grid(row=1, column=0, sticky='w')
+
+        self.mileage_unit_label = CTkLabel(self.mileage_frame, text="km", font=('Lato', 20))
+        self.mileage_unit_label.grid(row=1, column=1, sticky='w', padx=10)
+
         # ===== Mileage ===== #
 
         self.mileage_frame = CTkFrame(self.edit_container, fg_color='transparent')
