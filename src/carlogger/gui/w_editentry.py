@@ -33,21 +33,21 @@ class EditEntryPopup:
         self.separator = CTkLabel(self.main_frame, text='', bg_color='gray', height=1, font=('Arial', 2))
         self.separator.pack(fill='x', padx=10)
         
-        # ===== Edit Values ===== #
+        # ===== Edit Section Frames ===== #
 
         self.edit_main_frame = CTkFrame(self.main_frame, fg_color='transparent')
         self.edit_main_frame.pack(anchor='center', fill='both', pady=25, padx=15)
 
-        self.edit_left_frame = CTkFrame(self.edit_main_frame)
-        self.edit_left_frame.grid(row=0, column=0, sticky='nsew', pady=10)
+        self.edit_left_frame = CTkFrame(self.edit_main_frame, fg_color='#403f3f')
+        self.edit_left_frame.grid(row=0, column=0, sticky='nsew', pady=10, padx=10)
 
-        self.edit_mid_frame = CTkFrame(self.edit_main_frame)
-        self.edit_mid_frame.grid(row=0, column=1, sticky='nsew', pady=10)
+        self.edit_mid_frame = CTkFrame(self.edit_main_frame, fg_color='#403f3f')
+        self.edit_mid_frame.grid(row=0, column=1, sticky='nsew', pady=10, padx=10)
 
         # ===== Date ===== #
 
         self.date_frame = CTkFrame(self.edit_left_frame, fg_color='transparent')
-        self.date_frame.grid(row=0, column=0, sticky='w', pady=10)
+        self.date_frame.grid(row=0, column=0, sticky='w', pady=10, padx=10)
 
         self.date_label = CTkLabel(self.date_frame, text="Date", font=('Lato', 20))
         self.date_label.grid(row=0, column=0, sticky='w')
@@ -62,7 +62,7 @@ class EditEntryPopup:
         # ===== Desc ===== #
 
         self.desc_frame = CTkFrame(self.edit_left_frame, fg_color='transparent')
-        self.desc_frame.grid(row=1, column=0, sticky='w', pady=10)
+        self.desc_frame.grid(row=1, column=0, sticky='w', pady=10, padx=10)
 
         self.desc_label = CTkLabel(self.desc_frame, text="Description", font=('Lato', 20))
         self.desc_label.grid(row=0, column=0, sticky='w')
@@ -74,7 +74,7 @@ class EditEntryPopup:
         # ===== Parents ===== #
 
         self.parent_frame = CTkFrame(self.edit_left_frame, fg_color='transparent')
-        self.parent_frame.grid(row=2, column=0, sticky='w', pady=10, columnspan=3)
+        self.parent_frame.grid(row=2, column=0, sticky='w', pady=10, columnspan=3, padx=10)
 
         # Car
 
@@ -127,7 +127,7 @@ class EditEntryPopup:
         # ===== Category ===== #
 
         self.category_frame = CTkFrame(self.edit_left_frame, fg_color='transparent')
-        self.category_frame.grid(row=5, column=0, sticky='w', pady=10)
+        self.category_frame.grid(row=5, column=0, sticky='w', pady=10, padx=10)
 
         self.category_label = CTkLabel(self.category_frame, text="Category", font=('Lato', 20))
         self.category_label.grid(row=0, column=0, sticky='w')
@@ -140,7 +140,7 @@ class EditEntryPopup:
         # ===== Mileage ===== #
 
         self.mileage_frame = CTkFrame(self.edit_left_frame, fg_color='transparent')
-        self.mileage_frame.grid(row=6, column=0, sticky='w', pady=10)
+        self.mileage_frame.grid(row=6, column=0, sticky='w', pady=10, padx=10)
 
         self.mileage_label = CTkLabel(self.mileage_frame, text="Mileage", font=('Lato', 20))
         self.mileage_label.grid(row=0, column=0, sticky='w')
@@ -155,7 +155,7 @@ class EditEntryPopup:
         # ===== Custom Info ===== #
 
         self.custom_frame = CTkScrollableFrame(self.edit_mid_frame, fg_color='transparent', width=550, height=800)
-        self.custom_frame.grid(row=0, column=0, sticky='w', pady=10, padx=100)
+        self.custom_frame.grid(row=0, column=0, sticky='w', pady=10, padx=10)
 
         self.custom_label = CTkLabel(self.custom_frame, text="Custom Properties", font=('Lato', 20))
         self.custom_label.grid(row=0, column=0, sticky='w')
@@ -172,10 +172,57 @@ class EditEntryPopup:
         self.property_container = PropertyContainer(self.custom_frame,
                                                     self.root,
                                                     self.item_ref,
-                                                    width=250)
+                                                    width=250,
+                                                    fg_color='transparent')
         self.property_container.grid(row=1, column=0, columnspan=5, sticky='w')
 
         self.property_container.create_properties()
+        
+        # ===== ScheduledLogEntry Options ===== #
+
+        if not self.item_ref.__class__.__name__ == 'ScheduledLogEntry':
+            return
+
+        self.edit_right_frame = CTkFrame(self.edit_main_frame, fg_color='#403f3f')
+        self.edit_right_frame.grid(row=0, column=2, sticky='nsew', pady=10, padx=10)
+
+        # ===== Frequency ===== #
+
+        self.frequency_frame = CTkFrame(self.edit_right_frame, fg_color='transparent', width=550)
+        self.frequency_frame.grid(row=0, column=0, sticky='w', pady=10, padx=10)
+
+        self.frequency_label = CTkLabel(self.frequency_frame, text="Frequency", font=('Lato', 20))
+        self.frequency_label.grid(row=0, column=0, sticky='w')
+
+        self.frequency_entry = CTkEntry(self.frequency_frame, font=('Lato', 20), placeholder_text='Frequency')
+        self.frequency_entry.insert(0, self.item_ref.frequency)
+        self.frequency_entry.grid(row=1, column=0, sticky='w')
+
+        self.frequency_unit_label = CTkLabel(self.frequency_frame,
+                                             text='days' if self.item_ref.get_schedule_rule() == 'date' else 'km',
+                                             font=('Lato', 20))
+        self.frequency_unit_label.grid(row=1, column=1, sticky='w')
+
+        self.frequency_hint_label = CTkLabel(self.frequency_frame,
+                                             text="Leave empty for one-time entry",
+                                             font=('Lato', 12))
+        self.frequency_hint_label.grid(row=2, column=0, sticky='w', pady=3)
+
+        # ===== Rule ===== #
+
+        self.rule_frame = CTkFrame(self.edit_right_frame, fg_color='transparent', width=550)
+        self.rule_frame.grid(row=1, column=0, sticky='w', pady=10, padx=10)
+
+        self.rule_label = CTkLabel(self.rule_frame, text="Rule", font=('Lato', 20))
+        self.rule_label.grid(row=0, column=0, sticky='w')
+
+        self.rule_menu = CTkOptionMenu(self.rule_frame,
+                                       values=['date', 'mileage'],
+                                       command=self.on_rule_option_select)
+        self.rule_menu.grid(row=1, column=0, sticky='w')
+
+    def on_rule_option_select(self, *args):
+        print(self.rule_menu.get())
 
     def add_new_property(self):
         self.property_container.add_property()
