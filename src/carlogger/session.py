@@ -26,9 +26,8 @@ class AppSession:
         self.gui = gui
         self.gui.app_session = self
         self.cars = self.directory_manager.load_all_car_dir()
-
-        for car in self.cars:
-            self.gui.car_list.add_car(car)
+        self.gui.cars = self.cars
+        self.gui.selected_car = self.cars[0]
 
         if self.cars:
             self.gui.create_items(self.cars[0].get_all_scheduled_entry_logs(),

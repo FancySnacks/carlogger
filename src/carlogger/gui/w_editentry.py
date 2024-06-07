@@ -1,4 +1,5 @@
-from customtkinter import CTk, CTkFrame, CTkLabel, CTkButton, CTkEntry, CTkTextbox, CTkOptionMenu, CTkScrollableFrame
+from customtkinter import CTk, CTkFrame, CTkLabel, CTkButton, CTkEntry, \
+    CTkTextbox, CTkOptionMenu, CTkScrollableFrame
 
 from tkinter import END
 
@@ -6,10 +7,14 @@ from carlogger.items.entry_category import EntryCategory
 
 
 class EditEntryPopup:
-    def __init__(self, master, root: CTk, item_ref):
+    def __init__(self, master, root, item_ref):
         self.master = master
         self.root = root
         self.item_ref = item_ref
+
+        self.cars = self.root.cars
+        self.car_names = [car.car_info.name for car in self.cars]
+        self.current_collection = self.item_ref.component.parent
 
         self.main_frame = CTkFrame(self.master)
         self.main_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
@@ -85,9 +90,9 @@ class EditEntryPopup:
         self.car_label.grid(row=0, column=0, sticky='w')
 
         self.car_menu = CTkOptionMenu(self.car_frame,
-                                      values=[car.car_info.name for car in
-                                              self.root.app_session.cars])
-        self.car_menu.set(self.item_ref.component.parent.car.car_info.name)
+                                      values=self.car_names,
+                                      command=self.on_car_selection_change)
+        self.car_menu.set(self.root.selected_car.car_info.name)
         self.car_menu.grid(row=1, column=0, sticky='w')
 
         separator = CTkLabel(self.car_frame, text="->", font=('Lato', 20))
@@ -102,8 +107,8 @@ class EditEntryPopup:
         self.collection_label.grid(row=0, column=0, sticky='w')
 
         self.collection_menu = CTkOptionMenu(self.collection_frame,
-                                             values=[collection.name for collection in
-                                                     self.root.app_session.selected_car.collections])
+                                             values=self.get_collection_names(),
+                                             command=self.on_collection_selection_change)
         self.collection_menu.set(self.item_ref.component.parent.name)
         self.collection_menu.grid(row=1, column=0, sticky='w')
 
@@ -119,8 +124,7 @@ class EditEntryPopup:
         self.component_label.grid(row=0, column=0, sticky='w')
 
         self.component_menu = CTkOptionMenu(self.component_frame,
-                                            values=[comp.name for comp in
-                                                    self.root.app_session.selected_car.get_all_components()])
+                                            values=self.get_component_names())
         self.component_menu.set(self.item_ref.component.name)
         self.component_menu.grid(row=1, column=0, sticky='w')
 
@@ -218,11 +222,29 @@ class EditEntryPopup:
 
         self.rule_menu = CTkOptionMenu(self.rule_frame,
                                        values=['date', 'mileage'],
-                                       command=self.on_rule_option_select)
+                                       command=self.on_rule_selection_change)
         self.rule_menu.grid(row=1, column=0, sticky='w')
 
-    def on_rule_option_select(self, *args):
-        print(self.rule_menu.get())
+    def on_car_selection_change(self, selected_option):
+        colls = [collection.name for collection in self.root.selected_car.collections]
+        self.collection_menu.configure(values=colls)
+        self.component_menu.set(colls[0])
+
+    def on_collection_selection_change(self, selected_option):
+        self.current_collection = self.root.selected_car.get_collection_by_name(selected_option)
+        comps = [component.name for component in self.current_collection.components]
+        self.component_menu.configure(values=comps)
+        self.component_menu.set(comps[0])
+
+    def get_collection_names(self) -> list[str]:
+        return [coll.name for coll in self.root.selected_car.collections]
+
+    def get_component_names(self) -> list[str]:
+        return [comp.name for comp in self.current_collection.components]
+
+    def on_rule_selection_change(self, selected_option):
+        self.item_ref = selected_option.lower()
+        #self.item_ref.create_schedule_rule_obj()
 
     def add_new_property(self):
         self.property_container.add_property()
