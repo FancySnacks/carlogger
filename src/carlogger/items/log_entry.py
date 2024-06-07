@@ -182,9 +182,9 @@ class ScheduledLogEntry(LogEntry):
     the passed date string is empty then it will automatically turn to today's date
     """
 
-    rule: str = "date"
     frequency: int = 1
     repeating: bool = False
+    _rule: str = "date"
     _from_file: bool = False
     _schedule_obj: LogEntryScheduleRule = field(init=False, repr=False, default=None)
 
@@ -192,9 +192,15 @@ class ScheduledLogEntry(LogEntry):
         if self.date == "":
             self.date = TODAY
 
+    @property
+    def rule(self):
+        return self._rule
+
+    @rule.setter
+    def rule(self, new: str):
+        self._rule = new
         self._schedule_obj = self.create_schedule_rule_obj()
-        if not self._from_file:
-            self.repeat()
+        self.repeat()
 
     def filter_options(self) -> list[str]:
         return ['id', 'desc', 'date', 'component', 'category', 'mileage', 'frequency'] + list(self.custom_info.keys())
@@ -235,13 +241,11 @@ class ScheduledLogEntry(LogEntry):
                 'tags': self.tags,
                 'component': self.component.name,
                 'id': self.id,
+                'custom_info': self.custom_info,
                 'rule': self.rule,
                 'frequency': self.frequency,
-                'repeating': self.repeating,
+                'repeating': self.repeating
             }
-
-        for k, v in self.custom_info.items():
-            d[k] = v
 
         return d
 

@@ -9,7 +9,7 @@ from carlogger.cli.arg_executor import ArgExecutor, AddArgExecutor, ReadArgExecu
 from carlogger.items.component_collection import ComponentCollection
 from carlogger.items.car_component import CarComponent
 from carlogger.items.log_entry import ScheduledLogEntry
-from carlogger.util import check_file_extension_validity
+from carlogger.util import check_file_extension_validity, is_scheduled_entry
 
 
 class AppSession:
@@ -209,6 +209,9 @@ class AppSession:
         """Update values of target entry and update the save file."""
         for key, value in updated_data.items():
             setattr(entry, key, value)
+
+        if is_scheduled_entry(entry):
+            entry.get_new_date()
 
         self.directory_manager.update_car_directory(parent_car)
 

@@ -1,9 +1,10 @@
 from customtkinter import CTk, CTkFrame, CTkLabel, CTkButton, CTkEntry, \
     CTkTextbox, CTkOptionMenu, CTkScrollableFrame
 
-from tkinter import END
+from tkinter import END, StringVar
 
 from carlogger.items.entry_category import EntryCategory
+from carlogger.util import is_scheduled_entry
 
 
 class EditEntryPopup:
@@ -11,10 +12,14 @@ class EditEntryPopup:
         self.master = master
         self.root = root
         self.item_ref = item_ref
+        self.scheduled: bool = is_scheduled_entry(self.item_ref)
+        self.og_item_values = self.item_ref.to_json()
 
         self.cars = self.root.cars
         self.car_names = [car.car_info.name for car in self.cars]
         self.current_collection = self.item_ref.component.parent
+
+        # ===== Widget ===== #
 
         self.main_frame = CTkFrame(self.master)
         self.main_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
@@ -181,10 +186,20 @@ class EditEntryPopup:
         self.property_container.grid(row=1, column=0, columnspan=5, sticky='w')
 
         self.property_container.create_properties()
+
+        # ===== Save Changes Button ===== #
+
+        self.save_button = CTkButton(self.edit_main_frame,
+                                     text="Save Changes",
+                                     font=('Lato', 20),
+                                     fg_color='green',
+                                     corner_radius=10,
+                                     command=self.save_changes)
+        self.save_button.grid(row=1, column=0, sticky='w', padx=15, pady=5)
         
         # ===== ScheduledLogEntry Options ===== #
 
-        if not self.item_ref.__class__.__name__ == 'ScheduledLogEntry':
+        if not self.scheduled:
             return
 
         self.edit_right_frame = CTkFrame(self.edit_main_frame, fg_color='#403f3f')
@@ -221,8 +236,7 @@ class EditEntryPopup:
         self.rule_label.grid(row=0, column=0, sticky='w')
 
         self.rule_menu = CTkOptionMenu(self.rule_frame,
-                                       values=['date', 'mileage'],
-                                       command=self.on_rule_selection_change)
+                                       values=['date', 'mileage'])
         self.rule_menu.grid(row=1, column=0, sticky='w')
 
     def on_car_selection_change(self, selected_option):
@@ -242,12 +256,23 @@ class EditEntryPopup:
     def get_component_names(self) -> list[str]:
         return [comp.name for comp in self.current_collection.components]
 
-    def on_rule_selection_change(self, selected_option):
-        self.item_ref = selected_option.lower()
-        #self.item_ref.create_schedule_rule_obj()
-
     def add_new_property(self):
         self.property_container.add_property()
+
+    def save_changes(self):
+        updated_data: dict = dict()
+        updated_data['date'] = self.date_entry.get()
+        updated_data['desc'] = self.desc_entry.get(1.0, END)
+        updated_data['component'] = self.current_collection.get_component_by_name(self.component_menu.get())
+        updated_data['category'] = self.category_menu.get()
+        updated_data['mileage'] = int(self.mileage_entry.get())
+        updated_data['custom_info'] = self.property_container.get_properties()
+
+        if self.scheduled:
+            updated_data['frequency'] = int(self.frequency_entry.get())
+            updated_data['rule'] = self.rule_menu.get().lower()
+
+        self.root.app_session.update_entry(self.root.selected_car, self.item_ref, updated_data)
 
 
 class PropertyContainer(CTkFrame):
@@ -260,9 +285,17 @@ class PropertyContainer(CTkFrame):
         self.properties: dict[str, ...] = item_ref.custom_info
         self.property_widgets: list[PropertyItem] = []
 
+    def get_properties(self) -> dict:
+        d = {}
+        for pw in self.property_widgets:
+            d[pw.property_name.get()] = pw.get_val()
+
+        return d
+
     def add_property(self, name: str = 'New Property', value='Enter value'):
         new_item = PropertyItem(self, self.root, name, value, len(self.properties))
         self.property_widgets.append(new_item)
+        self.properties[name] = value
 
     def create_properties(self):
         for p in self.properties.items():
@@ -276,17 +309,17 @@ class PropertyItem:
 
         self.index: int = index
 
-        self.property_name: str = property_name
-        self.property_value = property_value
+        self.property_name = StringVar(value=property_name)
+        self.property_value = StringVar(value=property_value)
 
         # ===== Widget ===== #
 
         self.property_frame = CTkFrame(self.master, fg_color='gray', width=400)
         self.property_frame.pack(fill='x', anchor='w', padx=2, pady=2)
 
-        self.property_name_label = CTkEntry(self.property_frame, font=('Lato', 17), width=200)
-        self.property_name_label.insert(0, self.property_name.capitalize())
-        self.property_name_label.grid(row=0, column=0, sticky='w', padx=3, pady=2)
+        self.property_name_entry = CTkEntry(self.property_frame, font=('Lato', 17), width=200)
+        self.property_name_entry.insert(0, self.property_name.get().capitalize())
+        self.property_name_entry.grid(row=0, column=0, sticky='w', padx=3, pady=2)
 
         self.separator = CTkLabel(self.property_frame,
                                   text='',
@@ -296,6 +329,16 @@ class PropertyItem:
                                   font=('Arial', 2))
         self.separator.grid(row=0, column=1, sticky='w', padx=10)
 
-        self.property_value_label = CTkEntry(self.property_frame, font=('Lato', 17), width=300)
-        self.property_value_label.insert(0, self.property_value)
-        self.property_value_label.grid(row=0, column=2, sticky='w', padx=3, pady=2)
+        self.property_value_entry = CTkEntry(self.property_frame, font=('Lato', 17), width=300)
+        self.property_value_entry.insert(0, self.property_value.get())
+        self.property_value_entry.grid(row=0, column=2, sticky='w', padx=3, pady=2)
+
+    def get_val(self):
+        val = self.property_value_entry.get()
+        if val.isdigit():
+            if val.find(".") != -1 or val.find(",") != -1:
+                return float(val)
+            else:
+                return int(val)
+        else:
+            return val

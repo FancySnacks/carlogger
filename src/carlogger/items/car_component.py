@@ -104,8 +104,9 @@ class CarComponent:
                                           _id=str(uuid.uuid1()),
                                           custom_info=entry_data.get('custom_info') or {},
                                           frequency=entry_data['frequency'],
-                                          repeating=entry_data['repeating'],
-                                          rule=entry_data.get('rule', 'date'))
+                                          repeating=entry_data['repeating'])
+
+            new_entry.rule = entry_data.get('rule', 'date')
 
             if entry_data['frequency'] <= 0 and entry_data['repeating'] is True:
                 raise ValueError("Frequency of scheduled entry cannot be 0 if it's supposed to be repeating!")
@@ -133,8 +134,9 @@ class CarComponent:
                                           custom_info=entry_data.get('custom_info') or {},
                                           frequency=entry_data['frequency'],
                                           repeating=entry_data['repeating'],
-                                          rule=entry_data.get('rule', 'date'),
                                           _from_file=True)
+
+            new_entry.rule = entry_data.get('rule', 'date')
 
             if entry_data['frequency'] <= 0 and entry_data['repeating'] is True:
                 raise ValueError("Frequency of scheduled entry cannot be 0 if it's supposed to be repeating!")

@@ -120,3 +120,11 @@ def date_n_days_from_now(days: int) -> str:
     new_date = date_today - datetime.timedelta(days=days * -1)
     new_date = (new_date.day, new_date.month, new_date.year)
     return format_tuple_to_date_string(new_date)
+
+
+# ===== Items ====== #
+
+
+def is_scheduled_entry(entry) -> bool:
+    return entry.__class__.__name__ == 'ScheduledLogEntry'
+
