@@ -8,11 +8,12 @@ from carlogger.util import is_scheduled_entry, dict_diff
 
 
 class EditEntryPopup:
-    def __init__(self, master, root, item_ref):
+    def __init__(self, master, root, item_ref, item_widget):
         self.master = master
         self.root = root
         self.item_ref = item_ref
         self.scheduled: bool = is_scheduled_entry(self.item_ref)
+        self.item_widget = item_widget
 
         self.og_item_values = self.item_ref.to_json()
         self.og_item_values['component'] = self.item_ref.component
@@ -37,7 +38,7 @@ class EditEntryPopup:
                                      corner_radius=0,
                                      anchor='center',
                                      fg_color='transparent',
-                                     command=self.main_frame.destroy)
+                                     command=self.close_menu)
         self.back_button.grid(row=0, column=0, pady=5, padx=10, sticky='w')
 
         self.label = CTkLabel(self.top_frame, text="Edit Entry", font=('Lato', 30))
@@ -304,6 +305,7 @@ class EditEntryPopup:
 
     def add_new_property(self):
         self.property_container.add_property()
+        self.track_changes()
 
     def collect_changes(self):
         updated_data: dict = dict()
@@ -323,6 +325,7 @@ class EditEntryPopup:
 
     def save_changes(self):
         changed_data = self.collect_changes()
+        print(changed_data)
         self._reset_button()
         self.root.app_session.update_entry(self.root.selected_car, self.item_ref, changed_data)
 
@@ -338,6 +341,11 @@ class EditEntryPopup:
     def _reset_button(self, *args):
         self.saveb_button.configure(state='disabled')
         self.saveb_label.configure(text='')
+
+    def close_menu(self, *args):
+        self.item_widget.update_all_info()
+        self.main_frame.destroy()
+        del self
 
 
 class PropertyContainer(CTkFrame):
@@ -362,7 +370,6 @@ class PropertyContainer(CTkFrame):
         new_item = PropertyItem(self, self.root, name, value, len(self.properties))
         self.property_widgets.append(new_item)
         self.properties[name] = value
-        self.track_changes()
 
     def create_properties(self):
         for p in self.properties.items():

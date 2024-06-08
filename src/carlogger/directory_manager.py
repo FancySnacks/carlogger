@@ -75,6 +75,11 @@ class DirectoryManager:
             if len(comp.log_entries) > 0:
                 item_sorter = ItemSorter(comp.log_entries, 'latest')
                 comp.log_entries = item_sorter.get_sorted_list()
+
+            if len(comp.scheduled_log_entries) > 0:
+                item_sorter = ItemSorter(comp.scheduled_log_entries, 'latest')
+                comp.scheduled_log_entries = item_sorter.get_sorted_list()
+
             self.data_manager.save_file(comp, comp.get_target_path(self.data_manager.suffix))
 
     def load_car_dir(self, car_name: str):

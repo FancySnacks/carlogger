@@ -148,8 +148,8 @@ class SortableItemList(CTkFrame):
         for child in self.item_frame.winfo_children():
             child.destroy()
 
-    def open_entry_edit_window(self, item_ref):
-        self.parent.root.open_entry_edit_window(item_ref)
+    def open_entry_edit_window(self, item_ref, item_widget):
+        self.parent.root.open_entry_edit_window(item_ref, item_widget)
 
 
 class SortButton(CTkButton):
@@ -298,7 +298,7 @@ class Item(CTkFrame):
         return f"{self.item_ref.mileage} km"
 
     def open_entry_edit_window(self):
-        self.parent.open_entry_edit_window(self.item_ref)
+        self.parent.open_entry_edit_window(self.item_ref, self)
 
 
 class ScheduledLogEntryItem(Item):

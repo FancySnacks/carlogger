@@ -95,5 +95,5 @@ class RootWindow(CTk):
     def reset_item_list_widget(self):
         self.item_container.collapse_widget()
 
-    def open_entry_edit_window(self, item_ref):
-        self.edit_entry_popup = EditEntryPopup(self.main_frame, self, item_ref)
+    def open_entry_edit_window(self, item_ref, item_widget):
+        self.edit_entry_popup = EditEntryPopup(self.main_frame, self, item_ref, item_widget)
