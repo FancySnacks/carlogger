@@ -60,6 +60,7 @@ class CarComponent:
                                  component=self,
                                  _id=str(uuid.uuid1()),
                                  custom_info=entry_data.get('custom_info') or {})
+
         except Exception:
             Printer.print_msg(None, 'ADD_FAIL', name="new entry", relation=self.name)
         else:

@@ -340,3 +340,4 @@ class ScheduledLogEntryItem(Item):
 
         new_entry = self.item_ref.component.latest_entry
         self.parent.parent.item_list_widgets[1].create_log_entry(new_entry)
+        self.parent.refresh_items()
