@@ -11,17 +11,31 @@ from pathlib import Path
 from carlogger.const import CARS_PATH, TODAY, ITEM_FILE_EXTENSIONS, InvalidFileExtension, INVALID_FILE_EXTENSION_MESSAGE
 
 
+# ===== General ===== #
+
+def dict_diff(dict1: dict, dict2: dict) -> dict:
+    """Compare two dictionaries and return first dictionary only with values that are unique."""
+    return {k: v for k, v in dict1.items() if dict2[k] != v}
+
+
+# ===== Items ===== #
+
+def is_scheduled_entry(entry) -> bool:
+    return entry.__class__.__name__ == 'ScheduledLogEntry'
+
+
 def sort_key_is_attrib(key: str, item) -> bool:
     try:
         getattr(item, key)
         return True
-    except Exception as e:
+    except Exception:
         return False
+
 
 def is_valid_entry_id(entry_id: str) -> bool:
     """Checks whether passed string is a valid entry id."""
     try:
-        test = uuid.UUID(entry_id, version=1)
+        uuid.UUID(entry_id, version=1)
         return True
     except TypeError:
         return False
@@ -80,7 +94,7 @@ def format_date_string_to_tuple(date: str) -> tuple[int]:
 
 
 def date_string_to_date(date: str) -> datetime.date:
-    """Format time string to a datetime.date class"""
+    """Format time string to a datetime date class"""
     date_tuple = tuple([int(x) for x in date.split('-')])
     return datetime.date(year=date_tuple[2], month=date_tuple[1], day=date_tuple[0])
 
@@ -120,11 +134,3 @@ def date_n_days_from_now(days: int) -> str:
     new_date = date_today - datetime.timedelta(days=days * -1)
     new_date = (new_date.day, new_date.month, new_date.year)
     return format_tuple_to_date_string(new_date)
-
-
-# ===== Items ====== #
-
-
-def is_scheduled_entry(entry) -> bool:
-    return entry.__class__.__name__ == 'ScheduledLogEntry'
-

@@ -184,13 +184,15 @@ class ScheduledLogEntry(LogEntry):
 
     frequency: int = 1
     repeating: bool = False
-    _rule: str = "date"
+    _rule: str = 'date'
     _from_file: bool = False
     _schedule_obj: LogEntryScheduleRule = field(init=False, repr=False, default=None)
 
     def __post_init__(self):
         if self.date == "":
             self.date = TODAY
+
+        self._count = 0
 
     @property
     def rule(self):
@@ -200,7 +202,14 @@ class ScheduledLogEntry(LogEntry):
     def rule(self, new: str):
         self._rule = new
         self._schedule_obj = self.create_schedule_rule_obj()
-        self.repeat()
+
+        if self._from_file:
+            if self._count > 0:
+                self.repeat()
+            else:
+                self._count += 1
+        else:
+            self.repeat()
 
     def filter_options(self) -> list[str]:
         return ['id', 'desc', 'date', 'component', 'category', 'mileage', 'frequency'] + list(self.custom_info.keys())

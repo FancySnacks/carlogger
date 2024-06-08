@@ -1,10 +1,10 @@
 from customtkinter import CTk, CTkFrame, CTkLabel, CTkButton, CTkEntry, \
     CTkTextbox, CTkOptionMenu, CTkScrollableFrame
 
-from tkinter import END, StringVar
+from tkinter import END, StringVar, IntVar
 
 from carlogger.items.entry_category import EntryCategory
-from carlogger.util import is_scheduled_entry
+from carlogger.util import is_scheduled_entry, dict_diff
 
 
 class EditEntryPopup:
@@ -13,7 +13,10 @@ class EditEntryPopup:
         self.root = root
         self.item_ref = item_ref
         self.scheduled: bool = is_scheduled_entry(self.item_ref)
+
         self.og_item_values = self.item_ref.to_json()
+        self.og_item_values['component'] = self.item_ref.component
+        self.og_item_values['desc'] = self.item_ref.desc.strip()
 
         self.cars = self.root.cars
         self.car_names = [car.car_info.name for car in self.cars]
@@ -56,15 +59,22 @@ class EditEntryPopup:
 
         # ===== Date ===== #
 
+        self.date_var = StringVar()
+        self.date_var.set(self.item_ref.date)
+
         self.date_frame = CTkFrame(self.edit_left_frame, fg_color='transparent')
         self.date_frame.grid(row=0, column=0, sticky='w', pady=10, padx=10)
 
         self.date_label = CTkLabel(self.date_frame, text="Date", font=('Lato', 20))
         self.date_label.grid(row=0, column=0, sticky='w')
 
-        self.date_entry = CTkEntry(self.date_frame, font=('Lato', 20), placeholder_text='Enter date (DD-MM-YYYY)')
-        self.date_entry.insert(0, self.item_ref.date)
+        self.date_entry = CTkEntry(self.date_frame,
+                                   font=('Lato', 20),
+                                   placeholder_text='Enter date (DD-MM-YYYY)',
+                                   textvariable=self.date_var)
         self.date_entry.grid(row=1, column=0, sticky='w')
+
+        self.date_var.trace_add('write', self._track_changes)
 
         self.date_hint_label = CTkLabel(self.date_frame, text="format: DD-MM-YYYY", font=('Lato', 12))
         self.date_hint_label.grid(row=2, column=0, sticky='w', pady=3)
@@ -80,6 +90,8 @@ class EditEntryPopup:
         self.desc_entry = CTkTextbox(self.desc_frame, font=('Lato', 20), width=580, height=100)
         self.desc_entry.insert(END, self.item_ref.desc)
         self.desc_entry.grid(row=1, column=0, sticky='w')
+
+        self.desc_entry.bind('<Key>', self._track_changes)
 
         # ===== Parents ===== #
 
@@ -129,7 +141,8 @@ class EditEntryPopup:
         self.component_label.grid(row=0, column=0, sticky='w')
 
         self.component_menu = CTkOptionMenu(self.component_frame,
-                                            values=self.get_component_names())
+                                            values=self.get_component_names(),
+                                            command=self.on_component_selection_change)
         self.component_menu.set(self.item_ref.component.name)
         self.component_menu.grid(row=1, column=0, sticky='w')
 
@@ -142,11 +155,15 @@ class EditEntryPopup:
         self.category_label.grid(row=0, column=0, sticky='w')
 
         self.category_menu = CTkOptionMenu(self.category_frame,
-                                           values=[e for e in EntryCategory])
+                                           values=[e for e in EntryCategory],
+                                           command=self.on_category_selection_change)
         self.category_menu.set(self.item_ref.category)
         self.category_menu.grid(row=1, column=0, sticky='w')
 
         # ===== Mileage ===== #
+
+        self.mileage_var = IntVar()
+        self.mileage_var.set(self.item_ref.mileage)
 
         self.mileage_frame = CTkFrame(self.edit_left_frame, fg_color='transparent')
         self.mileage_frame.grid(row=6, column=0, sticky='w', pady=10, padx=10)
@@ -154,12 +171,16 @@ class EditEntryPopup:
         self.mileage_label = CTkLabel(self.mileage_frame, text="Mileage", font=('Lato', 20))
         self.mileage_label.grid(row=0, column=0, sticky='w')
 
-        self.mileage_entry = CTkEntry(self.mileage_frame, font=('Lato', 20), placeholder_text='Enter mileage (km)')
-        self.mileage_entry.insert(0, self.item_ref.mileage)
+        self.mileage_entry = CTkEntry(self.mileage_frame,
+                                      font=('Lato', 20),
+                                      placeholder_text='Enter mileage (km)',
+                                      textvariable=self.mileage_var)
         self.mileage_entry.grid(row=1, column=0, sticky='w')
 
         self.mileage_unit_label = CTkLabel(self.mileage_frame, text="km", font=('Lato', 20))
         self.mileage_unit_label.grid(row=1, column=1, sticky='w', padx=10)
+
+        self.mileage_var.trace_add('write', self._track_changes)
 
         # ===== Custom Info ===== #
 
@@ -194,61 +215,82 @@ class EditEntryPopup:
                                      font=('Lato', 20),
                                      fg_color='green',
                                      corner_radius=10,
-                                     command=self.save_changes)
+                                     command=self.save_changes,
+                                     state='disabled')
         self.save_button.grid(row=1, column=0, sticky='w', padx=15, pady=5)
-        
-        # ===== ScheduledLogEntry Options ===== #
 
-        if not self.scheduled:
-            return
+        if self.scheduled:
 
-        self.edit_right_frame = CTkFrame(self.edit_main_frame, fg_color='#403f3f')
-        self.edit_right_frame.grid(row=0, column=2, sticky='nsew', pady=10, padx=10)
+            # ===== ScheduledLogEntry Options ===== #
 
-        # ===== Frequency ===== #
+            self.edit_right_frame = CTkFrame(self.edit_main_frame, fg_color='#403f3f')
+            self.edit_right_frame.grid(row=0, column=2, sticky='nsew', pady=10, padx=10)
 
-        self.frequency_frame = CTkFrame(self.edit_right_frame, fg_color='transparent', width=550)
-        self.frequency_frame.grid(row=0, column=0, sticky='w', pady=10, padx=10)
+            # ===== Frequency ===== #
 
-        self.frequency_label = CTkLabel(self.frequency_frame, text="Frequency", font=('Lato', 20))
-        self.frequency_label.grid(row=0, column=0, sticky='w')
+            self.frequency_var = IntVar()
+            self.frequency_var.set(self.item_ref.frequency)
 
-        self.frequency_entry = CTkEntry(self.frequency_frame, font=('Lato', 20), placeholder_text='Frequency')
-        self.frequency_entry.insert(0, self.item_ref.frequency)
-        self.frequency_entry.grid(row=1, column=0, sticky='w')
+            self.frequency_frame = CTkFrame(self.edit_right_frame, fg_color='transparent', width=550)
+            self.frequency_frame.grid(row=0, column=0, sticky='w', pady=10, padx=10)
 
-        self.frequency_unit_label = CTkLabel(self.frequency_frame,
-                                             text='days' if self.item_ref.get_schedule_rule() == 'date' else 'km',
-                                             font=('Lato', 20))
-        self.frequency_unit_label.grid(row=1, column=1, sticky='w')
+            self.frequency_label = CTkLabel(self.frequency_frame, text="Frequency", font=('Lato', 20))
+            self.frequency_label.grid(row=0, column=0, sticky='w')
 
-        self.frequency_hint_label = CTkLabel(self.frequency_frame,
-                                             text="Leave empty for one-time entry",
-                                             font=('Lato', 12))
-        self.frequency_hint_label.grid(row=2, column=0, sticky='w', pady=3)
+            self.frequency_entry = CTkEntry(self.frequency_frame,
+                                            font=('Lato', 20),
+                                            placeholder_text='Frequency',
+                                            textvariable=self.frequency_var)
+            self.frequency_entry.grid(row=1, column=0, sticky='w')
 
-        # ===== Rule ===== #
+            self.frequency_unit_label = CTkLabel(self.frequency_frame,
+                                                 text='days' if self.item_ref.get_schedule_rule() == 'date' else 'km',
+                                                 font=('Lato', 20))
+            self.frequency_unit_label.grid(row=1, column=1, sticky='w')
 
-        self.rule_frame = CTkFrame(self.edit_right_frame, fg_color='transparent', width=550)
-        self.rule_frame.grid(row=1, column=0, sticky='w', pady=10, padx=10)
+            self.frequency_hint_label = CTkLabel(self.frequency_frame,
+                                                 text="Leave empty for one-time entry",
+                                                 font=('Lato', 12))
+            self.frequency_hint_label.grid(row=2, column=0, sticky='w', pady=3)
 
-        self.rule_label = CTkLabel(self.rule_frame, text="Rule", font=('Lato', 20))
-        self.rule_label.grid(row=0, column=0, sticky='w')
+            self.frequency_var.trace_add('write', self._track_changes)
 
-        self.rule_menu = CTkOptionMenu(self.rule_frame,
-                                       values=['date', 'mileage'])
-        self.rule_menu.grid(row=1, column=0, sticky='w')
+            # ===== Rule ===== #
+
+            self.rule_frame = CTkFrame(self.edit_right_frame, fg_color='transparent', width=550)
+            self.rule_frame.grid(row=1, column=0, sticky='w', pady=10, padx=10)
+
+            self.rule_label = CTkLabel(self.rule_frame, text="Rule", font=('Lato', 20))
+            self.rule_label.grid(row=0, column=0, sticky='w')
+
+            self.rule_menu = CTkOptionMenu(self.rule_frame,
+                                           values=['date', 'mileage'],
+                                           command=self.on_rule_selection_change)
+            self.rule_menu.grid(row=1, column=0, sticky='w')
+
+    def on_category_selection_change(self, selected_option):
+        self._track_changes(selected_option)
+
+    def on_rule_selection_change(self, selected_option):
+        self._track_changes(selected_option)
 
     def on_car_selection_change(self, selected_option):
+        self._track_changes(selected_option)
+
         colls = [collection.name for collection in self.root.selected_car.collections]
         self.collection_menu.configure(values=colls)
         self.component_menu.set(colls[0])
 
     def on_collection_selection_change(self, selected_option):
+        self._track_changes(selected_option)
+
         self.current_collection = self.root.selected_car.get_collection_by_name(selected_option)
         comps = [component.name for component in self.current_collection.components]
         self.component_menu.configure(values=comps)
         self.component_menu.set(comps[0])
+
+    def on_component_selection_change(self, selected_option):
+        self._track_changes(selected_option)
 
     def get_collection_names(self) -> list[str]:
         return [coll.name for coll in self.root.selected_car.collections]
@@ -259,20 +301,33 @@ class EditEntryPopup:
     def add_new_property(self):
         self.property_container.add_property()
 
-    def save_changes(self):
+    def collect_changes(self):
         updated_data: dict = dict()
         updated_data['date'] = self.date_entry.get()
-        updated_data['desc'] = self.desc_entry.get(1.0, END)
+        updated_data['desc'] = self.desc_entry.get(1.0, END).strip()
         updated_data['component'] = self.current_collection.get_component_by_name(self.component_menu.get())
         updated_data['category'] = self.category_menu.get()
-        updated_data['mileage'] = int(self.mileage_entry.get())
+        updated_data['mileage'] = self.mileage_var.get()
         updated_data['custom_info'] = self.property_container.get_properties()
 
         if self.scheduled:
-            updated_data['frequency'] = int(self.frequency_entry.get())
+            updated_data['frequency'] = self.frequency_var.get()
             updated_data['rule'] = self.rule_menu.get().lower()
 
-        self.root.app_session.update_entry(self.root.selected_car, self.item_ref, updated_data)
+        updated_data = dict_diff(updated_data, self.og_item_values)
+        return updated_data
+
+    def save_changes(self):
+        changed_data = self.collect_changes()
+        self.root.app_session.update_entry(self.root.selected_car, self.item_ref, changed_data)
+
+    def _track_changes(self, *args):
+        changed_data = self.collect_changes()
+
+        if changed_data == self.og_item_values or changed_data == {}:
+            self.save_button.configure(state='disabled')
+        else:
+            self.save_button.configure(state='normal')
 
 
 class PropertyContainer(CTkFrame):
