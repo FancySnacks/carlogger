@@ -57,6 +57,23 @@ class EditEntryPopup:
         self.edit_mid_frame = CTkFrame(self.edit_main_frame, fg_color='#403f3f')
         self.edit_mid_frame.grid(row=0, column=1, sticky='nsew', pady=10, padx=10)
 
+        # ===== Save Changes Button ===== #
+
+        self.saveb_frame = CTkFrame(self.edit_main_frame, fg_color='transparent')
+        self.saveb_frame.grid(row=1, column=0, sticky='w')
+
+        self.saveb_button = CTkButton(self.saveb_frame,
+                                      text="Save Changes",
+                                      font=('Lato', 20),
+                                      fg_color='green',
+                                      corner_radius=10,
+                                      command=self.save_changes,
+                                      state='disabled')
+        self.saveb_button.grid(row=0, column=0, sticky='w', padx=15, pady=5)
+
+        self.saveb_label = CTkLabel(self.saveb_frame, text="", font=('Lato', 16))
+        self.saveb_label.grid(row=0, column=1, sticky='w')
+
         # ===== Date ===== #
 
         self.date_var = StringVar(value=self.item_ref.date)
@@ -207,23 +224,6 @@ class EditEntryPopup:
 
         self.property_container.create_properties()
 
-        # ===== Save Changes Button ===== #
-
-        self.save_frame = CTkFrame(self.edit_main_frame, fg_color='transparent')
-        self.save_frame.grid(row=1, column=0, sticky='w')
-
-        self.save_button = CTkButton(self.save_frame,
-                                     text="Save Changes",
-                                     font=('Lato', 20),
-                                     fg_color='green',
-                                     corner_radius=10,
-                                     command=self.save_changes,
-                                     state='disabled')
-        self.save_button.grid(row=0, column=0, sticky='w', padx=15, pady=5)
-
-        self.save_label = CTkLabel(self.save_frame, text="", font=('Lato', 16))
-        self.save_label.grid(row=0, column=1, sticky='w')
-
         if self.scheduled:
 
             # ===== ScheduledLogEntry Options ===== #
@@ -329,11 +329,11 @@ class EditEntryPopup:
         changed_data = self.collect_changes()
 
         if changed_data == self.og_item_values or changed_data == {}:
-            self.save_button.configure(state='disabled')
-            self.save_label.configure(text='')
+            self.saveb_button.configure(state='disabled')
+            self.saveb_label.configure(text='')
         else:
-            self.save_button.configure(state='normal')
-            self.save_label.configure(text="There are unsaved changes.")
+            self.saveb_button.configure(state='normal')
+            self.saveb_label.configure(text="There are unsaved changes.")
 
 
 class PropertyContainer(CTkFrame):
