@@ -279,19 +279,19 @@ class EditEntryPopup:
         self.track_changes(selected_option)
 
     def on_car_selection_change(self, selected_option):
-        self.track_changes(selected_option)
-
         colls = [collection.name for collection in self.root.selected_car.collections]
         self.collection_menu.configure(values=colls)
         self.component_menu.set(colls[0])
 
-    def on_collection_selection_change(self, selected_option):
         self.track_changes(selected_option)
 
+    def on_collection_selection_change(self, selected_option):
         self.current_collection = self.root.selected_car.get_collection_by_name(selected_option)
         comps = [component.name for component in self.current_collection.components]
         self.component_menu.configure(values=comps)
         self.component_menu.set(comps[0])
+
+        self.track_changes(selected_option)
 
     def on_component_selection_change(self, selected_option):
         self.track_changes(selected_option)
@@ -323,17 +323,21 @@ class EditEntryPopup:
 
     def save_changes(self):
         changed_data = self.collect_changes()
+        self._reset_button()
         self.root.app_session.update_entry(self.root.selected_car, self.item_ref, changed_data)
 
     def track_changes(self, *args):
         changed_data = self.collect_changes()
 
         if changed_data == self.og_item_values or changed_data == {}:
-            self.saveb_button.configure(state='disabled')
-            self.saveb_label.configure(text='')
+            self._reset_button()
         else:
             self.saveb_button.configure(state='normal')
             self.saveb_label.configure(text="There are unsaved changes.")
+
+    def _reset_button(self, *args):
+        self.saveb_button.configure(state='disabled')
+        self.saveb_label.configure(text='')
 
 
 class PropertyContainer(CTkFrame):
