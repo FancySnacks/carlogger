@@ -59,8 +59,7 @@ class EditEntryPopup:
 
         # ===== Date ===== #
 
-        self.date_var = StringVar()
-        self.date_var.set(self.item_ref.date)
+        self.date_var = StringVar(value=self.item_ref.date)
 
         self.date_frame = CTkFrame(self.edit_left_frame, fg_color='transparent')
         self.date_frame.grid(row=0, column=0, sticky='w', pady=10, padx=10)
@@ -74,7 +73,7 @@ class EditEntryPopup:
                                    textvariable=self.date_var)
         self.date_entry.grid(row=1, column=0, sticky='w')
 
-        self.date_var.trace_add('write', self._track_changes)
+        self.date_var.trace_add('write', self.track_changes)
 
         self.date_hint_label = CTkLabel(self.date_frame, text="format: DD-MM-YYYY", font=('Lato', 12))
         self.date_hint_label.grid(row=2, column=0, sticky='w', pady=3)
@@ -91,7 +90,7 @@ class EditEntryPopup:
         self.desc_entry.insert(END, self.item_ref.desc)
         self.desc_entry.grid(row=1, column=0, sticky='w')
 
-        self.desc_entry.bind('<Key>', self._track_changes)
+        self.desc_entry.bind('<Key>', self.track_changes)
 
         # ===== Parents ===== #
 
@@ -162,8 +161,7 @@ class EditEntryPopup:
 
         # ===== Mileage ===== #
 
-        self.mileage_var = IntVar()
-        self.mileage_var.set(self.item_ref.mileage)
+        self.mileage_var = IntVar(value=self.item_ref.mileage)
 
         self.mileage_frame = CTkFrame(self.edit_left_frame, fg_color='transparent')
         self.mileage_frame.grid(row=6, column=0, sticky='w', pady=10, padx=10)
@@ -180,7 +178,7 @@ class EditEntryPopup:
         self.mileage_unit_label = CTkLabel(self.mileage_frame, text="km", font=('Lato', 20))
         self.mileage_unit_label.grid(row=1, column=1, sticky='w', padx=10)
 
-        self.mileage_var.trace_add('write', self._track_changes)
+        self.mileage_var.trace_add('write', self.track_changes)
 
         # ===== Custom Info ===== #
 
@@ -201,6 +199,7 @@ class EditEntryPopup:
 
         self.property_container = PropertyContainer(self.custom_frame,
                                                     self.root,
+                                                    self,
                                                     self.item_ref,
                                                     width=250,
                                                     fg_color='transparent')
@@ -210,10 +209,10 @@ class EditEntryPopup:
 
         # ===== Save Changes Button ===== #
 
-        self.mileage_frame = CTkFrame(self.edit_main_frame, fg_color='transparent')
-        self.mileage_frame.grid(row=1, column=0, sticky='w')
+        self.save_frame = CTkFrame(self.edit_main_frame, fg_color='transparent')
+        self.save_frame.grid(row=1, column=0, sticky='w')
 
-        self.save_button = CTkButton(self.mileage_frame,
+        self.save_button = CTkButton(self.save_frame,
                                      text="Save Changes",
                                      font=('Lato', 20),
                                      fg_color='green',
@@ -222,7 +221,7 @@ class EditEntryPopup:
                                      state='disabled')
         self.save_button.grid(row=0, column=0, sticky='w', padx=15, pady=5)
 
-        self.save_label = CTkLabel(self.mileage_frame, text="", font=('Lato', 16))
+        self.save_label = CTkLabel(self.save_frame, text="", font=('Lato', 16))
         self.save_label.grid(row=0, column=1, sticky='w')
 
         if self.scheduled:
@@ -234,8 +233,7 @@ class EditEntryPopup:
 
             # ===== Frequency ===== #
 
-            self.frequency_var = IntVar()
-            self.frequency_var.set(self.item_ref.frequency)
+            self.frequency_var = IntVar(value=self.item_ref.frequency)
 
             self.frequency_frame = CTkFrame(self.edit_right_frame, fg_color='transparent', width=550)
             self.frequency_frame.grid(row=0, column=0, sticky='w', pady=10, padx=10)
@@ -259,7 +257,7 @@ class EditEntryPopup:
                                                  font=('Lato', 12))
             self.frequency_hint_label.grid(row=2, column=0, sticky='w', pady=3)
 
-            self.frequency_var.trace_add('write', self._track_changes)
+            self.frequency_var.trace_add('write', self.track_changes)
 
             # ===== Rule ===== #
 
@@ -275,20 +273,20 @@ class EditEntryPopup:
             self.rule_menu.grid(row=1, column=0, sticky='w')
 
     def on_category_selection_change(self, selected_option):
-        self._track_changes(selected_option)
+        self.track_changes(selected_option)
 
     def on_rule_selection_change(self, selected_option):
-        self._track_changes(selected_option)
+        self.track_changes(selected_option)
 
     def on_car_selection_change(self, selected_option):
-        self._track_changes(selected_option)
+        self.track_changes(selected_option)
 
         colls = [collection.name for collection in self.root.selected_car.collections]
         self.collection_menu.configure(values=colls)
         self.component_menu.set(colls[0])
 
     def on_collection_selection_change(self, selected_option):
-        self._track_changes(selected_option)
+        self.track_changes(selected_option)
 
         self.current_collection = self.root.selected_car.get_collection_by_name(selected_option)
         comps = [component.name for component in self.current_collection.components]
@@ -296,7 +294,7 @@ class EditEntryPopup:
         self.component_menu.set(comps[0])
 
     def on_component_selection_change(self, selected_option):
-        self._track_changes(selected_option)
+        self.track_changes(selected_option)
 
     def get_collection_names(self) -> list[str]:
         return [coll.name for coll in self.root.selected_car.collections]
@@ -327,7 +325,7 @@ class EditEntryPopup:
         changed_data = self.collect_changes()
         self.root.app_session.update_entry(self.root.selected_car, self.item_ref, changed_data)
 
-    def _track_changes(self, *args):
+    def track_changes(self, *args):
         changed_data = self.collect_changes()
 
         if changed_data == self.og_item_values or changed_data == {}:
@@ -339,13 +337,14 @@ class EditEntryPopup:
 
 
 class PropertyContainer(CTkFrame):
-    def __init__(self, master, root: CTk, item_ref, **values):
+    def __init__(self, master, root: CTk, parent: EditEntryPopup, item_ref, **values):
         super().__init__(master, **values)
         self.master = master
         self.root = root
+        self.parent = parent
         self.item_ref = item_ref
 
-        self.properties: dict[str, ...] = item_ref.custom_info
+        self.properties: dict[str, ...] = dict(item_ref.custom_info)
         self.property_widgets: list[PropertyItem] = []
 
     def get_properties(self) -> dict:
@@ -359,10 +358,14 @@ class PropertyContainer(CTkFrame):
         new_item = PropertyItem(self, self.root, name, value, len(self.properties))
         self.property_widgets.append(new_item)
         self.properties[name] = value
+        self.track_changes()
 
     def create_properties(self):
         for p in self.properties.items():
             self.add_property(p[0], p[1])
+
+    def track_changes(self):
+        self.parent.track_changes()
 
 
 class PropertyItem:
@@ -371,6 +374,9 @@ class PropertyItem:
         self.root = root
 
         self.index: int = index
+        
+        self.og_property_name = property_name
+        self.og_property_value = property_value
 
         self.property_name = StringVar(value=property_name)
         self.property_value = StringVar(value=property_value)
@@ -380,8 +386,10 @@ class PropertyItem:
         self.property_frame = CTkFrame(self.master, fg_color='gray', width=400)
         self.property_frame.pack(fill='x', anchor='w', padx=2, pady=2)
 
-        self.property_name_entry = CTkEntry(self.property_frame, font=('Lato', 17), width=200)
-        self.property_name_entry.insert(0, self.property_name.get().capitalize())
+        self.property_name_entry = CTkEntry(self.property_frame, 
+                                            font=('Lato', 17), 
+                                            width=200, 
+                                            textvariable=self.property_name)
         self.property_name_entry.grid(row=0, column=0, sticky='w', padx=3, pady=2)
 
         self.separator = CTkLabel(self.property_frame,
@@ -392,9 +400,21 @@ class PropertyItem:
                                   font=('Arial', 2))
         self.separator.grid(row=0, column=1, sticky='w', padx=10)
 
-        self.property_value_entry = CTkEntry(self.property_frame, font=('Lato', 17), width=300)
-        self.property_value_entry.insert(0, self.property_value.get())
+        self.property_value_entry = CTkEntry(self.property_frame, 
+                                             font=('Lato', 17), 
+                                             width=300, 
+                                             textvariable=self.property_value)
         self.property_value_entry.grid(row=0, column=2, sticky='w', padx=3, pady=2)
+        
+        self.property_name.trace_add('write', self.on_property_update)
+        self.property_value.trace_add('write', self.on_property_update)
+        
+    def on_property_update(self, *args):
+        conditions = any((self.property_name.get() != self.og_property_name, 
+                          self.property_value.get() != self.og_property_value))
+        
+        if conditions:
+            self.master.track_changes()
 
     def get_val(self):
         val = self.property_value_entry.get()
