@@ -129,11 +129,15 @@ class ComponentCollection:
 
     def get_collection_by_name(self, name: str) -> ComponentCollection:
         """Find and return nested component collection by name."""
+        c = None
+
         for child in self.collections:
+            c = child
+
             if child.name == name:
                 return child
 
-        Printer.print_msg(child, 'READ_FAIL', name=name, relation=f"{self.car.car_info.name}->{self.name}")
+        Printer.print_msg(c, 'READ_FAIL', name=name, relation=f"{self.car.car_info.name}->{self.name}")
     
     def to_json(self) -> dict:
         d = {'name': self.name,

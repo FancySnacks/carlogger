@@ -325,7 +325,6 @@ class EditEntryPopup:
 
     def save_changes(self):
         changed_data = self.collect_changes()
-        print(changed_data)
         self._reset_button()
         self.root.app_session.update_entry(self.root.selected_car, self.item_ref, changed_data)
 
@@ -343,6 +342,8 @@ class EditEntryPopup:
         self.saveb_label.configure(text='')
 
     def close_menu(self, *args):
+        if self.item_ref.custom_info != self.og_item_values['custom_info']:
+            self.item_widget.create_custom_info()
         self.item_widget.update_all_info()
         self.main_frame.destroy()
         del self

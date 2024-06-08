@@ -102,7 +102,7 @@ class CarComponent:
                                           tags=entry_data['tags'],
                                           component=self,
                                           _id=str(uuid.uuid1()),
-                                          custom_info=entry_data.get('custom_info') or {},
+                                          custom_info=entry_data.get('custom_info', dict()),
                                           frequency=entry_data['frequency'],
                                           repeating=entry_data['repeating'])
 
@@ -131,7 +131,7 @@ class CarComponent:
                                           tags=entry_data['tags'],
                                           component=self,
                                           _id=entry_data['id'],
-                                          custom_info=entry_data.get('custom_info') or {},
+                                          custom_info=entry_data.get('custom_info', dict()),
                                           frequency=entry_data['frequency'],
                                           repeating=entry_data['repeating'],
                                           _from_file=True)
@@ -160,7 +160,7 @@ class CarComponent:
         else:
             Printer.print_msg(ScheduledLogEntry,
                               'ADD_SUCCESS',
-                              name=f"Entry '{entry.desc}' has been renewed for "
+                              name=f"Entry '{entry.desc.strip()}' has been renewed for "
                                    f"{entry.get_new_date()} and",
                               relation=self.name)
             entry.repeat()

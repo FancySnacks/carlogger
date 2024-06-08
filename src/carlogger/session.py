@@ -216,7 +216,8 @@ class AppSession:
         if is_scheduled_entry(entry):
             entry.get_new_date()
 
-        self.directory_manager.update_car_directory(parent_car)
+        path = entry.component.get_target_path(self.directory_manager.data_manager.suffix)
+        self.directory_manager.data_manager.save_file(entry.component, path)
 
     def set_scheduled_entry_as_done(self, parent_car: Car, entry: ScheduledLogEntry):
         """Update values of target entry and update the save file."""

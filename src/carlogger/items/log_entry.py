@@ -255,7 +255,6 @@ class ScheduledLogEntry(LogEntry):
                 'frequency': self.frequency,
                 'repeating': self.repeating
             }
-
         return d
 
     def __hash__(self):

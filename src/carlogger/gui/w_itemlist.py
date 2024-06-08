@@ -248,6 +248,10 @@ class Item(CTkFrame):
         self.edit_button.grid(row=0, column=0, sticky="nse", padx=3)
 
     def create_custom_info(self):
+        for w in self.custom_info_labels:
+            w.destroy()
+        self.custom_info_labels.clear()
+
         for index, item in enumerate(self.item_ref.custom_info.items()):
             new_label = CTkLabel(self,
                                  text=item[1],
