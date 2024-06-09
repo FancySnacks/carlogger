@@ -120,6 +120,8 @@ class DateScheduleRule(LogEntryScheduleRule):
 
         if self.get_time_remaining() > 0:
             return f"in {days} days"
+        elif self.get_time_remaining() == 0:
+            return f"Today"
         elif self.get_time_remaining() < 0:
             return f"{abs(days)} days ago"
         else:

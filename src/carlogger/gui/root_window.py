@@ -13,6 +13,8 @@ class RootWindow(CTk):
     def __init__(self):
         super().__init__()
         self.app_session = None
+        self.cars = []
+        self.selected_car = None
 
         self.title('Carlogger')
         self.geometry("1000x700")
