@@ -229,14 +229,14 @@ class EditEntryPopup:
 
             # ===== ScheduledLogEntry Options ===== #
 
-            self.edit_right_frame = CTkFrame(self.edit_main_frame, fg_color='#403f3f')
+            self.edit_right_frame = CTkFrame(self.edit_main_frame, fg_color='#403f3f', width=300)
             self.edit_right_frame.grid(row=0, column=2, sticky='nsew', pady=10, padx=10)
 
             # ===== Frequency ===== #
 
             self.frequency_var = IntVar(value=self.item_ref.frequency)
 
-            self.frequency_frame = CTkFrame(self.edit_right_frame, fg_color='transparent', width=550)
+            self.frequency_frame = CTkFrame(self.edit_right_frame, fg_color='transparent', width=300)
             self.frequency_frame.grid(row=0, column=0, sticky='w', pady=10, padx=10)
 
             self.frequency_label = CTkLabel(self.frequency_frame, text="Frequency", font=('Lato', 20))
@@ -331,15 +331,18 @@ class EditEntryPopup:
     def track_changes(self, *args):
         changed_data = self.collect_changes()
 
-        if changed_data == self.og_item_values or changed_data == {}:
+        if changed_data == self.og_item_values:
             self._reset_button()
         else:
-            self.saveb_button.configure(state='normal')
-            self.saveb_label.configure(text="There are unsaved changes.")
+            self._enable_button()
 
     def _reset_button(self, *args):
         self.saveb_button.configure(state='disabled')
         self.saveb_label.configure(text='')
+
+    def _enable_button(self):
+        self.saveb_button.configure(state='normal')
+        self.saveb_label.configure(text="There are unsaved changes.")
 
     def close_menu(self, *args):
         if self.item_ref.custom_info != self.og_item_values['custom_info']:
@@ -368,9 +371,15 @@ class PropertyContainer(CTkFrame):
         return d
 
     def add_property(self, name: str = 'New Property', value='Enter value'):
-        new_item = PropertyItem(self, self.root, name, value, len(self.properties))
+        new_item = PropertyItem(self, self.root, name, value, len(self.property_widgets))
         self.property_widgets.append(new_item)
         self.properties[name] = value
+
+    def delete_property(self, index: int, key: str):
+        self.properties.pop(key)
+        item = self.property_widgets.pop(index)
+        item.property_frame.destroy()
+        self.track_changes()
 
     def create_properties(self):
         for p in self.properties.items():
@@ -395,7 +404,7 @@ class PropertyItem:
 
         # ===== Widget ===== #
 
-        self.property_frame = CTkFrame(self.master, fg_color='gray', width=400)
+        self.property_frame = CTkFrame(self.master, fg_color='gray', width=500)
         self.property_frame.pack(fill='x', anchor='w', padx=2, pady=2)
 
         self.property_name_entry = CTkEntry(self.property_frame, 
@@ -414,13 +423,25 @@ class PropertyItem:
 
         self.property_value_entry = CTkEntry(self.property_frame, 
                                              font=('Lato', 17), 
-                                             width=300, 
+                                             width=280,
                                              textvariable=self.property_value)
         self.property_value_entry.grid(row=0, column=2, sticky='w', padx=3, pady=2)
         
         self.property_name.trace_add('write', self.on_property_update)
         self.property_value.trace_add('write', self.on_property_update)
-        
+
+        self.delete_button = CTkButton(self.property_frame,
+                                       text="x",
+                                       width=5,
+                                       font=('Lato', 20),
+                                       text_color='red',
+                                       fg_color='gray',
+                                       command=self.delete_property)
+        self.delete_button.grid(row=0, column=3, sticky='w', padx=3, pady=5)
+
+    def delete_property(self):
+        self.master.delete_property(self.index, self.property_name.get())
+
     def on_property_update(self, *args):
         conditions = any((self.property_name.get() != self.og_property_name, 
                           self.property_value.get() != self.og_property_value))
