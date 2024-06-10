@@ -1,7 +1,7 @@
 from customtkinter import CTkFrame, CTkButton, CTkLabel, CTk
 
 from carlogger.gui.c_itemlist import ItemList
-
+from carlogger.util import is_scheduled_entry
 
 class ItemContainer(CTkFrame):
     def __init__(self, master, parent_car, root: CTk, **values):
@@ -51,6 +51,14 @@ class SortableItemList(CTkFrame):
         self.item_label = CTkLabel(self.parent, text=header, font=('Lato', 20), anchor='w')
         self.item_label.pack(expand=True, fill='x', padx=10, pady=5)
 
+        self.add_button = CTkButton(self.parent,
+                                    text="+ Add Entry",
+                                    font=('Lato', 18),
+                                    fg_color='green',
+                                    width=35,
+                                    corner_radius=0)
+        self.add_button.pack(padx=10, pady=5, anchor='w')
+
         self.buttons_frame = CTkFrame(master=self.parent, height=35, fg_color="cyan")
         self.buttons_frame.pack(expand=True, fill='both', padx=10, pady=10)
 
@@ -58,6 +66,13 @@ class SortableItemList(CTkFrame):
         self.item_frame.pack(expand=True, fill='both', padx=10, pady=10)
 
         self.update_items(self.items)
+        self.set_button_message()
+
+    def set_button_message(self):
+        if is_scheduled_entry(self.items[0].item_ref):
+            self.add_button.configure(text='+ Add Scheduled Entry')
+        else:
+            self.add_button.configure(text='+ Add Entry')
 
     def sort_items(self, sort_key: str, button_ref, reverse: bool):
         if self.active_sort_button and self.active_sort_button != button_ref:
