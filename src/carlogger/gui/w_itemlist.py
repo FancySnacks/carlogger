@@ -46,18 +46,32 @@ class SortableItemList(CTkFrame):
 
         self.items: list[Item] = items
 
+        self.selected_items: list[Item] = []
+
         # ===== Widgets ==== #
 
         self.item_label = CTkLabel(self.parent, text=header, font=('Lato', 20), anchor='w')
         self.item_label.pack(expand=True, fill='x', padx=10, pady=5)
 
-        self.add_button = CTkButton(self.parent,
+        self.management_buttons_frame = CTkFrame(self.parent, fg_color='transparent')
+        self.management_buttons_frame.pack(expand=True, fill='x', pady=5)
+
+        self.add_button = CTkButton(self.management_buttons_frame,
                                     text="+ Add Entry",
                                     font=('Lato', 18),
                                     fg_color='green',
                                     width=35,
                                     corner_radius=0)
-        self.add_button.pack(padx=10, pady=5, anchor='w')
+        self.add_button.grid(row=0, column=0, sticky='w', padx=5)
+
+        self.del_button = CTkButton(self.management_buttons_frame,
+                                    text="Delete Entry",
+                                    font=('Lato', 18),
+                                    fg_color='red',
+                                    width=35,
+                                    corner_radius=0,
+                                    state='disabled')
+        self.del_button.grid(row=0, column=1, sticky='w', padx=5)
 
         self.buttons_frame = CTkFrame(master=self.parent, height=35, fg_color="cyan")
         self.buttons_frame.pack(expand=True, fill='both', padx=10, pady=10)
@@ -66,13 +80,26 @@ class SortableItemList(CTkFrame):
         self.item_frame.pack(expand=True, fill='both', padx=10, pady=10)
 
         self.update_items(self.items)
-        self.set_button_message()
+        self.set_add_button_message()
 
-    def set_button_message(self):
+    def set_add_button_message(self):
         if is_scheduled_entry(self.items[0].item_ref):
-            self.add_button.configure(text='+ Add Scheduled Entry')
+            self.add_button.configure(text="+ Add Scheduled Entry")
         else:
-            self.add_button.configure(text='+ Add Entry')
+            self.add_button.configure(text="+ Add Entry")
+
+    def set_delete_button_message(self):
+        selected_entries_count = len(self.selected_items)
+
+        if selected_entries_count > 1:
+            self.del_button.configure(text=f"Delete Entries ({selected_entries_count})")
+            self.del_button.configure(state='normal')
+        elif selected_entries_count > 0:
+            self.del_button.configure(text=f"Delete Entry")
+            self.del_button.configure(state='normal')
+        else:
+            self.del_button.configure(text=f"Delete Entry")
+            self.del_button.configure(state='disabled')
 
     def sort_items(self, sort_key: str, button_ref, reverse: bool):
         if self.active_sort_button and self.active_sort_button != button_ref:
@@ -219,7 +246,8 @@ class Item(CTkFrame):
                                     variable=self.is_selected,
                                     width=10,
                                     onvalue=True,
-                                    offvalue=False)
+                                    offvalue=False,
+                                    command=self.on_entry_selected)
         self.checkbox.grid(row=0, column=0, padx=5, pady=2)
 
         self.date_label = CTkLabel(self, text=self._get_date(), font=('Lato', 17), width=100)
@@ -271,6 +299,14 @@ class Item(CTkFrame):
                                      width=35,
                                      command=self.open_entry_edit_window)
         self.edit_button.grid(row=0, column=0, sticky="nse", padx=3)
+
+    def on_entry_selected(self, *args):
+        if self.is_selected.get():
+            self.parent.selected_items.append(self)
+        else:
+            self.parent.selected_items.remove(self)
+
+        self.parent.set_delete_button_message()
 
     def create_custom_info(self):
         for w in self.custom_info_labels:
