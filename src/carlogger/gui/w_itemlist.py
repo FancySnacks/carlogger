@@ -1,4 +1,4 @@
-from customtkinter import CTkFrame, CTkButton, CTkLabel, CTk
+from customtkinter import CTkFrame, CTkButton, CTkLabel, CTk, CTkCheckBox, BooleanVar
 
 from carlogger.gui.c_itemlist import ItemList
 from carlogger.util import is_scheduled_entry
@@ -212,8 +212,18 @@ class Item(CTkFrame):
 
         self.pack(expand=True, fill='x', padx=10, pady=5)
 
+        self.is_selected = BooleanVar(value=False)
+
+        self.checkbox = CTkCheckBox(self,
+                                    text='',
+                                    variable=self.is_selected,
+                                    width=10,
+                                    onvalue=True,
+                                    offvalue=False)
+        self.checkbox.grid(row=0, column=0, padx=5, pady=2)
+
         self.date_label = CTkLabel(self, text=self._get_date(), font=('Lato', 17), width=100)
-        self.date_label.grid(row=0, column=0, padx=5, pady=2)
+        self.date_label.grid(row=0, column=1, padx=5, pady=2)
 
         self.desc_label = CTkLabel(self,
                                    text=self._get_item_name(),
@@ -222,7 +232,7 @@ class Item(CTkFrame):
                                    width=315,
                                    justify='left',
                                    anchor='w')
-        self.desc_label.grid(row=0, column=1, padx=5, pady=2)
+        self.desc_label.grid(row=0, column=2, padx=5, pady=2)
 
         self.parent_label = CTkLabel(self,
                                      text=self.item_ref.component.name.capitalize(),
@@ -231,10 +241,10 @@ class Item(CTkFrame):
                                      width=150,
                                      justify='left',
                                      anchor='w')
-        self.parent_label.grid(row=0, column=2, padx=5, pady=2)
+        self.parent_label.grid(row=0, column=3, padx=5, pady=2)
 
         self.category_label = CTkLabel(self, text=self.item_ref.category.capitalize(), font=('Lato', 17), width=100)
-        self.category_label.grid(row=0, column=3, padx=5, pady=2)
+        self.category_label.grid(row=0, column=4, padx=5, pady=2)
 
         self.mileage_label = CTkLabel(self,
                                       text=self._get_mileage(),
@@ -242,7 +252,7 @@ class Item(CTkFrame):
                                       width=150,
                                       justify='left',
                                       anchor='w')
-        self.mileage_label.grid(row=0, column=4, padx=5, pady=2)
+        self.mileage_label.grid(row=0, column=5, padx=5, pady=2)
 
         self.create_custom_info()
 
@@ -251,7 +261,7 @@ class Item(CTkFrame):
         # ===== Settings Buttons ===== #
 
         self.option_buttons_frame = CTkFrame(self, fg_color='transparent')
-        self.option_buttons_frame.grid(row=0, column=8, sticky="nse", padx=3, pady=5)
+        self.option_buttons_frame.grid(row=0, column=9, sticky="nse", padx=3, pady=5)
 
         self.option_buttons_frame.rowconfigure(0, weight=1)
 
