@@ -1,4 +1,5 @@
 """General utility functions"""
+import dataclasses
 import datetime
 import os
 import pathlib
@@ -6,6 +7,7 @@ import time
 import re
 import uuid
 
+from dataclasses import fields
 from pathlib import Path
 
 from carlogger.const import CARS_PATH, TODAY, ITEM_FILE_EXTENSIONS, InvalidFileExtension, INVALID_FILE_EXTENSION_MESSAGE
@@ -30,6 +32,16 @@ def sort_key_is_attrib(key: str, item) -> bool:
         return True
     except Exception:
         return False
+
+
+def get_all_required_fields(item_class) -> list[str]:
+    item_fields = fields(item_class)
+    init_fields = [f.name for f in item_fields
+                   if f.init and f.default is dataclasses.MISSING
+                   and f.default_factory is dataclasses.MISSING
+                   and f.name[0] != '_']
+
+    return init_fields or []
 
 
 def is_valid_entry_id(entry_id: str) -> bool:

@@ -1,7 +1,7 @@
 from customtkinter import CTkFrame, CTkButton, CTkLabel, CTk, CTkCheckBox, BooleanVar
 
 from carlogger.gui.c_itemlist import ItemList
-from carlogger.util import is_scheduled_entry
+
 
 class ItemContainer(CTkFrame):
     def __init__(self, master, parent_car, root: CTk, **values):
@@ -92,7 +92,7 @@ class SortableItemList(CTkFrame):
         self.set_add_button_message()
 
     def set_add_button_message(self):
-        if is_scheduled_entry(self.items[0].item_ref):
+        if 'scheduled' in self.header.lower().replace(' ', ''):
             self.add_button.configure(text="+ Add Scheduled Entry")
         else:
             self.add_button.configure(text="+ Add Entry")
@@ -203,7 +203,9 @@ class SortableItemList(CTkFrame):
         self.parent.root.open_entry_edit_window(item_ref, item_widget)
 
     def open_entry_add_window(self):
-        self.parent.root.open_entry_add_window()
+        scheduled = 'scheduled' in self.header.lower().replace(' ', '')
+        self.parent.root.open_entry_add_window(scheduled)
+
 
 class SortButton(CTkButton):
     def __init__(self, master, parent, sort_method: str = 'SortOption', column: int = 0, **kwargs):
