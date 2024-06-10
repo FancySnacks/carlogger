@@ -61,7 +61,8 @@ class SortableItemList(CTkFrame):
                                     font=('Lato', 18),
                                     fg_color='green',
                                     width=35,
-                                    corner_radius=0)
+                                    corner_radius=0,
+                                    command=self.open_entry_add_window)
         self.add_button.grid(row=0, column=0, sticky='w', padx=5)
 
         self.del_button = CTkButton(self.management_buttons_frame,
@@ -193,6 +194,8 @@ class SortableItemList(CTkFrame):
     def open_entry_edit_window(self, item_ref, item_widget):
         self.parent.root.open_entry_edit_window(item_ref, item_widget)
 
+    def open_entry_add_window(self):
+        self.parent.root.open_entry_add_window()
 
 class SortButton(CTkButton):
     def __init__(self, master, parent, sort_method: str = 'SortOption', column: int = 0, **kwargs):
