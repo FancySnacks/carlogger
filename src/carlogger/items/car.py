@@ -132,7 +132,7 @@ class Car:
 
     def get_component_of_entry_by_entry_id(self, entry_id: str) -> CarComponent:
         """Find and return LogEntry by unique id looping through all items."""
-        entries = self.get_all_entry_logs()
+        entries = self.get_all_entry_logs(include_scheduled=True)
 
         for entry in entries:
             if entry.id == entry_id:

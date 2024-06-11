@@ -98,6 +98,16 @@ class RootWindow(CTk):
     def reset_item_list_widget(self):
         self.item_container.collapse_widget()
 
+    def delete_entries(self, entries: list):
+        car_name = self.selected_car.car_info.name
+        component = entries[0].component
+        entry_ids = [entry.id for entry in entries]
+
+        if len(entry_ids) == 1:
+            self.app_session.delete_entry_by_id(car_name, entry_ids[0], component)
+        else:
+            self.app_session.delete_entries_by_id(car_name, entry_ids)
+
     def open_entry_edit_window(self, item_ref, item_widget):
         self.edit_entry_popup = EditEntryPopup(self.main_frame, self, item_ref, item_widget)
 

@@ -179,11 +179,26 @@ class AppSession:
         comp.delete_entry_by_index(entry_index)
         self.directory_manager.update_car_directory(car)
 
-    def delete_entry_by_id(self, car_name: str, entry_id: str):
-        """Delete entry via list index from target component."""
+    def delete_entry_by_id(self, car_name: str, entry_id: str, component: CarComponent = None):
+        """Delete entry via their unique ID."""
         car = self.get_car_by_name(car_name)
-        comp = car.get_component_of_entry_by_entry_id(entry_id)
-        comp.delete_entry_by_id(entry_id)
+
+        if not component:
+            component = car.get_component_of_entry_by_entry_id(entry_id)
+
+        component.delete_entry_by_id(entry_id)
+        self.directory_manager.update_car_directory(car)
+
+    def delete_entries_by_id(self, car_name: str, entry_ids: list[str], component: CarComponent = None):
+        """Delete batch of entries from component via their unique ID."""
+        car = self.get_car_by_name(car_name)
+
+        if not component:
+            component = car.get_component_of_entry_by_entry_id(entry_ids[0])
+
+        for entry_id in entry_ids:
+            component.delete_entry_by_id(entry_id)
+
         self.directory_manager.update_car_directory(car)
 
     def update_car_info(self, car: Car, updated_data: dict[str, ...]):

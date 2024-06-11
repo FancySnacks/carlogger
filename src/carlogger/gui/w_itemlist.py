@@ -1,10 +1,17 @@
-from customtkinter import CTkFrame, CTkButton, CTkLabel, CTk, CTkCheckBox, BooleanVar
+from __future__ import annotations
+
+from customtkinter import CTkFrame, CTkButton, CTkLabel, CTkCheckBox, BooleanVar
+
+from typing import TYPE_CHECKING
 
 from carlogger.gui.c_itemlist import ItemList
 
+if TYPE_CHECKING:
+    from carlogger.gui.root_window import RootWindow
+
 
 class ItemContainer(CTkFrame):
-    def __init__(self, master, parent_car, root: CTk, **values):
+    def __init__(self, master, parent_car, root: RootWindow, **values):
         super().__init__(master, **values)
         self.root = root
         self.parent_car = parent_car
@@ -79,7 +86,8 @@ class SortableItemList(CTkFrame):
                                     fg_color='red',
                                     width=35,
                                     corner_radius=0,
-                                    state='disabled')
+                                    state='disabled',
+                                    command=self.delete_entry)
         self.del_button.grid(row=0, column=2, sticky='w', padx=5)
 
         self.buttons_frame = CTkFrame(master=self.parent, height=35, fg_color="cyan")
@@ -109,6 +117,14 @@ class SortableItemList(CTkFrame):
         else:
             self.del_button.configure(text=f"Delete Entry")
             self.del_button.configure(state='disabled')
+
+    def delete_entry(self):
+        entries = []
+        for item in self.selected_items:
+            entries.append(item.item_ref)
+
+        self.parent.root.delete_entries(entries)
+        self.refresh_items()
 
     def sort_items(self, sort_key: str, button_ref, reverse: bool):
         if self.active_sort_button and self.active_sort_button != button_ref:
