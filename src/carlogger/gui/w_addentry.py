@@ -4,6 +4,7 @@ from customtkinter import CTk, CTkFrame, CTkLabel, CTkButton, CTkEntry, \
 from tkinter import END, StringVar, IntVar
 
 from carlogger.items.entry_category import EntryCategory
+from carlogger.util import is_date
 from carlogger.const import TODAY
 
 
@@ -304,15 +305,33 @@ class AddEntryPopup:
 
     def collect_changes(self):
         updated_data: dict = dict()
-        updated_data['date'] = self.date_entry.get()
-        updated_data['desc'] = self.desc_entry.get(1.0, END).strip()
-        updated_data['component'] = self.current_collection.get_component_by_name(self.component_menu.get())
+
+        date = self.date_entry.get()
+        if is_date(date):
+            updated_data['date'] = date
+
+        desc = self.desc_entry.get(1.0, END).strip()
+        if desc:
+            updated_data['desc'] = desc
+
+        comp = self.current_collection.get_component_by_name(self.component_menu.get())
+        if comp:
+            updated_data['component'] = comp
+
         updated_data['category'] = self.category_menu.get()
-        updated_data['mileage'] = self.mileage_var.get()
+
+        mileage = self.mileage_var.get()
+        if mileage and mileage > 0:
+            updated_data['mileage'] = mileage
+
         updated_data['custom_info'] = self.property_container.get_properties()
 
         if self.is_scheduled_entry:
-            updated_data['frequency'] = self.frequency_var.get()
+            frequency = self.frequency_var.get()
+
+            if frequency:
+                updated_data['frequency'] = frequency
+
             updated_data['rule'] = self.rule_menu.get().lower()
 
         return updated_data
@@ -325,9 +344,9 @@ class AddEntryPopup:
         entry_data = self.collect_changes()
 
         if self._has_all_necessary_fields(entry_data):
-            print('success')
-
-        #self.root.app_session.add_entry()
+            self.root.app_session.add_entry()
+        else:
+            self.add_label.configure(text="There is missing information.")
 
     def track_changes(self, *args):
         changed_data = self.collect_changes()
