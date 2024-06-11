@@ -46,7 +46,10 @@ class AddEntryPopup:
                                      command=self.close_menu)
         self.back_button.grid(row=0, column=0, pady=5, padx=10, sticky='w')
 
-        self.label = CTkLabel(self.top_frame, text="Add Entry", font=('Lato', 30))
+        self.label = CTkLabel(self.top_frame, text="Add" 
+                                                   f"{' Scheduled' if self.is_scheduled_entry else ''}"
+                                                   " Entry",
+                              font=('Lato', 30))
         self.label.grid(row=0, column=1, pady=5, padx=10, sticky='w')
 
         self.separator = CTkLabel(self.main_frame, text='', bg_color='gray', height=1, font=('Arial', 2))
