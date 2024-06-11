@@ -14,10 +14,12 @@ class AddEntryPopup:
         self.root = root
         
         self.is_scheduled_entry = scheduled_entry
-        self.required_fields: list[str] = ['category', 'component', 'date', 'desc', 'mileage', 'custom_info']
+        self.required_fields: list[str] = ['category', 'component', 'date', 'desc', 'mileage', 'custom_info', 'tags']
 
         if self.is_scheduled_entry:
-            self.required_fields.extend(['frequency', 'rule'])
+            self.required_fields.extend(['frequency'])
+            self.required_fields.extend(['rule'])
+            self.required_fields.extend(['repeating'])
 
         self.cars = self.root.cars
         self.car_names = [car.car_info.name for car in self.cars]
@@ -42,7 +44,7 @@ class AddEntryPopup:
                                      command=self.close_menu)
         self.back_button.grid(row=0, column=0, pady=5, padx=10, sticky='w')
 
-        self.label = CTkLabel(self.top_frame, text="Edit Entry", font=('Lato', 30))
+        self.label = CTkLabel(self.top_frame, text="Add Entry", font=('Lato', 30))
         self.label.grid(row=0, column=1, pady=5, padx=10, sticky='w')
 
         self.separator = CTkLabel(self.main_frame, text='', bg_color='gray', height=1, font=('Arial', 2))
@@ -230,7 +232,7 @@ class AddEntryPopup:
 
             # ===== Frequency ===== #
 
-            self.frequency_var = IntVar(value=7)
+            self.frequency_var = StringVar(value="7")
 
             self.frequency_frame = CTkFrame(self.edit_right_frame, fg_color='transparent', width=300)
             self.frequency_frame.grid(row=0, column=0, sticky='w', pady=10, padx=10)
@@ -329,10 +331,16 @@ class AddEntryPopup:
         if self.is_scheduled_entry:
             frequency = self.frequency_var.get()
 
-            if frequency:
-                updated_data['frequency'] = frequency
+            if frequency != "" and int(frequency) > 0:
+                updated_data['frequency'] = int(frequency)
+                updated_data['repeating'] = True
+            else:
+                updated_data['frequency'] = 0
+                updated_data['repeating'] = False
 
             updated_data['rule'] = self.rule_menu.get().lower()
+
+        updated_data['tags'] = []
 
         return updated_data
 
@@ -344,7 +352,16 @@ class AddEntryPopup:
         entry_data = self.collect_changes()
 
         if self._has_all_necessary_fields(entry_data):
-            self.root.app_session.add_entry()
+            if self.is_scheduled_entry:
+                self.root.app_session.add_new_scheduled_entry(self.root.selected_car.car_info.name,
+                                                              self.current_collection.name,
+                                                              self.current_component.name,
+                                                              entry_data)
+            else:
+                self.root.app_session.add_new_entry(self.root.selected_car.car_info.name,
+                                                    self.current_collection.name,
+                                                    self.current_component.name,
+                                                    entry_data)
         else:
             self.add_label.configure(text="There is missing information.")
 
