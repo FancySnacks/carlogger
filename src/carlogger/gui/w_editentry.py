@@ -234,7 +234,7 @@ class EditEntryPopup:
 
             # ===== Frequency ===== #
 
-            self.frequency_var = IntVar(value=self.item_ref.frequency)
+            self.frequency_var = StringVar(value=self.item_ref.frequency)
 
             self.frequency_frame = CTkFrame(self.edit_right_frame, fg_color='transparent', width=300)
             self.frequency_frame.grid(row=0, column=0, sticky='w', pady=10, padx=10)
@@ -317,7 +317,8 @@ class EditEntryPopup:
         updated_data['custom_info'] = self.property_container.get_properties()
 
         if self.scheduled:
-            updated_data['frequency'] = self.frequency_var.get()
+            frequency = self.frequency_var.get() or 0
+            updated_data['frequency'] = int(frequency)
             updated_data['rule'] = self.rule_menu.get().lower()
 
         updated_data = dict_diff(updated_data, self.og_item_values)
