@@ -3,15 +3,17 @@ from customtkinter import CTk, CTkFrame, CTkLabel, CTkButton, CTkEntry, \
 
 from tkinter import END, StringVar, IntVar
 
+from carlogger.gui.w_itemlist import SortableItemList
 from carlogger.items.entry_category import EntryCategory
 from carlogger.util import is_date
 from carlogger.const import TODAY
 
 
 class AddEntryPopup:
-    def __init__(self, master, root, scheduled_entry: bool = False):
+    def __init__(self, master, root, item_list: SortableItemList, scheduled_entry: bool = False):
         self.master = master
         self.root = root
+        self.item_list = item_list
         
         self.is_scheduled_entry = scheduled_entry
         self.required_fields: list[str] = ['category', 'component', 'date', 'desc', 'mileage', 'custom_info', 'tags']
@@ -362,6 +364,7 @@ class AddEntryPopup:
                                                     self.current_collection.name,
                                                     self.current_component.name,
                                                     entry_data)
+            self._post_entry_add()
         else:
             self.add_label.configure(text="There is missing information.")
 
@@ -380,6 +383,10 @@ class AddEntryPopup:
     def _enable_button(self):
         self.add_button.configure(state='normal')
         self.add_label.configure(text='')
+
+    def _post_entry_add(self):
+        self.close_menu()
+        self.item_list.refresh_items()
 
     def close_menu(self, *args):
         self.main_frame.destroy()

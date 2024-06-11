@@ -204,7 +204,7 @@ class SortableItemList(CTkFrame):
 
     def open_entry_add_window(self):
         scheduled = 'scheduled' in self.header.lower().replace(' ', '')
-        self.parent.root.open_entry_add_window(scheduled)
+        self.parent.root.open_entry_add_window(self, scheduled)
 
 
 class SortButton(CTkButton):

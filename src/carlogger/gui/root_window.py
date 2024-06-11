@@ -101,5 +101,5 @@ class RootWindow(CTk):
     def open_entry_edit_window(self, item_ref, item_widget):
         self.edit_entry_popup = EditEntryPopup(self.main_frame, self, item_ref, item_widget)
 
-    def open_entry_add_window(self, scheduled_entry: bool = False):
-        self.add_entry_popup = AddEntryPopup(self.main_frame, self, scheduled_entry=scheduled_entry)
+    def open_entry_add_window(self, item_container, scheduled_entry: bool = False):
+        self.add_entry_popup = AddEntryPopup(self.main_frame, self, item_container, scheduled_entry=scheduled_entry)
