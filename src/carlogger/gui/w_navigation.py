@@ -4,7 +4,10 @@ from customtkinter import CTkFrame, CTkButton, CTkLabel
 class NavigationBar(CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
+        self.nav_widgets: list = []
         self.nav_items: list = []
+
+        self.current_item = None
 
         self.main_frame = CTkFrame(master=self, height=150, fg_color='red')
         self.main_frame.pack(expand=True, fill='both', padx=10, pady=10)
@@ -19,63 +22,71 @@ class NavigationBar(CTkFrame):
         self.main_frame.grid_columnconfigure(7, weight=0)
         self.main_frame.grid_columnconfigure(8, weight=1)
 
-        self.add_nav_item('Home')
-        self.add_nav_item('CarTestPytest')
-        self.add_nav_item('Engine')
-        self.add_nav_item('Spark Plug')
+        self.add_nav_item('Home', None)
 
-    def add_nav_item(self, name: str, **kwargs):
-        if len(self.nav_items) % 2 != 0:
+    def add_nav_item(self, name: str, item_ref, **kwargs):
+        self.nav_items.append(item_ref)
+        self.current_item = self.nav_items[-1]
+
+        if len(self.nav_widgets) % 2 != 0:
             self.add_separator()
 
         nav_item = NavItem(self,
                            widget_master=self.main_frame,
                            name=name,
-                           id=len(self.nav_items),
+                           id=len(self.nav_widgets),
+                           item_ref=item_ref,
                            column=self._get_column())
-        self.nav_items.append(nav_item)
+        self.nav_widgets.append(nav_item)
 
     def add_separator(self):
         separator = Separator(self,
                               widget_master=self.main_frame,
-                              id=len(self.nav_items),
+                              id=len(self.nav_widgets),
                               column=self._get_column())
-        self.nav_items.append(separator)
+        self.nav_widgets.append(separator)
 
     def go_to_previous_page(self, nav_item):
-        items_to_remove = self.nav_items[nav_item.id+1::]
-        indexes_to_remove = [item.id for item in items_to_remove]
+        if nav_item.item_ref == self.current_item:
+            return
 
-        for child in self.main_frame.winfo_children():
-            if self.main_frame.winfo_children().index(child) in indexes_to_remove:
-                child.destroy()
+        if len(self.nav_items) < 2:
+            return
 
-        self.nav_items = self.nav_items[0:nav_item.id+1:]
-        self.master.update_idletasks()
+        item_index = nav_item.id
+
+        for widget in self.nav_widgets[item_index + 1:]:
+            widget.button.grid_forget() if isinstance(widget, NavItem) else widget.separator.grid_forget()
+            widget.destroy()
+
+        self.nav_widgets = self.nav_widgets[:item_index + 1]
+        self.nav_items = self.nav_items[:(item_index // 2) + 1]
+        self.current_item = self.nav_items[-1] if self.nav_items else None
 
     def _get_column(self) -> int:
-        return len(self.nav_items) + 1
+        return len(self.nav_widgets) + 1
 
 
 class NavItem(CTkButton):
-    def __init__(self, master, widget_master, name: str, id: int, column=1, page_ref=None, **kwargs):
+    def __init__(self, master, widget_master, name: str, id: int, item_ref, column=1, page_ref=None, **kwargs):
         super().__init__(master, **kwargs)
         self.id = id
+        self.item_ref = item_ref
 
         self.button = CTkButton(master=widget_master,
-                                 text=name,
-                                 width=100,
-                                 height=30,
-                                 font=('Lato', 17),
-                                 command=self.go_to_page,
-                                 **kwargs)
+                                text=name,
+                                width=100,
+                                height=30,
+                                font=('Lato', 17),
+                                command=self.go_to_page,
+                                **kwargs)
         self.button.grid(row=0, column=column, padx=5, pady=5)
 
     def go_to_page(self):
         self.master.go_to_previous_page(self)
 
 
-class Separator(CTkButton):
+class Separator(CTkLabel):
     def __init__(self, master, widget_master, id: int, column=1, page_ref=None, **kwargs):
         super().__init__(master, **kwargs)
         self.id = id

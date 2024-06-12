@@ -82,6 +82,8 @@ class RootWindow(CTk):
             self.canvas.yview_scroll(-1, "units")
 
     def start_mainloop(self):
+        self.navigation.add_nav_item(self.selected_car.car_info.name, self.selected_car)
+
         for car in self.cars:
             self.car_list.add_car(car)
 
