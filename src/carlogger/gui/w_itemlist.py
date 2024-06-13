@@ -72,14 +72,6 @@ class SortableItemList(CTkFrame):
                                     command=self.open_entry_add_window)
         self.add_button.grid(row=0, column=0, sticky='w', padx=5)
 
-        self.move_button = CTkButton(self.management_buttons_frame,
-                                     text="Move",
-                                     font=('Lato', 18),
-                                     width=35,
-                                     corner_radius=0,
-                                     state='disabled')
-        self.move_button.grid(row=0, column=1, sticky='w', padx=5)
-
         self.del_button = CTkButton(self.management_buttons_frame,
                                     text="Delete Entry",
                                     font=('Lato', 18),
@@ -88,7 +80,7 @@ class SortableItemList(CTkFrame):
                                     corner_radius=0,
                                     state='disabled',
                                     command=self.delete_entry)
-        self.del_button.grid(row=0, column=2, sticky='w', padx=5)
+        self.del_button.grid(row=0, column=1, sticky='w', padx=5)
 
         self.buttons_frame = CTkFrame(master=self.parent, height=35, fg_color="cyan")
         self.buttons_frame.pack(expand=True, fill='both', padx=10, pady=10)
