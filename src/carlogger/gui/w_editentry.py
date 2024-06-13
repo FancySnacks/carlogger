@@ -179,7 +179,7 @@ class EditEntryPopup:
 
         # ===== Mileage ===== #
 
-        self.mileage_var = IntVar(value=self.item_ref.mileage)
+        self.mileage_var = StringVar(value=self.item_ref.mileage)
 
         self.mileage_frame = CTkFrame(self.edit_left_frame, fg_color='transparent')
         self.mileage_frame.grid(row=6, column=0, sticky='w', pady=10, padx=10)
@@ -313,7 +313,12 @@ class EditEntryPopup:
         updated_data['desc'] = self.desc_entry.get(1.0, END).strip()
         updated_data['component'] = self.current_collection.get_component_by_name(self.component_menu.get())
         updated_data['category'] = self.category_menu.get()
-        updated_data['mileage'] = self.mileage_var.get()
+
+        mileage = self.mileage_var.get()
+        if not mileage.isdigit():
+            mileage = 0
+        updated_data['mileage'] = int(mileage)
+
         updated_data['custom_info'] = self.property_container.get_properties()
 
         if self.scheduled:

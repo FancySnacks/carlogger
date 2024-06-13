@@ -183,7 +183,7 @@ class AddEntryPopup:
 
         # ===== Mileage ===== #
 
-        self.mileage_var = IntVar(value=self.current_component.current_mileage)
+        self.mileage_var = StringVar(value=self.current_component.current_mileage)
 
         self.mileage_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
         self.mileage_frame.grid(row=6, column=0, sticky='w', pady=10, padx=10)
@@ -328,8 +328,9 @@ class AddEntryPopup:
         updated_data['category'] = self.category_menu.get()
 
         mileage = self.mileage_var.get()
-        if mileage and mileage > 0:
-            updated_data['mileage'] = mileage
+        if not mileage.isdigit():
+            mileage = 0
+        updated_data['mileage'] = int(mileage)
 
         updated_data['custom_info'] = self.property_container.get_properties()
 
