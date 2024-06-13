@@ -1,10 +1,10 @@
 from customtkinter import CTk, CTkFrame, CTkLabel, CTkButton, CTkEntry, \
     CTkTextbox, CTkOptionMenu, CTkScrollableFrame
 
-from tkinter import END, StringVar, IntVar
+from tkinter import END, StringVar
 
 from carlogger.items.entry_category import EntryCategory
-from carlogger.util import is_scheduled_entry, dict_diff
+from carlogger.util import is_scheduled_entry, dict_diff, is_date
 
 
 class EditEntryPopup:
@@ -104,8 +104,8 @@ class EditEntryPopup:
         self.desc_label = CTkLabel(self.desc_frame, text="Description", font=('Lato', 20))
         self.desc_label.grid(row=0, column=0, sticky='w')
 
-        self.desc_entry = CTkTextbox(self.desc_frame, font=('Lato', 20), width=580, height=100)
-        self.desc_entry.insert(END, self.item_ref.desc)
+        self.desc_entry = CTkTextbox(self.desc_frame, font=('Lato', 20), width=580, height=100, border_width=2)
+        self.desc_entry.insert(END, self.item_ref.desc.strip())
         self.desc_entry.grid(row=1, column=0, sticky='w')
 
         self.desc_entry.bind('<Key>', self.track_changes)
@@ -309,8 +309,21 @@ class EditEntryPopup:
 
     def collect_changes(self):
         updated_data: dict = dict()
-        updated_data['date'] = self.date_entry.get()
-        updated_data['desc'] = self.desc_entry.get(1.0, END).strip()
+
+        date = self.date_entry.get()
+        if is_date(date):
+            updated_data['date'] = date
+            self.date_entry.configure(border_color='')
+        else:
+            self.date_entry.configure(border_color='red')
+
+        desc = self.desc_entry.get(1.0, END).strip()
+        if desc:
+            self.desc_entry.configure(border_color='')
+            updated_data['desc'] = desc
+        else:
+            self.desc_entry.configure(border_color='red')
+
         updated_data['component'] = self.current_collection.get_component_by_name(self.component_menu.get())
         updated_data['category'] = self.category_menu.get()
 
@@ -331,6 +344,7 @@ class EditEntryPopup:
 
     def save_changes(self):
         changed_data = self.collect_changes()
+
         self._reset_button()
         self.root.app_session.update_entry(self.root.selected_car, self.item_ref, changed_data)
 

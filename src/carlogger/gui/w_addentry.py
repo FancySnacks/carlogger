@@ -1,7 +1,7 @@
 from customtkinter import CTk, CTkFrame, CTkLabel, CTkButton, CTkEntry, \
     CTkTextbox, CTkOptionMenu, CTkScrollableFrame
 
-from tkinter import END, StringVar, IntVar
+from tkinter import END, StringVar
 
 from carlogger.gui.w_itemlist import SortableItemList
 from carlogger.items.entry_category import EntryCategory
@@ -316,6 +316,9 @@ class AddEntryPopup:
         date = self.date_entry.get()
         if is_date(date):
             updated_data['date'] = date
+            self.date_entry.configure(border_color='')
+        else:
+            self.date_entry.configure(border_color='red')
 
         desc = self.desc_entry.get(1.0, END).strip()
         if desc:
@@ -357,20 +360,22 @@ class AddEntryPopup:
     def add_entry(self):
         entry_data = self.collect_changes()
 
-        if self._has_all_necessary_fields(entry_data):
-            if self.is_scheduled_entry:
-                self.root.app_session.add_new_scheduled_entry(self.root.selected_car.car_info.name,
-                                                              self.current_collection.name,
-                                                              self.current_component.name,
-                                                              entry_data)
-            else:
-                self.root.app_session.add_new_entry(self.root.selected_car.car_info.name,
-                                                    self.current_collection.name,
-                                                    self.current_component.name,
-                                                    entry_data)
-            self._post_entry_add()
-        else:
+        if not self._has_all_necessary_fields(entry_data):
             self.add_label.configure(text="There is missing information.")
+            return
+
+        if self.is_scheduled_entry:
+            self.root.app_session.add_new_scheduled_entry(self.root.selected_car.car_info.name,
+                                                          self.current_collection.name,
+                                                          self.current_component.name,
+                                                          entry_data)
+        else:
+            self.root.app_session.add_new_entry(self.root.selected_car.car_info.name,
+                                                self.current_collection.name,
+                                                self.current_component.name,
+                                                entry_data)
+
+        self._post_entry_add()
 
     def track_changes(self, *args):
         changed_data = self.collect_changes()
