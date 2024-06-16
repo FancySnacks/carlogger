@@ -8,6 +8,7 @@ from carlogger.gui.w_itemlist import ItemContainer
 from carlogger.gui.c_itemlist import ItemList
 from carlogger.gui.w_editentry import EditEntryPopup
 from carlogger.gui.w_addentry import AddEntryPopup
+from carlogger.gui.w_collectionlist import CollectionContainer
 
 
 class RootWindow(CTk):
@@ -86,6 +87,13 @@ class RootWindow(CTk):
 
         for car in self.cars:
             self.car_list.add_car(car)
+
+        self.car_frame.destroy()
+
+        self.collection_container = CollectionContainer(self.scrollable_frame,
+                                                        root=self,
+                                                        parent=self.item_list)
+        self.collection_container.create_items(self.selected_car.collections)
 
         self.mainloop()
 
