@@ -1,7 +1,22 @@
 """Constant variables"""
 
+from __future__ import annotations
+
 import pathlib
+
 from datetime import datetime
+from typing import Union, TYPE_CHECKING
+
+ITEM = None
+
+if TYPE_CHECKING:
+    from carlogger.items.car import Car
+    from carlogger.items.car_info import CarInfo
+    from carlogger.items.component_collection import ComponentCollection
+    from carlogger.items.car_component import CarComponent
+    from carlogger.items.log_entry import LogEntry, ScheduledLogEntry
+
+    ITEM = Union[Car, CarInfo, ComponentCollection, CarComponent, LogEntry, ScheduledLogEntry]
 
 PATH = pathlib.Path(__file__).parent.parent.parent
 CARS_PATH = PATH.joinpath("save")

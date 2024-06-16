@@ -5,6 +5,7 @@ from customtkinter import CTkFrame, CTkButton, CTkLabel, CTkCheckBox, BooleanVar
 from typing import TYPE_CHECKING
 
 from carlogger.gui.c_itemlist import ItemList
+from carlogger.const import ITEM
 
 if TYPE_CHECKING:
     from carlogger.gui.root_window import RootWindow
@@ -30,7 +31,7 @@ class ItemContainer(CTkFrame):
         sortable_item_list = self.item_list_widgets[index]
         sortable_item_list.update_items(items)
 
-    def add_sort_buttons(self, sort_methods: list[str], item_list):
+    def add_sort_buttons(self, sort_methods: list[str], item_list: SortableItemList):
         for s in sort_methods:
             item_list.add_sort_button(s)
 
@@ -41,7 +42,7 @@ class ItemContainer(CTkFrame):
 
 
 class SortableItemList(CTkFrame):
-    def __init__(self, master, parent: ItemContainer, header: str, items: list, index: int, **values):
+    def __init__(self, master, parent: ItemContainer, header: str, items, index: int, **values):
         super().__init__(master, **values)
         self.parent: ItemContainer = parent
         self.header = header
@@ -51,7 +52,8 @@ class SortableItemList(CTkFrame):
         self.active_sort_button: SortButton = None
         self._children_buttons: list = []
 
-        self.items: list[Item] = items
+        self.items: list[ITEM] = items
+        self.widget_items: list[Item] = []
 
         self.selected_items: list[Item] = []
 
@@ -174,7 +176,7 @@ class SortableItemList(CTkFrame):
                         parent=self,
                         item_ref=item_obj,
                         row=row)
-        self.items.append(new_item)
+        self.widget_items.append(new_item)
 
     def create_scheduled_entry(self, item_obj, row: int = -1):
         if row == -1:
@@ -184,9 +186,9 @@ class SortableItemList(CTkFrame):
                                          parent=self,
                                          item_ref=item_obj,
                                          row=row)
-        self.items.append(new_item)
+        self.widget_items.append(new_item)
 
-    def update_item(self, item, item_ref, data_to_update: list[str]):
+    def update_item(self, item, item_ref: ITEM, data_to_update: list[str]):
         item.item_ref = item_ref
 
         if 'all' in data_to_update:
@@ -206,8 +208,9 @@ class SortableItemList(CTkFrame):
     def clear_items(self):
         for child in self.item_frame.winfo_children():
             child.destroy()
+        self.widget_items = []
 
-    def open_entry_edit_window(self, item_ref, item_widget):
+    def open_entry_edit_window(self, item_ref: ITEM, item_widget):
         self.parent.root.open_entry_edit_window(item_ref, item_widget)
 
     def open_entry_add_window(self):
@@ -244,7 +247,7 @@ class SortButton(CTkButton):
 
 
 class Item(CTkFrame):
-    def __init__(self, master, parent: SortableItemList, item_ref, row: int = 0, **kwargs):
+    def __init__(self, master, parent: SortableItemList, item_ref: ITEM, row: int = 0, **kwargs):
         super().__init__(master,
                          height=100,
                          fg_color='blue',
@@ -252,7 +255,7 @@ class Item(CTkFrame):
                          **kwargs)
         self.parent = parent
         self.id = row
-        self.item_ref = item_ref
+        self.item_ref: ITEM = item_ref
 
         self.custom_info_labels = []
 
