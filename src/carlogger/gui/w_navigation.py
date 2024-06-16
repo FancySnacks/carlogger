@@ -25,6 +25,9 @@ class NavigationBar(CTkFrame):
         self.main_frame.grid_columnconfigure(8, weight=1)
 
     def add_nav_item(self, name: str, item_ref, **kwargs):
+        if item_ref in self.nav_items:
+            return
+
         self.nav_items.append(item_ref)
         self.current_item = self.nav_items[-1]
 
