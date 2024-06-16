@@ -1,4 +1,5 @@
 from carlogger.items.item_sorter import ItemSorter
+from carlogger.const import ITEM
 
 
 class ItemList:
@@ -8,12 +9,12 @@ class ItemList:
         self.widget = widget
         self.app_session = app_session
 
-    def sort_items(self, items, sort_method: str, reverse: bool = False) -> list:
+    def sort_items(self, items: list[ITEM], sort_method: str, reverse: bool = False) -> list:
         item_sorter = ItemSorter(items, '')
         item_sorter.sort_method = sort_method
         return item_sorter.get_sorted_list(reverse)
 
-    def create_items(self, items: list, header: str, sort_key: str = '*'):
+    def create_items(self, items: list[ITEM], header: str, sort_key: str = '*'):
         items = self.sort_items(items,
                                 'latest' if sort_key == '*' else sort_key)
         self.items.append(items)
@@ -31,7 +32,7 @@ class ItemList:
     def collapse_widget(self):
         self.widget.collapse_widget()
 
-    def _get_sort_methods(self, items) -> list[str]:
+    def _get_sort_methods(self, items: list[ITEM]) -> list[str]:
         class_attrib: list[str] = items[0].filter_options()
         return self._move_id_sort_button_to_front(class_attrib)
 

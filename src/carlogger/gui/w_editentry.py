@@ -5,10 +5,11 @@ from tkinter import END, StringVar
 
 from carlogger.items.entry_category import EntryCategory
 from carlogger.util import is_scheduled_entry, dict_diff, is_date
+from carlogger.const import ITEM
 
 
 class EditEntryPopup:
-    def __init__(self, master, root, item_ref, item_widget):
+    def __init__(self, master, root, item_ref: ITEM, item_widget):
         self.master = master
         self.root = root
         self.item_ref = item_ref
@@ -373,12 +374,12 @@ class EditEntryPopup:
 
 
 class PropertyContainer(CTkFrame):
-    def __init__(self, master, root: CTk, parent: EditEntryPopup, item_ref, **values):
+    def __init__(self, master, root: CTk, parent: EditEntryPopup, item_ref: ITEM, **values):
         super().__init__(master, **values)
         self.master = master
         self.root = root
         self.parent = parent
-        self.item_ref = item_ref
+        self.item_ref: ITEM = item_ref
 
         self.properties: dict[str, ...] = dict(item_ref.custom_info)
         self.property_widgets: list[PropertyItem] = []
