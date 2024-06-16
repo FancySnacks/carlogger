@@ -7,43 +7,29 @@ class CarCard(CTkFrame):
         self.master: CarFrame = master
         self.car = car
 
-        self.main_frame = CTkFrame(master=self, corner_radius=5, fg_color="lightgray")
-        self.main_frame.grid(row=0, column=0, sticky='nsew', padx=5, pady=5)
+        self.column = 0
+        self.row = 0
 
-        self.info_frame = CTkFrame(master=self.main_frame,
-                                   corner_radius=0,
-                                   fg_color="lightgray")
-        self.info_frame.grid(row=0, column=0, sticky='nsew', padx=15, pady=3)
+        # ===== Widget ===== #
 
-        self.button = CTkButton(master=self.main_frame,
-                                corner_radius=0,
-                                text=">",
-                                width=15,
-                                font=('Lato', 25),
+        self.inner_frame = CTkFrame(self.master,
+                                    fg_color='gray')
+        self.inner_frame.grid(row=self.row, column=self.column, padx=5, pady=5)
+
+        self.name = CTkLabel(self.inner_frame,
+                             text=self.car.car_info.name, )
+
+        self.name.grid(row=0, column=0)
+
+        self.button = CTkButton(self.inner_frame,
+                                fg_color='transparent',
+                                bg_color='gray',
+                                hover_color='lightgray',
+                                width=250,
+                                height=175,
+                                text='',
                                 command=self.go_to_car)
-        self.button.grid(row=0, column=1, sticky='nsw')
-
-        self.car_name_label = CTkLabel(master=self.info_frame,
-                                       text=car.car_info.name,
-                                       text_color='white',
-                                       font=('Lato', 20),
-                                       fg_color='transparent')
-        self.car_name_label.grid(row=0, column=0, columnspan=5, sticky='w')
-
-        self.car_model_label = CTkLabel(master=self.info_frame,
-                                        text=f"{car.car_info.manufacturer} {car.car_info.model} "
-                                             f"({car.car_info.year})",
-                                        text_color='white',
-                                        font=('Lato', 15),
-                                        fg_color='transparent')
-        self.car_model_label.grid(row=1, column=0, sticky='w')
-
-        self.car_mileage_label = CTkLabel(master=self.info_frame,
-                                          text=f"{car.car_info.mileage} km",
-                                          text_color='white',
-                                          font=('Lato', 15),
-                                          fg_color='transparent')
-        self.car_mileage_label.grid(row=2, column=0, sticky='w')
+        self.button.grid(row=1, column=0, padx=5, pady=5, sticky='nsew')
 
     def go_to_car(self):
         self.master.go_to_car(self.car)
