@@ -1,5 +1,7 @@
 from carlogger.items.item_sorter import ItemSorter
+from carlogger.items.log_entry import LogEntry
 from carlogger.const import ITEM
+from carlogger.util import get_all_required_fields
 
 
 class ItemList:
@@ -10,6 +12,9 @@ class ItemList:
         self.app_session = app_session
 
     def sort_items(self, items: list[ITEM], sort_method: str, reverse: bool = False) -> list:
+        if len(items) == 0:
+            return items
+
         item_sorter = ItemSorter(items, '')
         item_sorter.sort_method = sort_method
         return item_sorter.get_sorted_list(reverse)
@@ -33,7 +38,10 @@ class ItemList:
         self.widget.collapse_widget()
 
     def _get_sort_methods(self, items: list[ITEM]) -> list[str]:
-        class_attrib: list[str] = items[0].filter_options()
+        if len(items) == 0:
+            class_attrib: list[str] = get_all_required_fields(LogEntry)
+        else:
+            class_attrib: list[str] = items[0].filter_options()
         return self._move_id_sort_button_to_front(class_attrib)
 
     def _move_id_sort_button_to_front(self, sort_funcs: list[str]) -> list[str]:

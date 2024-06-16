@@ -62,9 +62,19 @@ class NavigationBar(CTkFrame):
         self.nav_widgets = self.nav_widgets[:item_index + 1]
         self.nav_items = self.nav_items[:(item_index // 2) + 1]
         self.current_item = self.nav_items[-1] if self.nav_items else None
+        self.go_to(self.current_item)
 
-        if not nav_item.item_ref:
+    def go_to(self, item_ref):
+        if item_ref is None:
             self.root.go_to_homepage()
+
+        match item_ref.__class__.__name__:
+            case 'Car':
+                self.root.go_to_car(item_ref)
+            case 'ComponentCollection':
+                self.root.go_to_collection(item_ref)
+            case 'CarComponent':
+                self.root.go_to_component(item_ref)
 
     def _get_column(self) -> int:
         return len(self.nav_widgets) + 1

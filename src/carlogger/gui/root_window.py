@@ -2,13 +2,14 @@ from customtkinter import CTk, CTkScrollbar, CTkFrame
 from tkinter import Canvas
 
 from carlogger.gui.c_carlist import CarList
-from carlogger.gui.w_carframe import CarFrame
+from carlogger.gui.w_carlist import CarFrame
 from carlogger.gui.w_navigation import NavigationBar
 from carlogger.gui.w_itemlist import ItemContainer
 from carlogger.gui.c_itemlist import ItemList
 from carlogger.gui.w_editentry import EditEntryPopup
 from carlogger.gui.w_addentry import AddEntryPopup
 from carlogger.gui.w_collectionlist import CollectionContainer
+from carlogger.gui.w_componentlist import ComponentContainer
 
 
 class RootWindow(CTk):
@@ -140,11 +141,33 @@ class RootWindow(CTk):
                                                    parent=self.item_list)
         collection_container.create_items(car.collections)
 
-        self.open_page(collection_container, car.car_info)
+        self.open_page(collection_container, car.car_info.name, car)
+        self.selected_car = car
 
-    def open_page(self, new_page, item_ref):
+    def go_to_collection(self, collection):
+        component_container = ComponentContainer(self.scrollable_frame,
+                                                 root=self,
+                                                 parent=self.item_list)
+        component_container.create_items(collection.components)
+
+        self.open_page(component_container, collection.name, collection)
+
+    def go_to_component(self, component):
+        item_container = ItemContainer(self.scrollable_frame, parent_car=None, root=self)
+        item_container.grid(row=0, column=0, sticky="nsew")
+
+        item_list = ItemList(self.scrollable_frame, widget=item_container, app_session=self.app_session)
+
+        item_container.parent = item_list
+
+        item_list.create_items(component.scheduled_log_entries, 'Scheduled Log Entries', 'oldest')
+        item_list.create_items(component.log_entries, 'Log Entries', 'latest')
+
+        self.open_page(item_container, component.name, component)
+
+    def open_page(self, new_page, name, item_ref):
         if self.current_page:
             self.current_page.destroy()
 
         self.current_page = new_page
-        self.navigation.add_nav_item(item_ref.name, item_ref)
+        self.navigation.add_nav_item(name, item_ref)
