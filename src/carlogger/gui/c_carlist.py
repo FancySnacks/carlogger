@@ -8,6 +8,9 @@ class CarList:
             self.cars.append(car)
             self.create_car_widget(car)
 
+    def clear_cars(self):
+        self.cars = []
+
     def create_car_widget(self, car):
         self.widget.add_car(car)
 

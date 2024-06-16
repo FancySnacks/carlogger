@@ -2,10 +2,12 @@ from customtkinter import CTkFrame, CTkButton, CTkLabel
 
 
 class NavigationBar(CTkFrame):
-    def __init__(self, master, **kwargs):
+    def __init__(self, master, root, **kwargs):
         super().__init__(master, **kwargs)
         self.nav_widgets: list = []
         self.nav_items: list = []
+
+        self.root = root
 
         self.current_item = None
 
@@ -21,8 +23,6 @@ class NavigationBar(CTkFrame):
         self.main_frame.grid_columnconfigure(6, weight=0)
         self.main_frame.grid_columnconfigure(7, weight=0)
         self.main_frame.grid_columnconfigure(8, weight=1)
-
-        self.add_nav_item('Home', None)
 
     def add_nav_item(self, name: str, item_ref, **kwargs):
         self.nav_items.append(item_ref)
@@ -62,6 +62,9 @@ class NavigationBar(CTkFrame):
         self.nav_widgets = self.nav_widgets[:item_index + 1]
         self.nav_items = self.nav_items[:(item_index // 2) + 1]
         self.current_item = self.nav_items[-1] if self.nav_items else None
+
+        if not nav_item.item_ref:
+            self.root.go_to_homepage()
 
     def _get_column(self) -> int:
         return len(self.nav_widgets) + 1

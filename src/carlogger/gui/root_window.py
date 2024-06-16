@@ -17,6 +17,7 @@ class RootWindow(CTk):
         self.app_session = None
         self.cars = []
         self.selected_car = None
+        self.current_page = None
 
         self.title('Carlogger')
         self.geometry("1000x700")
@@ -30,7 +31,7 @@ class RootWindow(CTk):
         self.main_frame.grid_columnconfigure(0, weight=1)
         self.main_frame.grid_rowconfigure(1, weight=1)
 
-        self.navigation = NavigationBar(master=self.main_frame)
+        self.navigation = NavigationBar(master=self.main_frame, root=self)
         self.navigation.grid(row=0, column=0, sticky='ew')
 
         # Create a canvas to allow for scrolling
@@ -66,10 +67,8 @@ class RootWindow(CTk):
         self.scrollable_frame.grid_columnconfigure(0, weight=1)
         self.scrollable_frame.grid_rowconfigure(0, weight=1)
 
-        self.car_frame = CarFrame(self.scrollable_frame)
-        self.car_frame.grid(row=0, column=0, sticky='nsew')
-
-        self.car_list = CarList(self.car_frame)
+        self.navigation.add_nav_item('Home', None)
+        self.car_list = None
 
         self.item_container = ItemContainer(self.scrollable_frame, parent_car=None, root=self)
         self.item_container.grid(row=1, column=0, sticky="nsew")
@@ -83,18 +82,7 @@ class RootWindow(CTk):
             self.canvas.yview_scroll(-1, "units")
 
     def start_mainloop(self):
-        self.navigation.add_nav_item(self.selected_car.car_info.name, self.selected_car)
-
-        for car in self.cars:
-            self.car_list.add_car(car)
-
-        self.car_frame.destroy()
-
-        self.collection_container = CollectionContainer(self.scrollable_frame,
-                                                        root=self,
-                                                        parent=self.item_list)
-        self.collection_container.create_items(self.selected_car.collections)
-
+        self.go_to_homepage()
         self.mainloop()
 
     def create_items(self, items, parent, header, sort_key: str = '*'):
@@ -123,3 +111,40 @@ class RootWindow(CTk):
 
     def open_entry_add_window(self, item_container, scheduled_entry: bool = False):
         self.add_entry_popup = AddEntryPopup(self.main_frame, self, item_container, scheduled_entry=scheduled_entry)
+
+    def create_cars(self):
+        self.car_list.clear_cars()
+
+        for car in self.cars:
+            self.car_list.add_car(car)
+
+    def go_to_homepage(self):
+        car_frame = CarFrame(self.scrollable_frame, self)
+        car_frame.grid(row=0, column=0, sticky='nsew')
+
+        if self.current_page:
+            self.current_page.destroy()
+
+        self.current_page = car_frame
+
+        if not self.car_list:
+            self.car_list = CarList(self.current_page)
+        else:
+            self.car_list.widget = self.current_page
+
+        self.create_cars()
+
+    def go_to_car(self, car):
+        collection_container = CollectionContainer(self.scrollable_frame,
+                                                   root=self,
+                                                   parent=self.item_list)
+        collection_container.create_items(car.collections)
+
+        self.open_page(collection_container, car.car_info)
+
+    def open_page(self, new_page, item_ref):
+        if self.current_page:
+            self.current_page.destroy()
+
+        self.current_page = new_page
+        self.navigation.add_nav_item(item_ref.name, item_ref)
