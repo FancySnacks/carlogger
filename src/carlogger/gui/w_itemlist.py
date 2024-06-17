@@ -295,7 +295,7 @@ class Item(CTkFrame):
                                      anchor='w')
         self.parent_label.grid(row=0, column=3, padx=5, pady=2)
 
-        self.category_label = CTkLabel(self, text=self.item_ref.category.capitalize(), font=('Lato', 17), width=100)
+        self.category_label = CTkLabel(self, text=self._get_item_category(), font=('Lato', 17), width=100)
         self.category_label.grid(row=0, column=4, padx=5, pady=2)
 
         self.mileage_label = CTkLabel(self,
@@ -379,6 +379,10 @@ class Item(CTkFrame):
     def _get_item_name(self) -> str:
         properties = self.item_ref.to_json().get('name', ''), self.item_ref.to_json().get('desc', ''), ''
         return sorted(properties, reverse=True)[0]
+
+    def _get_item_category(self) -> str:
+        category = self.item_ref.category.replace('_', ' ')
+        return category.capitalize()
 
     def _get_date(self):
         return self.item_ref.date
