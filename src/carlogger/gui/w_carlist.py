@@ -2,13 +2,13 @@ from customtkinter import CTkFrame, CTkLabel, CTkButton
 
 
 class CarCard(CTkFrame):
-    def __init__(self, master, car, **values):
+    def __init__(self, master, car, row=0, col=0, **values):
         super().__init__(master, **values)
         self.master: CarFrame = master
         self.car = car
 
-        self.column = 0
-        self.row = 0
+        self.row = row
+        self.column = col
 
         # ===== Widget ===== #
 
@@ -42,8 +42,9 @@ class CarFrame(CTkFrame):
         self.car_cards: list[CarCard] = []
 
     def add_car(self, car):
-        new_car_card = CarCard(master=self, car=car)
-        new_car_card.grid(row=0, column=len(self.car_cards), sticky='w')
+        col = len(self.car_cards)
+        new_car_card = CarCard(master=self, car=car, row=0, col=col)
+        new_car_card.grid(row=0, column=col, sticky='w')
         self.car_cards.append(new_car_card)
 
     def clear_cars(self):

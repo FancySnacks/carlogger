@@ -12,10 +12,11 @@ if TYPE_CHECKING:
 
 
 class ItemContainer(CTkFrame):
-    def __init__(self, master, parent_car, root: RootWindow, **values):
+    def __init__(self, master, parent_car, root: RootWindow, homepage = False, **values):
         super().__init__(master, **values)
         self.root = root
         self.parent_car = parent_car
+        self.homepage = homepage
 
         self.parent: ItemList = ...
         self.app_session = ...
@@ -175,7 +176,8 @@ class SortableItemList(CTkFrame):
         new_item = Item(master=self.item_frame,
                         parent=self,
                         item_ref=item_obj,
-                        row=row)
+                        row=row,
+                        homepage=self.parent.homepage)
         self.widget_items.append(new_item)
 
     def create_scheduled_entry(self, item_obj, row: int = -1):
@@ -185,7 +187,8 @@ class SortableItemList(CTkFrame):
         new_item = ScheduledLogEntryItem(master=self.item_frame,
                                          parent=self,
                                          item_ref=item_obj,
-                                         row=row)
+                                         row=row,
+                                         homepage=self.parent.homepage)
         self.widget_items.append(new_item)
 
     def update_item(self, item, item_ref: ITEM, data_to_update: list[str]):
@@ -247,13 +250,14 @@ class SortButton(CTkButton):
 
 
 class Item(CTkFrame):
-    def __init__(self, master, parent: SortableItemList, item_ref: ITEM, row: int = 0, **kwargs):
+    def __init__(self, master, parent: SortableItemList, item_ref: ITEM, row: int = 0, homepage=False, **kwargs):
         super().__init__(master,
                          height=100,
                          fg_color='blue',
                          corner_radius=0,
                          **kwargs)
         self.parent = parent
+        self.homepage = homepage
         self.id = row
         self.item_ref: ITEM = item_ref
 
@@ -311,6 +315,9 @@ class Item(CTkFrame):
         self.columnconfigure(8, weight=1)
 
         # ===== Settings Buttons ===== #
+
+        if self.homepage:
+            return
 
         self.option_buttons_frame = CTkFrame(self, fg_color='transparent')
         self.option_buttons_frame.grid(row=0, column=9, sticky="nse", padx=3, pady=5)
@@ -397,6 +404,9 @@ class Item(CTkFrame):
 class ScheduledLogEntryItem(Item):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        if self.homepage:
+            return
 
         self.complete_button = CTkButton(self.option_buttons_frame,
                                          text='➕',

@@ -128,13 +128,7 @@ class RootWindow(CTk):
             self.car_list.widget = car_frame
 
         self.create_cars()
-
-        if self.cars:
-            self.create_items(self.cars[0].get_all_scheduled_entry_logs(),
-                              self.cars[0],
-                              'Scheduled Log Entries',
-                              'oldest')
-            self.create_items(self.cars[0].get_all_entry_logs(), self.cars[0], 'Log Entries')
+        self.homepage.homepage_init()
 
     def go_to_car(self, car):
         collection_container = CollectionContainer(self.scrollable_frame,
