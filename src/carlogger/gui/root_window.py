@@ -1,6 +1,7 @@
 from customtkinter import CTk, CTkScrollbar, CTkFrame
 from tkinter import Canvas
 
+from carlogger.gui.w_homepage import Homepage
 from carlogger.gui.c_carlist import CarList
 from carlogger.gui.w_carlist import CarFrame
 from carlogger.gui.w_navigation import NavigationBar
@@ -69,12 +70,9 @@ class RootWindow(CTk):
         self.scrollable_frame.grid_rowconfigure(0, weight=1)
 
         self.navigation.add_nav_item('Home', None)
+
         self.car_list = None
-
-        self.item_container = ItemContainer(self.scrollable_frame, parent_car=None, root=self)
-        self.item_container.grid(row=1, column=0, sticky="nsew")
-
-        self.item_list = None
+        self.homepage = None
 
     def _on_mousewheel(self, event):
         if event.num == 5 or event.delta == -120:
@@ -86,16 +84,11 @@ class RootWindow(CTk):
         self.go_to_homepage()
         self.mainloop()
 
-    def create_items(self, items, parent, header, sort_key: str = '*'):
-        if not self.item_list:
-            self.item_list = ItemList(parent, widget=self.item_container, app_session=self.app_session)
-            self.item_container.parent = self.item_list
-            self.item_container.app_session = self.app_session
-            self.item_container.parent_car = parent
-        self.item_list.create_items(items, header, sort_key)
-
     def reset_item_list_widget(self):
-        self.item_container.collapse_widget()
+        self.homepage.item_container.collapse_widget()
+
+    def create_items(self, items, parent_car, header, sort_key: str = '*'):
+        self.homepage.create_items(items, parent_car, header, sort_key)
 
     def delete_entries(self, entries: list):
         car_name = self.selected_car.car_info.name
@@ -120,25 +113,32 @@ class RootWindow(CTk):
             self.car_list.add_car(car)
 
     def go_to_homepage(self):
-        car_frame = CarFrame(self.scrollable_frame, self)
+        self.homepage = Homepage(self.scrollable_frame, self)
+
+        car_frame = CarFrame(self.homepage, self)
         car_frame.grid(row=0, column=0, sticky='nsew')
 
         if self.current_page:
             self.current_page.destroy()
-
         self.current_page = car_frame
 
         if not self.car_list:
-            self.car_list = CarList(self.current_page)
+            self.car_list = CarList(car_frame)
         else:
-            self.car_list.widget = self.current_page
+            self.car_list.widget = car_frame
 
         self.create_cars()
 
+        if self.cars:
+            self.create_items(self.cars[0].get_all_scheduled_entry_logs(),
+                              self.cars[0],
+                              'Scheduled Log Entries',
+                              'oldest')
+            self.create_items(self.cars[0].get_all_entry_logs(), self.cars[0], 'Log Entries')
+
     def go_to_car(self, car):
         collection_container = CollectionContainer(self.scrollable_frame,
-                                                   root=self,
-                                                   parent=self.item_list)
+                                                   root=self)
         collection_container.create_items(car.collections)
 
         self.open_page(collection_container, car.car_info.name, car)
@@ -146,8 +146,7 @@ class RootWindow(CTk):
 
     def go_to_collection(self, collection):
         component_container = ComponentContainer(self.scrollable_frame,
-                                                 root=self,
-                                                 parent=self.item_list)
+                                                 root=self)
         component_container.create_items(collection.components)
 
         self.open_page(component_container, collection.name, collection)

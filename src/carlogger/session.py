@@ -25,18 +25,12 @@ class AppSession:
     def create_gui(self, gui: RootWindow):
         self.gui = gui
         self.gui.app_session = self
+
         self.cars = self.directory_manager.load_all_car_dir()
+
         self.gui.cars = self.cars
-        self.gui.selected_car = self.cars[0]
-
-        if self.cars:
-            self.gui.create_items(self.cars[0].get_all_scheduled_entry_logs(),
-                                  self.cars[0],
-                                  'Scheduled Log Entries',
-                                  'oldest')
-            self.gui.create_items(self.cars[0].get_all_entry_logs(), self.cars[0], 'Log Entries')
-
         self.selected_car = self.cars[0]
+
         self.gui.start_mainloop()
 
     def request_item_update(self):

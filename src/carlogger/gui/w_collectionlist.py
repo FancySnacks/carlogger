@@ -1,16 +1,13 @@
 from customtkinter import CTkFrame, CTkButton, CTkLabel
 
-from carlogger.gui.c_itemlist import ItemList
 from carlogger.const import ITEM
 
 
 class CollectionContainer(CTkFrame):
-    def __init__(self, master, root, parent: ItemList, **kwargs):
+    def __init__(self, master, root, **kwargs):
         super().__init__(master, **kwargs)
         self.master = master
         self.root = root
-
-        self.parent: ItemList = parent
         self.widget_items = []
 
         self.grid(row=0, column=0, sticky='nsew')
