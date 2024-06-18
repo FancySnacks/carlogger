@@ -103,7 +103,7 @@ class CarComponent:
                                           tags=entry_data['tags'],
                                           component=self,
                                           _id=str(uuid.uuid1()),
-                                          custom_info=entry_data.get('custom_info', dict()),
+                                          custom_info=entry_data.get('custom_info') or {},
                                           frequency=entry_data['frequency'],
                                           repeating=entry_data['repeating'])
 
@@ -132,7 +132,7 @@ class CarComponent:
                                           tags=entry_data['tags'],
                                           component=self,
                                           _id=entry_data['id'],
-                                          custom_info=entry_data.get('custom_info', dict()),
+                                          custom_info=entry_data.get('custom_info') or {},
                                           frequency=entry_data['frequency'],
                                           repeating=entry_data['repeating'],
                                           _from_file=True)

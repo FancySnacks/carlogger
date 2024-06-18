@@ -258,6 +258,7 @@ class Item(CTkFrame):
                          **kwargs)
         self.parent = parent
         self.homepage = homepage
+
         self.id = row
         self.item_ref: ITEM = item_ref
 
@@ -290,6 +291,16 @@ class Item(CTkFrame):
                                    anchor='w')
         self.desc_label.grid(row=0, column=2, padx=5, pady=2)
 
+        if homepage:
+            self.parent_car_label = CTkLabel(self,
+                                             text=self.item_ref.component.parent.car.car_info.name,
+                                             font=('Lato', 17),
+                                             wraplength=115,
+                                             width=130,
+                                             justify='left',
+                                             anchor='w')
+            self.parent_car_label.grid(row=0, column=3, padx=5, pady=2)
+
         self.parent_label = CTkLabel(self,
                                      text=self.item_ref.component.name.capitalize(),
                                      font=('Lato', 17),
@@ -297,10 +308,10 @@ class Item(CTkFrame):
                                      width=150,
                                      justify='left',
                                      anchor='w')
-        self.parent_label.grid(row=0, column=3, padx=5, pady=2)
+        self.parent_label.grid(row=0, column=3+self.homepage, padx=5, pady=2)
 
         self.category_label = CTkLabel(self, text=self._get_item_category(), font=('Lato', 17), width=100)
-        self.category_label.grid(row=0, column=4, padx=5, pady=2)
+        self.category_label.grid(row=0, column=4+self.homepage, padx=5, pady=2)
 
         self.mileage_label = CTkLabel(self,
                                       text=self._get_mileage(),
@@ -308,7 +319,7 @@ class Item(CTkFrame):
                                       width=150,
                                       justify='left',
                                       anchor='w')
-        self.mileage_label.grid(row=0, column=5, padx=5, pady=2)
+        self.mileage_label.grid(row=0, column=5+self.homepage, padx=5, pady=2)
 
         self.create_custom_info()
 
@@ -320,7 +331,7 @@ class Item(CTkFrame):
             return
 
         self.option_buttons_frame = CTkFrame(self, fg_color='transparent')
-        self.option_buttons_frame.grid(row=0, column=9, sticky="nse", padx=3, pady=5)
+        self.option_buttons_frame.grid(row=0, column=9+self.homepage, sticky="nse", padx=3, pady=5)
 
         self.option_buttons_frame.rowconfigure(0, weight=1)
 
