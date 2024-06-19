@@ -12,13 +12,14 @@ class ItemSorter:
         self.sort_method = sort_method
 
         self.sort_method_map = {'latest': self.sort_by_latest_entry,
-                                'oldest': self.sort_by_oldest_entry}
+                                'oldest': self.sort_by_oldest_entry,
+                                'car': self.sort_by_parent_car}
 
     def get_sorted_list(self, reverse_order: bool = False) -> list:
         sort_method: str | Callable = self._get_sort_method()
 
         if type(sort_method) != str:
-            return sort_method(self.items)
+            return sort_method(self.items, reverse_order)
         else:
             return self.sort_by_attrib(self.items, sort_method, reverse_order)
 
@@ -60,7 +61,7 @@ class ItemSorter:
             else:
                 return False
 
-    def sort_by_latest_entry(self, items: list) -> list:
+    def sort_by_latest_entry(self, items: list[LogEntry | ScheduledLogEntry], *args) -> list:
         if items[0].__class__.__name__ in ('LogEntry', 'ScheduledLogEntry'):
             return self.sort_by_latest_entry_raw(items)
 
@@ -73,7 +74,7 @@ class ItemSorter:
 
         return [e[0] for e in items]
 
-    def sort_by_oldest_entry(self, items: list) -> list:
+    def sort_by_oldest_entry(self, items: list[LogEntry | ScheduledLogEntry], *args) -> list:
         if items[0].__class__.__name__ in ('LogEntry', 'ScheduledLogEntry'):
             return self.sort_by_oldest_entry_raw(items)
 
@@ -105,3 +106,13 @@ class ItemSorter:
         items = sorted(entry_map, key=lambda x: x[1])
 
         return [e[0] for e in items]
+
+    def sort_by_parent_car(self, items: list[LogEntry | ScheduledLogEntry], reverse_order=False):
+        entries: list[tuple[str, LogEntry | ScheduledLogEntry]] = []
+
+        for entry in items:
+            parent_car = entry.component.parent.car.car_info.name
+            entries.append((parent_car, entry))
+
+        sorted_entries = sorted(entries, key=lambda x: x[0], reverse=reverse_order)
+        return [entry[1] for entry in sorted_entries]

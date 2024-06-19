@@ -94,6 +94,9 @@ class SortableItemList(CTkFrame):
         self.update_items(self.items)
         self.set_add_button_message()
 
+        if self.parent.homepage:
+            self.add_sort_button('car')
+
     def set_add_button_message(self):
         if 'scheduled' in self.header.lower().replace(' ', ''):
             self.add_button.configure(text="+ Add Scheduled Entry")
