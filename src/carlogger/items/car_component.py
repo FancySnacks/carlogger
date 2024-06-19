@@ -236,7 +236,7 @@ class CarComponent:
             else:
                 i += 1
 
-        print("No entry with given id has been found")
+        Printer.print_msg(LogEntry, 'READ_FAIL', name=entry_id, relation=self.parent.name)
 
     def to_json(self) -> dict:
         """Returns object properties as JSON-serializable dictionary."""
