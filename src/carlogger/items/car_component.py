@@ -262,7 +262,7 @@ class CarComponent:
         if '.' in self.path.suffix:
             return self.path
 
-        return self.path.joinpath(f"{self.name.replace(' ', '_')}.{extension}")
+        return self.path.joinpath(f"{self.parent.name}_{self.name.replace(' ', '_')}.{extension}")
 
     def get_formatted_info(self) -> str:
         """Return well-formatted string representing data of this class."""

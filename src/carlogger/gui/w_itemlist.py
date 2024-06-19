@@ -302,7 +302,7 @@ class Item(CTkFrame):
             self.parent_car_label.grid(row=0, column=3, padx=5, pady=2)
 
         self.parent_label = CTkLabel(self,
-                                     text=self.item_ref.component.name.capitalize(),
+                                     text=self._get_component_name(),
                                      font=('Lato', 17),
                                      wraplength=135,
                                      width=150,
@@ -397,6 +397,10 @@ class Item(CTkFrame):
     def _get_item_name(self) -> str:
         properties = self.item_ref.to_json().get('name', ''), self.item_ref.to_json().get('desc', ''), ''
         return sorted(properties, reverse=True)[0]
+
+    def _get_component_name(self) -> str:
+        sep = self.item_ref.component.name.replace('_', ' ')
+        return sep.capitalize()
 
     def _get_item_category(self) -> str:
         category = self.item_ref.category.replace('_', ' ')
