@@ -64,6 +64,7 @@ class RootWindow(CTk):
         self.canvas.create_window((0.0, 0.0),
                                   window=self.scrollable_frame,
                                   anchor='nw',
+                                  height=self.canvas.winfo_screenheight(),
                                   width=self.canvas.winfo_screenwidth())
 
         self.scrollable_frame.grid_columnconfigure(0, weight=1)

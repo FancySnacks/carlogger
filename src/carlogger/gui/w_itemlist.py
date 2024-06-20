@@ -61,10 +61,10 @@ class SortableItemList(CTkFrame):
         # ===== Widgets ==== #
 
         self.item_label = CTkLabel(self.parent, text=header, font=('Lato', 20), anchor='w')
-        self.item_label.pack(expand=True, fill='x', padx=10, pady=5)
+        self.item_label.pack(fill='x', padx=10, pady=5)
 
         self.management_buttons_frame = CTkFrame(self.parent, fg_color='transparent')
-        self.management_buttons_frame.pack(expand=True, fill='x', pady=5)
+        self.management_buttons_frame.pack(fill='x', pady=5)
 
         self.add_button = CTkButton(self.management_buttons_frame,
                                     text="+ Add Entry",
@@ -86,10 +86,10 @@ class SortableItemList(CTkFrame):
         self.del_button.grid(row=0, column=1, sticky='w', padx=5)
 
         self.buttons_frame = CTkFrame(master=self.parent, height=35, fg_color="cyan")
-        self.buttons_frame.pack(expand=True, fill='both', padx=10, pady=10)
+        self.buttons_frame.pack(fill='x', padx=10, pady=10)
 
         self.item_frame = CTkFrame(master=self.parent, fg_color="skyblue")
-        self.item_frame.pack(expand=True, fill='both', padx=10, pady=10)
+        self.item_frame.pack(fill='x', padx=10, pady=10)
 
         self.update_items(self.items)
         self.set_add_button_message()
