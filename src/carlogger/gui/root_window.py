@@ -132,7 +132,8 @@ class RootWindow(CTk):
 
     def go_to_car(self, car):
         collection_container = CollectionContainer(self.scrollable_frame,
-                                                   root=self)
+                                                   root=self,
+                                                   go_to_func=self.go_to_collection)
         collection_container.create_items(car.collections)
 
         self.open_page(collection_container, car.car_info.name, car)
@@ -140,7 +141,8 @@ class RootWindow(CTk):
 
     def go_to_collection(self, collection):
         component_container = ComponentContainer(self.scrollable_frame,
-                                                 root=self)
+                                                 root=self,
+                                                 go_to_func=self.go_to_component)
         component_container.create_items(collection.components)
 
         self.open_page(component_container, collection.name, collection)
