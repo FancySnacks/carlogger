@@ -13,13 +13,14 @@ if TYPE_CHECKING:
 
 class ItemContainer(CTkFrame):
     def __init__(self, master, parent_car, root: RootWindow, homepage=False, **values):
-        super().__init__(master, **values)
+        super().__init__(master)
         self.root = root
         self.parent_car = parent_car
         self.homepage = homepage
 
         self.parent: ItemList = ...
         self.app_session = ...
+        self.component = values.get('component')
 
         self.item_list_widgets: list[SortableItemList] = []
 
@@ -31,6 +32,10 @@ class ItemContainer(CTkFrame):
     def update_items(self, items: list, index: int):
         sortable_item_list = self.item_list_widgets[index]
         sortable_item_list.update_items(items)
+
+    def refresh_items(self):
+        self.root.go_to_homepage()
+        self.root.go_to_component(self.component)
 
     def add_sort_buttons(self, sort_methods: list[str], item_list: SortableItemList):
         for s in sort_methods:
@@ -168,7 +173,7 @@ class SortableItemList(CTkFrame):
             self.create_item(item)
 
     def refresh_items(self):
-        self.parent.parent.request_item_update()
+        self.parent.refresh_items()
 
     def create_item(self, item_obj, row=-1):
         if item_obj.__class__.__name__ == 'ScheduledLogEntry':

@@ -149,7 +149,7 @@ class RootWindow(CTk):
         self.open_page(component_container, collection.name, collection)
 
     def go_to_component(self, component):
-        item_container = ItemContainer(self.scrollable_frame, parent_car=None, root=self)
+        item_container = ItemContainer(self.scrollable_frame, parent_car=None, root=self, component=component)
         item_container.grid(row=0, column=0, sticky="nsew")
 
         item_list = ItemList(self.scrollable_frame, widget=item_container, app_session=self.app_session)
