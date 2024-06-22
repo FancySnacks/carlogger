@@ -63,30 +63,31 @@ class SortableItemList(CTkFrame):
         self.item_label = CTkLabel(self.parent, text=header, font=('Lato', 20), anchor='w')
         self.item_label.pack(fill='x', padx=10, pady=5)
 
-        self.management_buttons_frame = CTkFrame(self.parent, fg_color='transparent')
-        self.management_buttons_frame.pack(fill='x', pady=5)
+        if not self.parent.homepage:
+            self.management_buttons_frame = CTkFrame(self.parent, fg_color='transparent')
+            self.management_buttons_frame.pack(fill='x', pady=5)
 
-        self.add_button = CTkButton(self.management_buttons_frame,
-                                    text="+ Add Entry",
-                                    font=('Lato', 18),
-                                    fg_color='green',
-                                    width=35,
-                                    corner_radius=0,
-                                    command=self.open_entry_add_window)
-        self.add_button.grid(row=0, column=0, sticky='w', padx=5)
+            self.add_button = CTkButton(self.management_buttons_frame,
+                                        text="+ Add Entry",
+                                        font=('Lato', 18),
+                                        fg_color='green',
+                                        width=35,
+                                        corner_radius=0,
+                                        command=self.open_entry_add_window)
+            self.add_button.grid(row=0, column=0, sticky='w', padx=5)
 
-        self.del_button = CTkButton(self.management_buttons_frame,
-                                    text="Delete Entry",
-                                    font=('Lato', 18),
-                                    fg_color='red',
-                                    width=35,
-                                    corner_radius=0,
-                                    state='disabled',
-                                    command=self.delete_entry)
-        self.del_button.grid(row=0, column=1, sticky='w', padx=5)
+            self.del_button = CTkButton(self.management_buttons_frame,
+                                        text="Delete Entry",
+                                        font=('Lato', 18),
+                                        fg_color='red',
+                                        width=35,
+                                        corner_radius=0,
+                                        state='disabled',
+                                        command=self.delete_entry)
+            self.del_button.grid(row=0, column=1, sticky='w', padx=5)
 
-        self.buttons_frame = CTkFrame(master=self.parent, height=35, fg_color="cyan")
-        self.buttons_frame.pack(fill='x', padx=10, pady=10)
+        self.sort_buttons_frame = CTkFrame(master=self.parent, height=35, fg_color="cyan")
+        self.sort_buttons_frame.pack(fill='x', padx=10, pady=10)
 
         self.item_frame = CTkFrame(master=self.parent, fg_color="skyblue")
         self.item_frame.pack(fill='x', padx=10, pady=10)
@@ -98,6 +99,9 @@ class SortableItemList(CTkFrame):
             self.add_sort_button('car')
 
     def set_add_button_message(self):
+        if self.parent.homepage:
+            return
+
         if 'scheduled' in self.header.lower().replace(' ', ''):
             self.add_button.configure(text="+ Add Scheduled Entry")
         else:
@@ -137,7 +141,7 @@ class SortableItemList(CTkFrame):
             if len(self._children_buttons) % 2 != 0:
                 self.add_separator()
 
-            new_button = SortButton(master=self.buttons_frame,
+            new_button = SortButton(master=self.sort_buttons_frame,
                                     parent=self,
                                     sort_method=sort_method,
                                     column=len(self._children_buttons),
@@ -147,7 +151,7 @@ class SortableItemList(CTkFrame):
             self._children_buttons.append(new_button)
 
     def add_separator(self):
-        separator = CTkLabel(self.buttons_frame, text='|', font=('Lato', 25), text_color='white')
+        separator = CTkLabel(self.sort_buttons_frame, text='|', font=('Lato', 25), text_color='white')
         separator.grid(row=0,
                        column=len(self._children_buttons))
         self._children_buttons.append(separator)
