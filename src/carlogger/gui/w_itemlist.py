@@ -48,7 +48,12 @@ class ItemContainer(CTkFrame):
 
 
 class SortableItemList(CTkFrame):
-    def __init__(self, master, parent: ItemContainer, header: str, items, index: int, **values):
+    def __init__(self, master,
+                 parent: ItemContainer,
+                 header: str,
+                 items,
+                 index: int,
+                 **values):
         super().__init__(master, **values)
         self.parent: ItemContainer = parent
         self.header = header
