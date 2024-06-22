@@ -155,6 +155,7 @@ class RootWindow(CTk):
         item_list = ItemList(self.scrollable_frame, widget=item_container, app_session=self.app_session)
 
         item_container.parent = item_list
+        item_container.app_session = self.app_session
 
         item_list.create_items(component.scheduled_log_entries, 'Scheduled Log Entries', 'oldest')
         item_list.create_items(component.log_entries, 'Log Entries', 'latest')

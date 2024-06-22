@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 class ItemContainer(CTkFrame):
-    def __init__(self, master, parent_car, root: RootWindow, homepage = False, **values):
+    def __init__(self, master, parent_car, root: RootWindow, homepage=False, **values):
         super().__init__(master, **values)
         self.root = root
         self.parent_car = parent_car

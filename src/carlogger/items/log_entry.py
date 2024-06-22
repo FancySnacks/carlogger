@@ -229,6 +229,7 @@ class ScheduledLogEntry(LogEntry):
         return new_obj
 
     def repeat(self):
+        self.mileage = self.component.current_mileage
         self._schedule_obj.set_new_time()
 
     def get_new_date(self) -> int | str:
