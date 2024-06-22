@@ -292,8 +292,8 @@ class Item(CTkFrame):
         self.desc_label = CTkLabel(self,
                                    text=self._get_item_name(),
                                    font=('Lato', 17),
-                                   wraplength=300,
-                                   width=315,
+                                   wraplength=500,
+                                   width=515,
                                    justify='left',
                                    anchor='w')
         self.desc_label.grid(row=0, column=2, padx=5, pady=2)
