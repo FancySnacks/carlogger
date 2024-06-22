@@ -125,9 +125,11 @@ class CarComponent:
     def create_scheduled_entry_from_file(self, entry_data: dict) -> str:
         """Creates a new scheduled entry adding it to the list and returns its unique id."""
         try:
+            clamped_mil = self._clamp_scheduled_entry_mileage(entry_data)
+
             new_entry = ScheduledLogEntry(desc=entry_data['desc'],
                                           date=entry_data['date'],
-                                          mileage=entry_data['mileage'],
+                                          mileage=clamped_mil,
                                           category=EntryCategory(entry_data['category']),
                                           tags=entry_data['tags'],
                                           component=self,
@@ -179,6 +181,7 @@ class CarComponent:
                 entry_to_update.to_json()[k] = v
 
         self._add_search_tags_from_entry(entry_to_update)
+        self._update_mileage(entry_to_update)
 
     def delete_entry_by_id(self, entry_id: str):
         """Delete log entry given it's unique id hash."""
@@ -295,6 +298,12 @@ class CarComponent:
     def _update_mileage(self, entry: LogEntry):
         if entry.mileage > self.current_mileage:
             self.current_mileage = entry.mileage
+
+    def _clamp_scheduled_entry_mileage(self, entry_data) -> int:
+        if entry_data['rule'] == 'mileage':
+            return entry_data['mileage']
+        else:
+            return self.current_mileage
 
     def __repr__(self) -> str:
         return f"[COMPONENT] {self.name} ({len(self.log_entries)} Entries)\n"
