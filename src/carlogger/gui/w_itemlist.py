@@ -70,7 +70,7 @@ class SortableItemList(CTkFrame):
 
         # ===== Widgets ==== #
 
-        self.item_label = CTkLabel(self.parent, text=header, font=('Lato', 20), anchor='w')
+        self.item_label = CTkLabel(self.parent, text=f"{header} [{len(self.items)}]", font=('Lato', 20), anchor='w')
         self.item_label.pack(fill='x', padx=10, pady=5)
 
         if not self.parent.homepage:
@@ -179,12 +179,15 @@ class SortableItemList(CTkFrame):
 
     def refresh_items(self):
         self.parent.refresh_items()
+        self.item_label.configure(text=f"{self.header} [{len(self.widget_items)}]")
 
     def create_item(self, item_obj, row=-1):
         if item_obj.__class__.__name__ == 'ScheduledLogEntry':
             self.create_scheduled_entry(item_obj, row)
         else:
             self.create_log_entry(item_obj, row)
+
+        self.item_label.configure(text=f"{self.header} [{len(self.widget_items)}]")
 
     def create_log_entry(self, item_obj, row: int = -1):
         if row == -1:
