@@ -105,7 +105,11 @@ class RootWindow(CTk):
         self.edit_entry_popup = EditEntryPopup(self.main_frame, self, item_ref, item_widget)
 
     def open_entry_add_window(self, item_container, scheduled_entry: bool = False):
-        self.add_entry_popup = AddEntryPopup(self.main_frame, self, item_container, scheduled_entry=scheduled_entry)
+        self.add_entry_popup = AddEntryPopup(self.main_frame,
+                                             self,
+                                             item_container,
+                                             parent_component=self.navigation.current_item,
+                                             scheduled_entry=scheduled_entry)
 
     def create_cars(self):
         self.car_list.clear_cars()

@@ -10,7 +10,7 @@ from carlogger.const import TODAY
 
 
 class AddEntryPopup:
-    def __init__(self, master, root, item_list: SortableItemList, scheduled_entry: bool = False):
+    def __init__(self, master, root, item_list: SortableItemList, parent_component, scheduled_entry: bool = False):
         self.master = master
         self.root = root
         self.item_list = item_list
@@ -25,8 +25,8 @@ class AddEntryPopup:
 
         self.cars = self.root.cars
         self.car_names = [car.car_info.name for car in self.cars]
-        self.current_collection = self.root.selected_car.collections[0]
-        self.current_component = self.current_collection.components[0]
+        self.current_component = parent_component
+        self.current_collection = self.current_component.parent
 
         # ===== Widget ===== #
 
@@ -152,6 +152,8 @@ class AddEntryPopup:
                                              command=self.on_collection_selection_change)
         self.collection_menu.grid(row=1, column=0, sticky='w')
 
+        self.collection_menu.set(self.current_collection.name)
+
         separator = CTkLabel(self.collection_frame, text="->", font=('Lato', 20))
         separator.grid(row=1, column=1, sticky='w', padx=10)
 
@@ -167,6 +169,8 @@ class AddEntryPopup:
                                             values=self.get_component_names(),
                                             command=self.on_component_selection_change)
         self.component_menu.grid(row=1, column=0, sticky='w')
+
+        self.component_menu.set(self.current_component.name)
 
         # ===== Category ===== #
 
