@@ -29,7 +29,7 @@ class FiledataManager(ABC):
         pass
 
     @abstractmethod
-    def save_file(self, data, filepath):
+    def save_file(self, data, filepath, *values):
         """Save data as file to target path."""
         pass
 
@@ -37,6 +37,10 @@ class FiledataManager(ABC):
     def delete_file(self, obj):
         """Remove file from the system."""
         pass
+
+    @abstractmethod
+    def export_selected_values(self, keys_to_export, data_to_save):
+        return
 
 
 class JSONFiledataManager(FiledataManager):
@@ -47,9 +51,12 @@ class JSONFiledataManager(FiledataManager):
         with open(filepath, "r") as file:
             return json.load(file)
 
-    def save_file(self, obj: JSONSerializableObject, filepath=None):
+    def save_file(self, obj: JSONSerializableObject, filepath=None, *values):
         """Converts object to a dictionary to be saved to target path in a JSON file."""
         data_to_save: dict = obj.to_json()
+
+        if values:
+            data_to_save = self.export_selected_values(values, data_to_save)
 
         if filepath is None:
             filepath = obj.get_target_path(self.suffix)
@@ -61,6 +68,15 @@ class JSONFiledataManager(FiledataManager):
         """Remove target savefile from the system."""
         os.remove(obj.get_target_path(self.suffix))
 
+    def export_selected_values(self, keys_to_export, data_to_save: dict):
+        values_to_export = {}
+        for key in data_to_save.keys():
+            if key in keys_to_export:
+                values_to_export[key] = data_to_save[key]
+        data_to_save = values_to_export
+
+        return data_to_save
+
 
 class TxtFiledataManager(FiledataManager):
     suffix = "txt"
@@ -70,9 +86,12 @@ class TxtFiledataManager(FiledataManager):
         with open(filepath, "r") as file:
             return file.readlines()
 
-    def save_file(self, obj, filepath=None):
+    def save_file(self, obj, filepath=None, *values):
         """Save item to target path as a txt file."""
         data_to_save: dict = obj.to_json()
+
+        if values:
+            data_to_save = self.export_selected_values(*values, data_to_save)
 
         if filepath is None:
             filepath = obj.get_target_path(self.suffix)
@@ -84,3 +103,11 @@ class TxtFiledataManager(FiledataManager):
         """Remove target savefile from the system."""
         os.remove(obj.get_target_path(self.suffix))
 
+    def export_selected_values(self, keys_to_export, data_to_save: dict):
+        values_to_export = {}
+        for key in data_to_save.keys():
+            if key in keys_to_export:
+                values_to_export[key] = data_to_save[key]
+        data_to_save = values_to_export
+
+        return data_to_save

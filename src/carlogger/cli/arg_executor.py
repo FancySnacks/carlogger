@@ -494,7 +494,10 @@ class ExportArgExecutor(ArgExecutor):
         save_path = self.parsed_args['path']
         car_name = self.parsed_args['name']
         car = self.app_session.get_car_by_name(car_name)
-        self.app_session.export_item_to_file(car.car_info, save_path)
+
+        values = self.parsed_args.get('values', [])
+
+        self.app_session.export_item_to_file(car.car_info, save_path, *values)
 
     def export_collection(self):
         save_path = self.parsed_args['path']
@@ -508,7 +511,9 @@ class ExportArgExecutor(ArgExecutor):
             collection.collections = []
             collection.components = []
 
-        self.app_session.export_item_to_file(collection, save_path)
+        values = self.parsed_args.get('values', [])
+
+        self.app_session.export_item_to_file(collection, save_path, *values)
 
     def export_component(self):
         save_path = self.parsed_args['path']
@@ -525,7 +530,9 @@ class ExportArgExecutor(ArgExecutor):
             component.part_list = []
             component.scheduled_log_entries = []
 
-        self.app_session.export_item_to_file(component, save_path)
+        values = self.parsed_args.get('values', [])
+
+        self.app_session.export_item_to_file(component, save_path, *values)
 
     def _recognize_context(self) -> str:
         """Which item to export; car, collection or component?"""

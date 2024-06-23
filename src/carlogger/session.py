@@ -230,9 +230,9 @@ class AppSession:
         self.directory_manager.data_manager.save_file(entry.component, path)
         return repeated_entry
 
-    def export_item_to_file(self, item, path):
+    def export_item_to_file(self, item, path, *values):
         check_file_extension_validity(path)
-        self.directory_manager.match_extension_to_filedata_manager(path).save_file(item, path)
+        self.directory_manager.match_extension_to_filedata_manager(path).save_file(item, path, *values)
 
     def import_item_from_file(self, item_class_name: str, path, no_children=False, **parents):
         check_file_extension_validity(path)

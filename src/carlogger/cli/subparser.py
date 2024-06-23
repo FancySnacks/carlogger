@@ -717,10 +717,20 @@ class ExportSubparser(Subparser):
                                 type=str)
 
     def add_nochild_arg(self):
-        for sp_name, sp_obj in list(self.export_parsers.choices.items())[1:]:
+        for sp_name, sp_obj in list(self.export_parsers.choices.items())[1::]:
             sp_obj.add_argument('--nochildren',
                                 help="Import item without child elements.",
                                 action='store_true')
+
+    def add_values_arg(self):
+        for sp_name, sp_obj in list(self.export_parsers.choices.items()):
+            sp_obj.add_argument('--values',
+                                help="Select which values to export. All by default.",
+                                metavar='VALUES TO EXPORT',
+                                dest='values',
+                                nargs='*',
+                                default=[]
+                                )
 
     def create_subparser(self):
         self.export_parser = self.parser_parent.subparsers.add_parser('export',
@@ -773,3 +783,4 @@ class ExportSubparser(Subparser):
 
         self.add_path_arg()
         self.add_nochild_arg()
+        self.add_values_arg()
