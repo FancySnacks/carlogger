@@ -12,8 +12,7 @@ class CarCard(CTkFrame):
 
         # ===== Widget ===== #
 
-        self.inner_frame = CTkFrame(self.master,
-                                    fg_color='gray')
+        self.inner_frame = CTkFrame(self.master, fg_color='gray')
         self.inner_frame.grid(row=self.row, column=self.column, padx=5, pady=5)
 
         self.name = CTkLabel(self.inner_frame,
@@ -35,11 +34,48 @@ class CarCard(CTkFrame):
         self.master.go_to_car(self.car)
 
 
+class DummyCarCard(CTkFrame):
+    def __init__(self, master, car, row=0, col=0, **values):
+        super().__init__(master, **values)
+        self.master: CarFrame = master
+        self.car = car
+
+        self.row = row
+        self.column = col
+
+        # ===== Widget ===== #
+
+        self.inner_frame = CTkFrame(self.master, fg_color='transparent')
+        self.inner_frame.grid(row=self.row, column=self.column, padx=5, pady=5)
+
+        self.name = CTkLabel(self.inner_frame,
+                             text='+',
+                             font=('Lato', 15))
+
+        self.name.grid(row=0, column=0)
+
+        self.button = CTkButton(self.inner_frame,
+                                fg_color='#323131',
+                                border_color='lightgray',
+                                border_width=3,
+                                border_spacing=5,
+                                hover_color='lightgray',
+                                width=250,
+                                height=210,
+                                text='+',
+                                font=('Lato', 50))
+        self.button.grid(row=0, column=0, padx=5, pady=5, sticky='nsew')
+
+
 class CarFrame(CTkFrame):
     def __init__(self, master, root, **values):
         super().__init__(master, **values)
         self.root = root
         self.car_cards: list[CarCard] = []
+
+        new_car_card = DummyCarCard(master=self, car=None, row=0, col=0)
+        new_car_card.grid(row=0, column=0, sticky='w')
+        self.car_cards.append(new_car_card)
 
     def add_car(self, car):
         col = len(self.car_cards)

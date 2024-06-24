@@ -20,8 +20,7 @@ class ContainerItem(ABC):
                                     fg_color='gray')
         self.inner_frame.grid(row=self.row, column=self.column, padx=5, pady=5)
 
-        self.name = CTkLabel(self.inner_frame,
-                             text=self.item_ref.name,)
+        self.name = CTkLabel(self.inner_frame, text=self.item_ref.name, font=('Lato', 15))
 
         self.name.grid(row=0, column=0)
 
@@ -39,6 +38,33 @@ class ContainerItem(ABC):
         self.master.go_to(self.item_ref)
 
 
+class DummyContainerItem(ABC):
+    def __init__(self, master, item_ref: ITEM, column: int, row=0, **kwargs):
+        self.master = master
+        self.item_ref = item_ref
+
+        self.column = column
+        self.row = row
+
+        # ===== Widget ===== #
+
+        self.inner_frame = CTkFrame(self.master,
+                                    fg_color='transparent')
+        self.inner_frame.grid(row=self.row, column=self.column, padx=5, pady=5)
+
+        self.button = CTkButton(self.inner_frame,
+                                fg_color='#323131',
+                                border_color='lightgray',
+                                border_width=3,
+                                border_spacing=5,
+                                hover_color='lightgray',
+                                width=250,
+                                height=210,
+                                text='+',
+                                font=('Lato', 50))
+        self.button.grid(row=0, column=0, padx=5, pady=5, sticky='nsew')
+
+
 class Container(CTkFrame, ABC):
     def __init__(self, master, root, go_to_func: Callable, **kwargs):
         super().__init__(master, **kwargs)
@@ -48,6 +74,11 @@ class Container(CTkFrame, ABC):
         self.widget_items = []
 
         self.grid(row=0, column=0, sticky='nsew')
+
+        row = len(self.widget_items) // 7
+        column = len(self.widget_items) % 7
+        new_item = DummyContainerItem(self, None, column, row=row)
+        self.widget_items.append(new_item)
 
     def add_item(self, item_ref: ITEM, widget_item_class=ContainerItem):
         row = len(self.widget_items) // 7
