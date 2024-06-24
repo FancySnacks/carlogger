@@ -63,8 +63,12 @@ class DummyCarCard(CTkFrame):
                                 width=250,
                                 height=210,
                                 text='+',
-                                font=('Lato', 50))
+                                font=('Lato', 50),
+                                command=self.open_add_menu)
         self.button.grid(row=0, column=0, padx=5, pady=5, sticky='nsew')
+
+    def open_add_menu(self):
+        self.master.open_add_car_menu()
 
 
 class CarFrame(CTkFrame):
@@ -91,3 +95,6 @@ class CarFrame(CTkFrame):
 
     def go_to_car(self, car):
         self.root.go_to_car(car)
+
+    def open_add_car_menu(self):
+        self.root.open_car_add_window()

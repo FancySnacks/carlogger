@@ -9,6 +9,7 @@ from carlogger.gui.w_itemlist import ItemContainer
 from carlogger.gui.c_itemlist import ItemList
 from carlogger.gui.w_editentry import EditEntryPopup
 from carlogger.gui.w_addentry import AddEntryPopup
+from carlogger.gui.w_addcar import AddCarPopup
 from carlogger.gui.w_collectionlist import CollectionContainer
 from carlogger.gui.w_componentlist import ComponentContainer
 
@@ -110,6 +111,9 @@ class RootWindow(CTk):
                                              item_container,
                                              parent_component=self.navigation.current_item,
                                              scheduled_entry=scheduled_entry)
+
+    def open_car_add_window(self):
+        self.add_car_popup = AddCarPopup(self.main_frame, self, self.car_list)
 
     def create_cars(self):
         self.car_list.clear_cars()

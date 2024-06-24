@@ -61,8 +61,12 @@ class DummyContainerItem(ABC):
                                 width=250,
                                 height=210,
                                 text='+',
-                                font=('Lato', 50))
+                                font=('Lato', 50),
+                                command=self.open_add_menu)
         self.button.grid(row=0, column=0, padx=5, pady=5, sticky='nsew')
+
+    def open_add_menu(self):
+        pass
 
 
 class Container(CTkFrame, ABC):
