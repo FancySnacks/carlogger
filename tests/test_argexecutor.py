@@ -91,7 +91,7 @@ def test_arg_executor_creates_new_entry(directory_manager, add_cmd):
 # ===== Read ===== #
 
 def test_arg_executor_outputs_car(capsys, directory_manager, read_cmd):
-    expected_out = """\n=== CarTestPytest ===\nmanufacturer: Skoda \nmodel: Roomster \nyear: 2002 \nmileage: 198000 \nbody: Hatchback \nlength: 4200 \nweight: 1800 \nname: CarTestPytest \ncustom_info: [] \n\n[COLLECTION]
+    expected_out = """\n=== CarTestPytest ===\nmanufacturer: Skoda \nmodel: Roomster \nyear: 2002 \nmileage: 198000 \nname: CarTestPytest \ncustom_info: [] \n\n[COLLECTION]
  Engine (1 Components | 0 Nested Collections)\n\n"""
 
     args = read_cmd['car']

@@ -27,7 +27,7 @@ def test_get_subparser_type(args, expected):
 
 @pytest.mark.parametrize("args, expected", [
     (['', 'add', 'car', '--name', 'CarTestPytest', '--manufacturer', 'Skoda', '--model', 'Roomster', '--year', '2002',
-      '--mileage', '198000', '--body', 'Hatchback', '--length', '4200', '--weight', '1800'], AddArgExecutor),
+      '--mileage', '198000'], AddArgExecutor),
     (['', 'read', 'car', 'CarTestPytest'], ReadArgExecutor)
 ])
 def test_console_args_get_evaluated(args, expected, directory_manager):

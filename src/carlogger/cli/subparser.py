@@ -178,19 +178,6 @@ class AddSubparser(Subparser):
                                          type=int,
                                          required=True)
 
-        self.add_car_parser.add_argument('--body',
-                                         type=str,
-                                         help="Hatchback, sedan, coupe, station wagon, SUV etc.",
-                                         required=True)
-
-        self.add_car_parser.add_argument('--length',
-                                         type=int,
-                                         required=True)
-
-        self.add_car_parser.add_argument('--weight',
-                                         type=int,
-                                         required=True)
-
         self.add_car_parser.add_argument('--custom',
                                          action=ParseKwargs, type=str,
                                          help="More entry properties as defined by the user, "

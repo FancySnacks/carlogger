@@ -9,9 +9,6 @@ class CarInfo:
     model: str
     year: int
     mileage: int
-    body: str
-    length: int
-    weight: int
     name: str = ""
     path: str = ""
     custom_info: dict[str, ...] = field(default_factory=dict)

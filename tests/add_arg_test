@@ -1,4 +1,4 @@
-carlogger add car --name CarTestPytest --manufacturer Skoda --model Roomster --year 2002 --mileage 198000 --body Hatchback --length 4200 --weight 1800
+carlogger add car --name CarTestPytest --manufacturer Skoda --model Roomster --year 2002 --mileage 198000
 carlogger add collection --name Engine --car CarTestPytest
 carlogger add collection --name "Turbocharger" --car CarTestPytest --parent Engine
 carlogger add collection --name "Intake" --car CarTestPytest --parent Turbocharger

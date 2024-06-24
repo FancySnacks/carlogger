@@ -93,10 +93,7 @@ def mock_car_info() -> dict:
         'manufacturer': 'Seat',
         'model': 'Leon 1',
         'year': 2003,
-        'body': 'hatchback',
-        'length': 4140,
         'mileage': 205000,
-        'weight': 1700,
         'name': 'ProjectCar'
     }
 
@@ -109,10 +106,7 @@ def mock_car_dict_list() -> list[dict]:
         'manufacturer': 'Fiat',
         'model': '500',
         'year': 2017,
-        'body': 'hatchback',
-        'length': 4140,
         'mileage': 13500,
-        'weight': 1700,
         'name': 'NewPurchase'
     }
 
@@ -120,10 +114,7 @@ def mock_car_dict_list() -> list[dict]:
         'manufacturer': 'Toyota',
         'model': 'Celica',
         'year': 2003,
-        'body': 'coupe',
-        'length': 4140,
         'mileage': 221387,
-        'weight': 1700,
         'name': 'ProjectCar'
     }
 
