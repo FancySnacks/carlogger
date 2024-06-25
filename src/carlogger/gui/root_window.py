@@ -11,6 +11,7 @@ from carlogger.gui.w_editentry import EditEntryPopup
 from carlogger.gui.w_addentry import AddEntryPopup
 from carlogger.gui.w_addcar import AddCarPopup
 from carlogger.gui.w_addcollection import AddCollectionPopup
+from carlogger.gui.w_addcomponent import AddComponentPopup
 from carlogger.gui.w_collectionlist import CollectionContainer
 from carlogger.gui.w_componentlist import ComponentContainer
 
@@ -21,6 +22,7 @@ class RootWindow(CTk):
         self.app_session = None
         self.cars = []
         self.selected_car = None
+        self.selected_collection = None
         self.current_page = None
 
         self.title('Carlogger')
@@ -119,6 +121,9 @@ class RootWindow(CTk):
     def open_collection_add_window(self):
         self.add_collection_popup = AddCollectionPopup(self.main_frame, self, self.selected_car)
 
+    def open_component_add_window(self):
+        self.add_component_popup = AddComponentPopup(self.main_frame, self, self.selected_collection, self.selected_car)
+
     def create_cars(self):
         self.car_list.clear_cars()
 
@@ -154,10 +159,12 @@ class RootWindow(CTk):
         self.selected_car = car
 
     def go_to_collection(self, collection):
+        self.selected_collection = collection
+
         component_container = ComponentContainer(self.scrollable_frame,
                                                  root=self,
                                                  go_to_func=self.go_to_component,
-                                                 add_widget_func=None)
+                                                 add_widget_func=self.open_component_add_window)
         component_container.create_items(collection.components)
 
         self.open_page(component_container, collection.name, collection)
