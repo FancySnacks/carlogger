@@ -10,6 +10,7 @@ from carlogger.gui.c_itemlist import ItemList
 from carlogger.gui.w_editentry import EditEntryPopup
 from carlogger.gui.w_addentry import AddEntryPopup
 from carlogger.gui.w_addcar import AddCarPopup
+from carlogger.gui.w_addcollection import AddCollectionPopup
 from carlogger.gui.w_collectionlist import CollectionContainer
 from carlogger.gui.w_componentlist import ComponentContainer
 
@@ -113,7 +114,10 @@ class RootWindow(CTk):
                                              scheduled_entry=scheduled_entry)
 
     def open_car_add_window(self):
-        self.add_car_popup = AddCarPopup(self.main_frame, self, self.car_list)
+        self.add_car_popup = AddCarPopup(self.main_frame, self)
+
+    def open_collection_add_window(self):
+        self.add_collection_popup = AddCollectionPopup(self.main_frame, self, self.selected_car)
 
     def create_cars(self):
         self.car_list.clear_cars()
@@ -142,7 +146,8 @@ class RootWindow(CTk):
     def go_to_car(self, car):
         collection_container = CollectionContainer(self.scrollable_frame,
                                                    root=self,
-                                                   go_to_func=self.go_to_collection)
+                                                   go_to_func=self.go_to_collection,
+                                                   add_widget_func=self.open_collection_add_window)
         collection_container.create_items(car.collections)
 
         self.open_page(collection_container, car.car_info.name, car)
@@ -151,7 +156,8 @@ class RootWindow(CTk):
     def go_to_collection(self, collection):
         component_container = ComponentContainer(self.scrollable_frame,
                                                  root=self,
-                                                 go_to_func=self.go_to_component)
+                                                 go_to_func=self.go_to_component,
+                                                 add_widget_func=None)
         component_container.create_items(collection.components)
 
         self.open_page(component_container, collection.name, collection)

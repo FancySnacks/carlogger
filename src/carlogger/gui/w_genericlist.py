@@ -66,15 +66,16 @@ class DummyContainerItem(ABC):
         self.button.grid(row=0, column=0, padx=5, pady=5, sticky='nsew')
 
     def open_add_menu(self):
-        pass
+        self.master.open_add_widget()
 
 
 class Container(CTkFrame, ABC):
-    def __init__(self, master, root, go_to_func: Callable, **kwargs):
+    def __init__(self, master, root, go_to_func: Callable, add_widget_func: Callable, **kwargs):
         super().__init__(master, **kwargs)
         self.master = master
         self.root = root
         self.go_to_func = go_to_func
+        self.add_widget_func = add_widget_func
         self.widget_items = []
 
         self.grid(row=0, column=0, sticky='nsew')
@@ -96,3 +97,6 @@ class Container(CTkFrame, ABC):
 
     def go_to(self, item_ref: ITEM):
         self.go_to_func(item_ref)
+
+    def open_add_widget(self):
+        self.add_widget_func()

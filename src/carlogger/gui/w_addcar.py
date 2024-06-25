@@ -8,10 +8,9 @@ from carlogger.util import date_string_to_date
 
 
 class AddCarPopup:
-    def __init__(self, master, root, car_list: CarFrame):
+    def __init__(self, master, root):
         self.master = master
         self.root = root
-        self.car_list = car_list
 
         self.required_fields: list[str] = ['name', 'manufacturer', 'model', 'year', 'mileage', 'custom_info']
 

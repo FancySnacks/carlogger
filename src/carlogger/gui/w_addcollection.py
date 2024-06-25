@@ -2,20 +2,28 @@ from customtkinter import CTk, CTkFrame, CTkLabel, CTkButton, CTkEntry, CTkScrol
 
 from tkinter import StringVar
 
-from carlogger.gui.w_genericlist import Container
-
 
 class AddCollectionPopup:
-    def __init__(self, master, root, collection_list: Container):
+    def __init__(self, master, root, parent_car):
         self.master = master
         self.root = root
-        self.collection_list = collection_list
+        self.parent_car = parent_car
 
         self.required_fields: list[str] = ['name', 'custom_info']
 
+        # ===== Overlay Frame ===== #
+
+        self.overlay_frame = CTkFrame(self.master, bg_color='transparent')
+        self.overlay_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
+
+        # ===== Main Popup Frame ===== #
+
+        self.popup_frame = CTkFrame(self.master, width=965, height=600, corner_radius=10, bg_color='transparent')
+        self.popup_frame.place(relx=0.5, rely=0.5, anchor='center')
+
         # ===== Widget ===== #
 
-        self.main_frame = CTkFrame(self.master)
+        self.main_frame = CTkFrame(self.popup_frame)
         self.main_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
 
         self.top_frame = CTkFrame(self.main_frame, fg_color='transparent')
@@ -31,7 +39,7 @@ class AddCollectionPopup:
                                      command=self.close_menu)
         self.back_button.grid(row=0, column=0, pady=5, padx=10, sticky='w')
 
-        self.label = CTkLabel(self.top_frame, text="Add Car", font=('Lato', 30))
+        self.label = CTkLabel(self.top_frame, text="Add Collection", font=('Lato', 30))
         self.label.grid(row=0, column=1, pady=5, padx=10, sticky='w')
 
         self.separator = CTkLabel(self.main_frame, text='', bg_color='gray', height=1, font=('Arial', 2))
@@ -39,7 +47,7 @@ class AddCollectionPopup:
 
         # ===== Add Section Frames ===== #
 
-        self.add_main_frame = CTkScrollableFrame(self.main_frame, fg_color='transparent', height=1900)
+        self.add_main_frame = CTkFrame(self.main_frame, fg_color='#403f3f')
         self.add_main_frame.pack(anchor='center', fill='both', pady=10, padx=15)
 
         self.add_left_frame = CTkFrame(self.add_main_frame, fg_color='#403f3f')
@@ -48,17 +56,17 @@ class AddCollectionPopup:
         self.add_mid_frame = CTkFrame(self.add_main_frame, fg_color='#403f3f')
         self.add_mid_frame.grid(row=0, column=1, sticky='nsew', pady=10, padx=10)
 
-        # ===== Add Car Button ===== #
+        # ===== Add Collection Button ===== #
 
         self.addb_frame = CTkFrame(self.add_main_frame, fg_color='transparent')
-        self.addb_frame.grid(row=1, column=0, sticky='w')
+        self.addb_frame.grid(row=1, column=0, sticky='w', pady=10)
 
         self.add_button = CTkButton(self.addb_frame,
-                                    text="Create Entry",
+                                    text="Create Collection",
                                     font=('Lato', 20),
                                     fg_color='green',
                                     corner_radius=10,
-                                    command=self.add_car,
+                                    command=self.add_collection,
                                     state='disabled')
         self.add_button.grid(row=0, column=0, sticky='w', padx=15, pady=5)
 
@@ -68,7 +76,6 @@ class AddCollectionPopup:
         # ===== Name ===== #
 
         self.name_var = StringVar()
-
         self.name_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
         self.name_frame.grid(row=0, column=0, sticky='w', pady=10, padx=10)
 
@@ -77,85 +84,15 @@ class AddCollectionPopup:
 
         self.name_entry = CTkEntry(self.name_frame,
                                    font=('Lato', 20),
-                                   textvariable=self.name_var)
+                                   textvariable=self.name_var,
+                                   width=250)
         self.name_entry.grid(row=1, column=0, sticky='w')
 
         self.name_var.trace_add('write', self.track_changes)
 
-        # ===== Manufacturer ===== #
-
-        self.manufacturer_var = StringVar()
-
-        self.manufacturer_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
-        self.manufacturer_frame.grid(row=1, column=0, sticky='w', pady=10, padx=10)
-
-        self.manufacturer_label = CTkLabel(self.manufacturer_frame, text="Manufacturer", font=('Lato', 20))
-        self.manufacturer_label.grid(row=0, column=0, sticky='w')
-
-        self.manufacturer_entry = CTkEntry(self.manufacturer_frame, font=('Lato', 20),
-                                           textvariable=self.manufacturer_var)
-        self.manufacturer_entry.grid(row=1, column=0, sticky='w')
-
-        self.manufacturer_var.trace_add('write', self.track_changes)
-
-        # ===== Model ===== #
-
-        self.model_var = StringVar()
-
-        self.model_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
-        self.model_frame.grid(row=2, column=0, sticky='w', pady=10, padx=10)
-
-        self.model_label = CTkLabel(self.model_frame, text="Model", font=('Lato', 20))
-        self.model_label.grid(row=0, column=0, sticky='w')
-
-        self.model_entry = CTkEntry(self.model_frame,
-                                    font=('Lato', 20),
-                                    textvariable=self.model_var)
-        self.model_entry.grid(row=1, column=0, sticky='w')
-
-        self.model_var.trace_add('write', self.track_changes)
-
-        # ===== Year ===== #
-
-        self.year_var = StringVar(value=str(date_string_to_date(TODAY).year))
-
-        self.year_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
-        self.year_frame.grid(row=3, column=0, sticky='w', pady=10, padx=10)
-
-        self.year_label = CTkLabel(self.year_frame, text="Year", font=('Lato', 20))
-        self.year_label.grid(row=0, column=0, sticky='w')
-
-        self.year_entry = CTkEntry(self.year_frame,
-                                   font=('Lato', 20),
-                                   textvariable=self.year_var)
-        self.year_entry.grid(row=1, column=0, sticky='w')
-
-        self.year_var.trace_add('write', self.track_changes)
-
-        # ===== Mileage ===== #
-
-        self.mileage_var = StringVar(value="0")
-
-        self.mileage_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
-        self.mileage_frame.grid(row=4, column=0, sticky='w', pady=10, padx=10)
-
-        self.mileage_label = CTkLabel(self.mileage_frame, text="Mileage", font=('Lato', 20))
-        self.mileage_label.grid(row=0, column=0, sticky='w')
-
-        self.mileage_entry = CTkEntry(self.mileage_frame,
-                                      font=('Lato', 20),
-                                      placeholder_text='Enter mileage (km)',
-                                      textvariable=self.mileage_var)
-        self.mileage_entry.grid(row=1, column=0, sticky='w')
-
-        self.mileage_unit_label = CTkLabel(self.mileage_frame, text="km", font=('Lato', 20))
-        self.mileage_unit_label.grid(row=1, column=1, sticky='w', padx=10)
-
-        self.mileage_var.trace_add('write', self.track_changes)
-
         # ===== Custom Info ===== #
 
-        self.custom_frame = CTkScrollableFrame(self.add_mid_frame, fg_color='transparent', width=550, height=800)
+        self.custom_frame = CTkScrollableFrame(self.add_mid_frame, fg_color='transparent', width=550, height=400)
         self.custom_frame.grid(row=0, column=0, sticky='w', pady=10, padx=10)
 
         self.custom_label = CTkLabel(self.custom_frame, text="Custom Properties", font=('Lato', 20))
@@ -193,32 +130,6 @@ class AddCollectionPopup:
         else:
             self.name_entry.configure(border_color='red')
 
-        manufacturer = self.manufacturer_entry.get()
-        if manufacturer:
-            updated_data['manufacturer'] = manufacturer
-            self.manufacturer_entry.configure(border_color='')
-        else:
-            self.manufacturer_entry.configure(border_color='red')
-
-        model = self.model_entry.get()
-        if model:
-            updated_data['model'] = model
-            self.model_entry.configure(border_color='')
-        else:
-            self.model_entry.configure(border_color='red')
-
-        year = self.year_entry.get()
-        if model:
-            updated_data['year'] = year
-            self.year_entry.configure(border_color='')
-        else:
-            self.year_entry.configure(border_color='red')
-
-        mileage = self.mileage_var.get()
-        if not mileage.isdigit():
-            mileage = 0
-        updated_data['mileage'] = int(mileage)
-
         updated_data['custom_info'] = self.property_container.get_properties()
 
         return updated_data
@@ -227,14 +138,14 @@ class AddCollectionPopup:
         keys = list(values.keys())
         return sorted(keys) == sorted(self.required_fields)
 
-    def add_car(self):
-        car_data = self.collect_changes()
+    def add_collection(self):
+        coll_data = self.collect_changes()
 
-        if not self._has_all_necessary_fields(car_data):
+        if not self._has_all_necessary_fields(coll_data):
             self.add_label.configure(text="There is missing information.")
             return
 
-        self.root.app_session.add_new_car(car_data)
+        self.root.app_session.add_new_collection(self.parent_car.car_info.name, coll_data['name'])
 
         self._post_entry_add()
 
@@ -256,15 +167,16 @@ class AddCollectionPopup:
 
     def _post_entry_add(self):
         self.close_menu()
-        self.root.go_to_homepage()
+        self.root.go_to_car(self.parent_car)
 
     def close_menu(self, *args):
-        self.main_frame.destroy()
+        self.overlay_frame.destroy()
+        self.popup_frame.destroy()
         del self
 
 
 class PropertyContainer(CTkFrame):
-    def __init__(self, master, root: CTk, parent: AddCarPopup, **values):
+    def __init__(self, master, root: CTk, parent: AddCollectionPopup, **values):
         super().__init__(master, **values)
         self.master = master
         self.root = root
@@ -318,9 +230,9 @@ class PropertyItem:
         self.property_frame.pack(fill='x', anchor='w', padx=2, pady=2)
 
         self.property_name_car = CTkEntry(self.property_frame,
-                                            font=('Lato', 17),
-                                            width=200,
-                                            textvariable=self.property_name)
+                                          font=('Lato', 17),
+                                          width=200,
+                                          textvariable=self.property_name)
         self.property_name_car.grid(row=0, column=0, sticky='w', padx=3, pady=2)
 
         self.separator = CTkLabel(self.property_frame,
@@ -332,9 +244,9 @@ class PropertyItem:
         self.separator.grid(row=0, column=1, sticky='w', padx=10)
 
         self.property_value_car = CTkEntry(self.property_frame,
-                                             font=('Lato', 17),
-                                             width=280,
-                                             textvariable=self.property_value)
+                                           font=('Lato', 17),
+                                           width=280,
+                                           textvariable=self.property_value)
         self.property_value_car.grid(row=0, column=2, sticky='w', padx=3, pady=2)
 
         self.property_name.trace_add('write', self.on_property_update)
