@@ -2,29 +2,20 @@ from customtkinter import CTk, CTkFrame, CTkLabel, CTkButton, CTkEntry, CTkScrol
 
 from tkinter import StringVar
 
-from carlogger.gui.w_carlist import CarFrame
-from carlogger.const import TODAY
-from carlogger.util import date_string_to_date
+from carlogger.gui.w_genericlist import Container
 
 
-class AddCarPopup:
-    def __init__(self, master, root, car_list: CarFrame):
+class AddCollectionPopup:
+    def __init__(self, master, root, collection_list: Container):
         self.master = master
         self.root = root
-        self.car_list = car_list
+        self.collection_list = collection_list
 
-        self.required_fields: list[str] = ['name', 'manufacturer', 'model', 'year', 'mileage', 'custom_info']
-
-        # ===== Overlay Frame ===== #
-        self.overlay_frame = CTkFrame(self.master, bg_color='transparent')
-        self.overlay_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
-
-        # ===== Main Popup Frame ===== #
-        self.popup_frame = CTkFrame(self.master, width=965, height=600, corner_radius=10, bg_color='transparent')
-        self.popup_frame.place(relx=0.5, rely=0.5, anchor='center')
+        self.required_fields: list[str] = ['name', 'custom_info']
 
         # ===== Widget ===== #
-        self.main_frame = CTkFrame(self.popup_frame)
+
+        self.main_frame = CTkFrame(self.master)
         self.main_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
 
         self.top_frame = CTkFrame(self.main_frame, fg_color='transparent')
@@ -47,7 +38,8 @@ class AddCarPopup:
         self.separator.pack(fill='x', padx=10)
 
         # ===== Add Section Frames ===== #
-        self.add_main_frame = CTkFrame(self.main_frame, fg_color='#403f3f')
+
+        self.add_main_frame = CTkScrollableFrame(self.main_frame, fg_color='transparent', height=1900)
         self.add_main_frame.pack(anchor='center', fill='both', pady=10, padx=15)
 
         self.add_left_frame = CTkFrame(self.add_main_frame, fg_color='#403f3f')
@@ -57,11 +49,12 @@ class AddCarPopup:
         self.add_mid_frame.grid(row=0, column=1, sticky='nsew', pady=10, padx=10)
 
         # ===== Add Car Button ===== #
+
         self.addb_frame = CTkFrame(self.add_main_frame, fg_color='transparent')
-        self.addb_frame.grid(row=1, column=0, sticky='w', pady=10)
+        self.addb_frame.grid(row=1, column=0, sticky='w')
 
         self.add_button = CTkButton(self.addb_frame,
-                                    text="Create Car",
+                                    text="Create Entry",
                                     font=('Lato', 20),
                                     fg_color='green',
                                     corner_radius=10,
@@ -73,7 +66,9 @@ class AddCarPopup:
         self.add_label.grid(row=0, column=1, sticky='w')
 
         # ===== Name ===== #
+
         self.name_var = StringVar()
+
         self.name_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
         self.name_frame.grid(row=0, column=0, sticky='w', pady=10, padx=10)
 
@@ -82,14 +77,15 @@ class AddCarPopup:
 
         self.name_entry = CTkEntry(self.name_frame,
                                    font=('Lato', 20),
-                                   textvariable=self.name_var,
-                                   width=250)
+                                   textvariable=self.name_var)
         self.name_entry.grid(row=1, column=0, sticky='w')
 
         self.name_var.trace_add('write', self.track_changes)
 
         # ===== Manufacturer ===== #
+
         self.manufacturer_var = StringVar()
+
         self.manufacturer_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
         self.manufacturer_frame.grid(row=1, column=0, sticky='w', pady=10, padx=10)
 
@@ -97,14 +93,15 @@ class AddCarPopup:
         self.manufacturer_label.grid(row=0, column=0, sticky='w')
 
         self.manufacturer_entry = CTkEntry(self.manufacturer_frame, font=('Lato', 20),
-                                           textvariable=self.manufacturer_var,
-                                           width=250)
+                                           textvariable=self.manufacturer_var)
         self.manufacturer_entry.grid(row=1, column=0, sticky='w')
 
         self.manufacturer_var.trace_add('write', self.track_changes)
 
         # ===== Model ===== #
+
         self.model_var = StringVar()
+
         self.model_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
         self.model_frame.grid(row=2, column=0, sticky='w', pady=10, padx=10)
 
@@ -113,14 +110,15 @@ class AddCarPopup:
 
         self.model_entry = CTkEntry(self.model_frame,
                                     font=('Lato', 20),
-                                    textvariable=self.model_var,
-                                    width=250)
+                                    textvariable=self.model_var)
         self.model_entry.grid(row=1, column=0, sticky='w')
 
         self.model_var.trace_add('write', self.track_changes)
 
         # ===== Year ===== #
+
         self.year_var = StringVar(value=str(date_string_to_date(TODAY).year))
+
         self.year_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
         self.year_frame.grid(row=3, column=0, sticky='w', pady=10, padx=10)
 
@@ -135,7 +133,9 @@ class AddCarPopup:
         self.year_var.trace_add('write', self.track_changes)
 
         # ===== Mileage ===== #
+
         self.mileage_var = StringVar(value="0")
+
         self.mileage_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
         self.mileage_frame.grid(row=4, column=0, sticky='w', pady=10, padx=10)
 
@@ -145,8 +145,7 @@ class AddCarPopup:
         self.mileage_entry = CTkEntry(self.mileage_frame,
                                       font=('Lato', 20),
                                       placeholder_text='Enter mileage (km)',
-                                      textvariable=self.mileage_var,
-                                      width=250)
+                                      textvariable=self.mileage_var)
         self.mileage_entry.grid(row=1, column=0, sticky='w')
 
         self.mileage_unit_label = CTkLabel(self.mileage_frame, text="km", font=('Lato', 20))
@@ -155,7 +154,8 @@ class AddCarPopup:
         self.mileage_var.trace_add('write', self.track_changes)
 
         # ===== Custom Info ===== #
-        self.custom_frame = CTkScrollableFrame(self.add_mid_frame, fg_color='transparent', width=550, height=400)
+
+        self.custom_frame = CTkScrollableFrame(self.add_mid_frame, fg_color='transparent', width=550, height=800)
         self.custom_frame.grid(row=0, column=0, sticky='w', pady=10, padx=10)
 
         self.custom_label = CTkLabel(self.custom_frame, text="Custom Properties", font=('Lato', 20))
@@ -259,8 +259,7 @@ class AddCarPopup:
         self.root.go_to_homepage()
 
     def close_menu(self, *args):
-        self.overlay_frame.destroy()
-        self.popup_frame.destroy()
+        self.main_frame.destroy()
         del self
 
 
