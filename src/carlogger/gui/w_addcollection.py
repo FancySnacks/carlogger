@@ -1,4 +1,4 @@
-from customtkinter import CTk, CTkFrame, CTkLabel, CTkButton, CTkEntry, CTkScrollableFrame
+from customtkinter import CTk, CTkFrame, CTkLabel, CTkButton, CTkEntry, CTkScrollableFrame, CTkOptionMenu
 
 from tkinter import StringVar
 
@@ -90,6 +90,23 @@ class AddCollectionPopup:
 
         self.name_var.trace_add('write', self.track_changes)
 
+        # ===== Parents ===== #
+
+        self.parent_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
+        self.parent_frame.grid(row=2, column=0, sticky='w', pady=10, columnspan=3, padx=10)
+
+        # Car
+        self.car_frame = CTkFrame(self.parent_frame, fg_color='transparent')
+        self.car_frame.grid(row=0, column=0, sticky='w', pady=10)
+
+        self.car_label = CTkLabel(self.car_frame, text="Car", font=('Lato', 20))
+        self.car_label.grid(row=0, column=0, sticky='w')
+
+        self.car_menu = CTkOptionMenu(self.car_frame,
+                                      values=[car.car_info.name for car in self.root.cars])
+        self.car_menu.set(self.root.selected_car.car_info.name)
+        self.car_menu.grid(row=1, column=0, sticky='w')
+
         # ===== Custom Info ===== #
 
         self.custom_frame = CTkScrollableFrame(self.add_mid_frame, fg_color='transparent', width=550, height=400)
@@ -145,7 +162,7 @@ class AddCollectionPopup:
             self.add_label.configure(text="There is missing information.")
             return
 
-        self.root.app_session.add_new_collection(self.parent_car.car_info.name, coll_data['name'])
+        self.root.app_session.add_new_collection(self.car_menu.get(), coll_data['name'])
 
         self._post_entry_add()
 
