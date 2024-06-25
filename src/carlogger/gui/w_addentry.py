@@ -27,6 +27,7 @@ class AddEntryPopup:
         self.car_names = [car.car_info.name for car in self.cars]
         self.current_component = parent_component
         self.current_collection = self.current_component.parent
+        self.parent_car = self.current_collection.car
 
         # ===== Widget ===== #
 
@@ -287,17 +288,28 @@ class AddEntryPopup:
         self.track_changes(selected_option)
 
     def on_car_selection_change(self, selected_option):
-        colls = [collection.name for collection in self.root.selected_car.collections]
+        self.parent_car = self.root.app_session.get_car_by_name(selected_option)
+        colls = [collection.name for collection in self.parent_car.collections]
         self.collection_menu.configure(values=colls)
-        self.component_menu.set(colls[0])
+
+        if len(colls) > 0:
+            self.collection_menu.set(colls[0])
+        else:
+            self.component_menu.set('')
+
+        self.on_collection_selection_change(self.collection_menu.get())
 
         self.track_changes(selected_option)
 
     def on_collection_selection_change(self, selected_option):
-        self.current_collection = self.root.selected_car.get_collection_by_name(selected_option)
+        self.current_collection = self.parent_car.get_collection_by_name(selected_option)
         comps = [component.name for component in self.current_collection.components]
         self.component_menu.configure(values=comps)
-        self.component_menu.set(comps[0])
+
+        if len(comps) > 0:
+            self.component_menu.set(comps[0])
+        else:
+            self.component_menu.set('')
 
         self.track_changes(selected_option)
 

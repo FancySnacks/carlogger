@@ -1,4 +1,4 @@
-from customtkinter import CTk, CTkFrame, CTkLabel, CTkButton, CTkEntry, CTkScrollableFrame
+from customtkinter import CTk, CTkFrame, CTkLabel, CTkButton, CTkEntry, CTkScrollableFrame, CTkOptionMenu
 
 from tkinter import StringVar
 
@@ -91,6 +91,40 @@ class AddComponentPopup:
 
         self.name_var.trace_add('write', self.track_changes)
 
+        # ===== Parents ===== #
+
+        self.parent_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
+        self.parent_frame.grid(row=2, column=0, sticky='w', pady=10, columnspan=3, padx=10)
+
+        # Car
+        self.car_frame = CTkFrame(self.parent_frame, fg_color='transparent')
+        self.car_frame.grid(row=0, column=0, sticky='w', pady=10)
+
+        self.car_label = CTkLabel(self.car_frame, text="Car", font=('Lato', 20))
+        self.car_label.grid(row=0, column=0, sticky='w')
+
+        self.car_menu = CTkOptionMenu(self.car_frame,
+                                      values=self.get_car_names(),
+                                      command=self.on_car_changed)
+        self.car_menu.set(self.root.selected_car.car_info.name)
+        self.car_menu.grid(row=1, column=0, sticky='w')
+
+        separator = CTkLabel(self.car_frame, text="->", font=('Lato', 20))
+        separator.grid(row=1, column=1, sticky='w', padx=10)
+
+        # Collection
+        self.collection_frame = CTkFrame(self.parent_frame, fg_color='transparent')
+        self.collection_frame.grid(row=0, column=1, sticky='w', pady=10)
+
+        self.collection_label = CTkLabel(self.collection_frame, text="Collection", font=('Lato', 20))
+        self.collection_label.grid(row=0, column=0, sticky='w')
+
+        self.collection_menu = CTkOptionMenu(self.collection_frame,
+                                             values=self.get_collection_names(),
+                                             command=self.on_collection_changed)
+        self.collection_menu.grid(row=1, column=0, sticky='w')
+        self.collection_menu.set(self.parent_collection.name)
+
         # ===== Custom Info ===== #
 
         self.custom_frame = CTkScrollableFrame(self.add_mid_frame, fg_color='transparent', width=550, height=400)
@@ -120,6 +154,24 @@ class AddComponentPopup:
     def add_new_property(self):
         self.property_container.add_property()
         self.track_changes()
+
+    def get_collection_names(self) -> list[str]:
+        return [coll.name for coll in self.parent_car.collections]
+
+    def get_car_names(self) -> list[str]:
+        return [car.car_info.name for car in self.root.cars]
+
+    def on_car_changed(self, choice):
+        car_choice = choice
+        self.parent_car = self.root.app_session.get_car_by_name(car_choice)
+        collection_names = [coll.name for coll in self.parent_car.collections]
+        self.collection_menu.configure(values=collection_names)
+        self.collection_menu.set(collection_names[0])
+        self.parent_collection = self.parent_car.get_collection_by_name(collection_names[0])
+
+    def on_collection_changed(self, choice):
+        coll_choice = choice
+        self.parent_collection = self.parent_car.get_collection_by_name(coll_choice)
 
     def collect_changes(self):
         updated_data: dict = dict()
