@@ -3,15 +3,16 @@ from customtkinter import CTk, CTkFrame, CTkLabel, CTkButton, CTkEntry, CTkScrol
 from tkinter import StringVar
 
 from carlogger.const import TODAY
-from carlogger.util import date_string_to_date
+from carlogger.util import date_string_to_date, dict_diff
 
 
-class AddCarPopup:
-    def __init__(self, master, root):
+class EditCarPopup:
+    def __init__(self, master, root, car_ref):
         self.master = master
         self.root = root
 
-        self.required_fields: list[str] = ['name', 'manufacturer', 'model', 'year', 'mileage', 'custom_info']
+        self.car_ref = car_ref
+        self.og_item_values = self.car_ref.car_info.to_json()
 
         # ===== Overlay Frame ===== #
         self.overlay_frame = CTkFrame(self.master, bg_color='transparent')
@@ -55,20 +56,20 @@ class AddCarPopup:
         self.add_mid_frame.grid(row=0, column=1, sticky='nsew', pady=10, padx=10)
 
         # ===== Add Car Button ===== #
-        self.addb_frame = CTkFrame(self.add_main_frame, fg_color='transparent')
-        self.addb_frame.grid(row=1, column=0, sticky='w', pady=10)
+        self.saveb_frame = CTkFrame(self.add_main_frame, fg_color='transparent')
+        self.saveb_frame.grid(row=1, column=0, sticky='w', pady=10)
 
-        self.add_button = CTkButton(self.addb_frame,
-                                    text="Create Car",
-                                    font=('Lato', 20),
-                                    fg_color='green',
-                                    corner_radius=10,
-                                    command=self.add_car,
-                                    state='disabled')
-        self.add_button.grid(row=0, column=0, sticky='w', padx=15, pady=5)
+        self.saveb_button = CTkButton(self.saveb_frame,
+                                      text="Create Car",
+                                      font=('Lato', 20),
+                                      fg_color='green',
+                                      corner_radius=10,
+                                      command=self.update_car,
+                                      state='disabled')
+        self.saveb_button.grid(row=0, column=0, sticky='w', padx=15, pady=5)
 
-        self.add_label = CTkLabel(self.addb_frame, text="", font=('Lato', 16))
-        self.add_label.grid(row=0, column=1, sticky='w')
+        self.saveb_label = CTkLabel(self.saveb_frame, text="", font=('Lato', 16))
+        self.saveb_label.grid(row=0, column=1, sticky='w')
 
         # ===== Name ===== #
         self.name_var = StringVar()
@@ -181,6 +182,22 @@ class AddCarPopup:
         self.property_container.add_property()
         self.track_changes()
 
+    def track_changes(self, *args):
+        changed_data = self.collect_changes()
+
+        if changed_data == self.og_item_values:
+            self._reset_button()
+        else:
+            self._enable_button()
+
+    def _reset_button(self, *args):
+        self.saveb_button.configure(state='disabled')
+        self.saveb_label.configure(text='')
+
+    def _enable_button(self):
+        self.saveb_button.configure(state='normal')
+        self.saveb_label.configure(text="There are unsaved changes.")
+
     def collect_changes(self):
         updated_data: dict = dict()
 
@@ -219,38 +236,14 @@ class AddCarPopup:
 
         updated_data['custom_info'] = self.property_container.get_properties()
 
+        updated_data = dict_diff(updated_data, self.og_item_values)
         return updated_data
 
-    def _has_all_necessary_fields(self, values: dict) -> bool:
-        keys = list(values.keys())
-        return sorted(keys) == sorted(self.required_fields)
-
-    def add_car(self):
+    def update_car(self):
         car_data = self.collect_changes()
 
-        if not self._has_all_necessary_fields(car_data):
-            self.add_label.configure(text="There is missing information.")
-            return
-
-        self.root.app_session.add_new_car(car_data)
-
-        self._post_entry_add()
-
-    def track_changes(self, *args):
-        changed_data = self.collect_changes()
-
-        if changed_data == {}:
-            self._reset_button()
-        else:
-            self._enable_button()
-
-    def _reset_button(self, *args):
-        self.add_button.configure(state='disabled')
-        self.add_label.configure(text='')
-
-    def _enable_button(self):
-        self.add_button.configure(state='normal')
-        self.add_label.configure(text='')
+        self._reset_button()
+        self.root.app_session.update_car_info(self.car_ref, car_data)
 
     def _post_entry_add(self):
         self.close_menu()
@@ -263,7 +256,7 @@ class AddCarPopup:
 
 
 class PropertyContainer(CTkFrame):
-    def __init__(self, master, root: CTk, parent: AddCarPopup, **values):
+    def __init__(self, master, root: CTk, parent: EditCarPopup, **values):
         super().__init__(master, **values)
         self.master = master
         self.root = root

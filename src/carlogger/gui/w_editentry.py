@@ -180,7 +180,7 @@ class EditEntryPopup:
 
         # ===== Mileage ===== #
 
-        self.mileage_var = StringVar(value=self.item_ref.mileage)
+        self.mileage_var = StringVar(value=str(self.item_ref.mileage))
 
         self.mileage_frame = CTkFrame(self.edit_left_frame, fg_color='transparent')
         self.mileage_frame.grid(row=6, column=0, sticky='w', pady=10, padx=10)
@@ -235,7 +235,7 @@ class EditEntryPopup:
 
             # ===== Frequency ===== #
 
-            self.frequency_var = StringVar(value=self.item_ref.frequency)
+            self.frequency_var = StringVar(value=str(self.item_ref.frequency))
 
             self.frequency_frame = CTkFrame(self.edit_right_frame, fg_color='transparent', width=300)
             self.frequency_frame.grid(row=0, column=0, sticky='w', pady=10, padx=10)
