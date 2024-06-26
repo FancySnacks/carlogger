@@ -1,6 +1,8 @@
 from customtkinter import CTk, CTkScrollbar, CTkFrame
 from tkinter import Canvas
 
+from carlogger.gui.w_editcar import EditCarPopup
+from carlogger.gui.w_editcollection import EditCollectionPopup
 from carlogger.gui.w_homepage import Homepage
 from carlogger.gui.c_carlist import CarList
 from carlogger.gui.w_carlist import CarFrame

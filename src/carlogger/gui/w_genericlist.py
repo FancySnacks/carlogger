@@ -80,13 +80,16 @@ class Container(CTkFrame, ABC):
 
         self.grid(row=0, column=0, sticky='nsew')
 
-        row = len(self.widget_items) // 7
+        row = self._get_row() + 1
         column = len(self.widget_items) % 7
         new_item = DummyContainerItem(self, None, column, row=row)
         self.widget_items.append(new_item)
 
+    def _get_row(self) -> int:
+        return len(self.widget_items) // 7
+
     def add_item(self, item_ref: ITEM, widget_item_class=ContainerItem):
-        row = len(self.widget_items) // 7
+        row = self._get_row() + 1
         column = len(self.widget_items) % 7
         new_item = widget_item_class(self, item_ref, column, row=row)
         self.widget_items.append(new_item)

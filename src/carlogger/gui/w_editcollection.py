@@ -1,27 +1,28 @@
-from customtkinter import CTk, CTkFrame, CTkLabel, CTkButton, CTkEntry, CTkScrollableFrame
+from customtkinter import CTk, CTkFrame, CTkLabel, CTkButton, CTkEntry, CTkScrollableFrame, CTkOptionMenu
 
 from tkinter import StringVar
 
-from carlogger.util import dict_diff
 
-
-class EditCarPopup:
-    def __init__(self, master, root, car_ref):
+class AddCollectionPopup:
+    def __init__(self, master, root, parent_car):
         self.master = master
         self.root = root
+        self.parent_car = parent_car
 
-        self.car_ref = car_ref
-        self.og_item_values = self.car_ref.car_info.to_json()
+        self.required_fields: list[str] = ['name', 'custom_info']
 
         # ===== Overlay Frame ===== #
+
         self.overlay_frame = CTkFrame(self.master, bg_color='transparent')
         self.overlay_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
 
         # ===== Main Popup Frame ===== #
+
         self.popup_frame = CTkFrame(self.master, width=965, height=600, corner_radius=10, bg_color='transparent')
         self.popup_frame.place(relx=0.5, rely=0.5, anchor='center')
 
         # ===== Widget ===== #
+
         self.main_frame = CTkFrame(self.popup_frame)
         self.main_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
 
@@ -38,13 +39,14 @@ class EditCarPopup:
                                      command=self.close_menu)
         self.back_button.grid(row=0, column=0, pady=5, padx=10, sticky='w')
 
-        self.label = CTkLabel(self.top_frame, text="Update Car", font=('Lato', 30))
+        self.label = CTkLabel(self.top_frame, text="Add Collection", font=('Lato', 30))
         self.label.grid(row=0, column=1, pady=5, padx=10, sticky='w')
 
         self.separator = CTkLabel(self.main_frame, text='', bg_color='gray', height=1, font=('Arial', 2))
         self.separator.pack(fill='x', padx=10)
 
         # ===== Add Section Frames ===== #
+
         self.add_main_frame = CTkFrame(self.main_frame, fg_color='#403f3f')
         self.add_main_frame.pack(anchor='center', fill='both', pady=10, padx=15)
 
@@ -54,24 +56,26 @@ class EditCarPopup:
         self.add_mid_frame = CTkFrame(self.add_main_frame, fg_color='#403f3f')
         self.add_mid_frame.grid(row=0, column=1, sticky='nsew', pady=10, padx=10)
 
-        # ===== Add Car Button ===== #
-        self.saveb_frame = CTkFrame(self.add_main_frame, fg_color='transparent')
-        self.saveb_frame.grid(row=1, column=0, sticky='w', pady=10)
+        # ===== Add Collection Button ===== #
 
-        self.saveb_button = CTkButton(self.saveb_frame,
-                                      text="Update Car",
-                                      font=('Lato', 20),
-                                      fg_color='green',
-                                      corner_radius=10,
-                                      command=self.update_car,
-                                      state='disabled')
-        self.saveb_button.grid(row=0, column=0, sticky='w', padx=15, pady=5)
+        self.addb_frame = CTkFrame(self.add_main_frame, fg_color='transparent')
+        self.addb_frame.grid(row=1, column=0, sticky='w', pady=10)
 
-        self.saveb_label = CTkLabel(self.saveb_frame, text="", font=('Lato', 16))
-        self.saveb_label.grid(row=0, column=1, sticky='w')
+        self.add_button = CTkButton(self.addb_frame,
+                                    text="Create Collection",
+                                    font=('Lato', 20),
+                                    fg_color='green',
+                                    corner_radius=10,
+                                    command=self.add_collection,
+                                    state='disabled')
+        self.add_button.grid(row=0, column=0, sticky='w', padx=15, pady=5)
+
+        self.add_label = CTkLabel(self.addb_frame, text="", font=('Lato', 16))
+        self.add_label.grid(row=0, column=1, sticky='w')
 
         # ===== Name ===== #
-        self.name_var = StringVar(value=self.og_item_values['name'])
+
+        self.name_var = StringVar()
         self.name_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
         self.name_frame.grid(row=0, column=0, sticky='w', pady=10, padx=10)
 
@@ -86,73 +90,25 @@ class EditCarPopup:
 
         self.name_var.trace_add('write', self.track_changes)
 
-        # ===== Manufacturer ===== #
-        self.manufacturer_var = StringVar(value=self.og_item_values['manufacturer'])
-        self.manufacturer_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
-        self.manufacturer_frame.grid(row=1, column=0, sticky='w', pady=10, padx=10)
+        # ===== Parents ===== #
 
-        self.manufacturer_label = CTkLabel(self.manufacturer_frame, text="Manufacturer", font=('Lato', 20))
-        self.manufacturer_label.grid(row=0, column=0, sticky='w')
+        self.parent_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
+        self.parent_frame.grid(row=2, column=0, sticky='w', pady=10, columnspan=3, padx=10)
 
-        self.manufacturer_entry = CTkEntry(self.manufacturer_frame, font=('Lato', 20),
-                                           textvariable=self.manufacturer_var,
-                                           width=250)
-        self.manufacturer_entry.grid(row=1, column=0, sticky='w')
+        # Car
+        self.car_frame = CTkFrame(self.parent_frame, fg_color='transparent')
+        self.car_frame.grid(row=0, column=0, sticky='w', pady=10)
 
-        self.manufacturer_var.trace_add('write', self.track_changes)
+        self.car_label = CTkLabel(self.car_frame, text="Car", font=('Lato', 20))
+        self.car_label.grid(row=0, column=0, sticky='w')
 
-        # ===== Model ===== #
-        self.model_var = StringVar(value=self.og_item_values['model'])
-        self.model_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
-        self.model_frame.grid(row=2, column=0, sticky='w', pady=10, padx=10)
-
-        self.model_label = CTkLabel(self.model_frame, text="Model", font=('Lato', 20))
-        self.model_label.grid(row=0, column=0, sticky='w')
-
-        self.model_entry = CTkEntry(self.model_frame,
-                                    font=('Lato', 20),
-                                    textvariable=self.model_var,
-                                    width=250)
-        self.model_entry.grid(row=1, column=0, sticky='w')
-
-        self.model_var.trace_add('write', self.track_changes)
-
-        # ===== Year ===== #
-        self.year_var = StringVar(value=str(self.og_item_values['year']))
-        self.year_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
-        self.year_frame.grid(row=3, column=0, sticky='w', pady=10, padx=10)
-
-        self.year_label = CTkLabel(self.year_frame, text="Year", font=('Lato', 20))
-        self.year_label.grid(row=0, column=0, sticky='w')
-
-        self.year_entry = CTkEntry(self.year_frame,
-                                   font=('Lato', 20),
-                                   textvariable=self.year_var)
-        self.year_entry.grid(row=1, column=0, sticky='w')
-
-        self.year_var.trace_add('write', self.track_changes)
-
-        # ===== Mileage ===== #
-        self.mileage_var = StringVar(value=str(self.og_item_values['mileage']))
-        self.mileage_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
-        self.mileage_frame.grid(row=4, column=0, sticky='w', pady=10, padx=10)
-
-        self.mileage_label = CTkLabel(self.mileage_frame, text="Mileage", font=('Lato', 20))
-        self.mileage_label.grid(row=0, column=0, sticky='w')
-
-        self.mileage_entry = CTkEntry(self.mileage_frame,
-                                      font=('Lato', 20),
-                                      placeholder_text='Enter mileage (km)',
-                                      textvariable=self.mileage_var,
-                                      width=250)
-        self.mileage_entry.grid(row=1, column=0, sticky='w')
-
-        self.mileage_unit_label = CTkLabel(self.mileage_frame, text="km", font=('Lato', 20))
-        self.mileage_unit_label.grid(row=1, column=1, sticky='w', padx=10)
-
-        self.mileage_var.trace_add('write', self.track_changes)
+        self.car_menu = CTkOptionMenu(self.car_frame,
+                                      values=[car.car_info.name for car in self.root.cars])
+        self.car_menu.set(self.root.selected_car.car_info.name)
+        self.car_menu.grid(row=1, column=0, sticky='w')
 
         # ===== Custom Info ===== #
+
         self.custom_frame = CTkScrollableFrame(self.add_mid_frame, fg_color='transparent', width=550, height=400)
         self.custom_frame.grid(row=0, column=0, sticky='w', pady=10, padx=10)
 
@@ -181,24 +137,6 @@ class EditCarPopup:
         self.property_container.add_property()
         self.track_changes()
 
-    def track_changes(self, *args):
-        changed_data = self.collect_changes()
-
-        if changed_data == self.og_item_values:
-            self._reset_button()
-        elif changed_data == {}:
-            self._reset_button()
-        else:
-            self._enable_button()
-
-    def _reset_button(self, *args):
-        self.saveb_button.configure(state='disabled')
-        self.saveb_label.configure(text='')
-
-    def _enable_button(self):
-        self.saveb_button.configure(state='normal')
-        self.saveb_label.configure(text="There are unsaved changes.")
-
     def collect_changes(self):
         updated_data: dict = dict()
 
@@ -209,46 +147,44 @@ class EditCarPopup:
         else:
             self.name_entry.configure(border_color='red')
 
-        manufacturer = self.manufacturer_entry.get()
-        if manufacturer:
-            updated_data['manufacturer'] = manufacturer
-            self.manufacturer_entry.configure(border_color='')
-        else:
-            self.manufacturer_entry.configure(border_color='red')
-
-        model = self.model_entry.get()
-        if model:
-            updated_data['model'] = model
-            self.model_entry.configure(border_color='')
-        else:
-            self.model_entry.configure(border_color='red')
-
-        year = self.year_entry.get()
-        if model:
-            updated_data['year'] = year
-            self.year_entry.configure(border_color='')
-        else:
-            self.year_entry.configure(border_color='red')
-
-        mileage = self.mileage_var.get()
-        if not mileage.isdigit():
-            mileage = 0
-        updated_data['mileage'] = int(mileage)
-
         updated_data['custom_info'] = self.property_container.get_properties()
 
-        updated_data = dict_diff(updated_data, self.og_item_values)
         return updated_data
 
-    def update_car(self):
-        car_data = self.collect_changes()
+    def _has_all_necessary_fields(self, values: dict) -> bool:
+        keys = list(values.keys())
+        return sorted(keys) == sorted(self.required_fields)
 
-        self._reset_button()
-        self.root.app_session.update_car_info(self.car_ref, car_data)
+    def add_collection(self):
+        coll_data = self.collect_changes()
+
+        if not self._has_all_necessary_fields(coll_data):
+            self.add_label.configure(text="There is missing information.")
+            return
+
+        self.root.app_session.add_new_collection(self.car_menu.get(), coll_data['name'])
+
+        self._post_entry_add()
+
+    def track_changes(self, *args):
+        changed_data = self.collect_changes()
+
+        if changed_data == {}:
+            self._reset_button()
+        else:
+            self._enable_button()
+
+    def _reset_button(self, *args):
+        self.add_button.configure(state='disabled')
+        self.add_label.configure(text='')
+
+    def _enable_button(self):
+        self.add_button.configure(state='normal')
+        self.add_label.configure(text='')
 
     def _post_entry_add(self):
         self.close_menu()
-        self.root.go_to_homepage()
+        self.root.go_to_car(self.parent_car)
 
     def close_menu(self, *args):
         self.overlay_frame.destroy()
@@ -257,7 +193,7 @@ class EditCarPopup:
 
 
 class PropertyContainer(CTkFrame):
-    def __init__(self, master, root: CTk, parent: EditCarPopup, **values):
+    def __init__(self, master, root: CTk, parent: AddCollectionPopup, **values):
         super().__init__(master, **values)
         self.master = master
         self.root = root
