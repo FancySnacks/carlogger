@@ -25,11 +25,16 @@ class CarComponent:
     name: str
     log_entries: list[LogEntry] = field(init=False, default_factory=list)
     scheduled_log_entries: list[ScheduledLogEntry] = field(init=False, default_factory=list)
+
     current_part: Part = field(init=False, default=None)
     part_list: list[Part] = field(init=False, default_factory=list)
     current_mileage: int = field(init=False, default=0)
-    search_tags: set[str] = field(init=False, default_factory=set)
+
     parent: ComponentCollection = field(init=False, default=None)
+
+    search_tags: set[str] = field(init=False, default_factory=set)
+    custom_info: dict[str, ...] = field(default_factory=dict)
+
     path: str = ""
     _sort_index: str = field(init=False, repr=False, default='')
 
@@ -250,6 +255,7 @@ class CarComponent:
              'log_entries': [entry.to_json() for entry in self.log_entries],
              'scheduled_log_entries': [entry.to_json() for entry in self.scheduled_log_entries],
              'search_tags': list(self.search_tags),
+             'custom_info': self.custom_info,
              }
 
         return d

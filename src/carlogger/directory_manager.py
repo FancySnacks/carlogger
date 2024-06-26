@@ -142,7 +142,8 @@ class DirectoryManager:
                                          collections=data.get('collections'),
                                          components=data.get('components'),
                                          parent_collection=data.get('parent_collection'),
-                                         car=parent_car)
+                                         car=parent_car,
+                                         custom_info=data.get('custom_info', {}))
                      for data in new_collection.collections]
                 new_collection.components.clear()
 
@@ -166,7 +167,9 @@ class DirectoryManager:
             try:
                 if "collections" not in child['path']:
                     item_data: dict = self.data_manager.load_file(child['path'])
-                    c = CarComponent(item_data['name'], collection.path.parent.joinpath('components'))
+                    c = CarComponent(item_data['name'],
+                                     custom_info=item_data.get('custom_info', {}),
+                                     path=collection.path.parent.joinpath('components'))
                     c.parent = collection
                     self._add_entries_to_component(item_data, c)
                     coms.append(c)

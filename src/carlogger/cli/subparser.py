@@ -180,14 +180,14 @@ class AddSubparser(Subparser):
 
         self.add_car_parser.add_argument('--custom',
                                          action=ParseKwargs, type=str,
-                                         help="More entry properties as defined by the user, "
+                                         help="More car properties as defined by the user, "
                                               "stored into a dictionary.\n"
                                               "Pass arguments as 'key=value' pairs, separated by spaces.\n"
-                                              "Example: --custom 'catalogue_number=450159' 'warranty=5 years'",
+                                              "Example: --custom 'key=val' 'key2=value2'",
                                          metavar='OTHER CAR PROPERTIES',
                                          dest='custom_info',
                                          nargs='*',
-                                         default=[])
+                                         default={})
 
         # ===== Add Collection ===== #
 
@@ -209,6 +209,18 @@ class AddSubparser(Subparser):
                                                 metavar="PARENT COLLECTION NAME",
                                                 help="Parent collection.")
 
+        self.add_collection_parser.add_argument('--custom',
+                                                action=ParseKwargs,
+                                                type=str,
+                                                help="More collection properties as defined by the user, "
+                                                     "stored into a dictionary.\n"
+                                                     "Pass arguments as 'key=value' pairs, separated by spaces.\n"
+                                                     "Example: --custom 'key=val' 'key2=value2'",
+                                                metavar='CUSTOM ENTRY PROPERTIES',
+                                                dest='custom_info',
+                                                nargs='*',
+                                                default={})
+
         # ===== Add Component ===== #
 
         self.add_component_parser = self.add_subparsers.add_parser('component')
@@ -228,6 +240,18 @@ class AddSubparser(Subparser):
                                                help="Parent collection.",
                                                type=str,
                                                required=True)
+
+        self.add_component_parser.add_argument('--custom',
+                                               action=ParseKwargs,
+                                               type=str,
+                                               help="More component properties as defined by the user, "
+                                                    "stored into a dictionary.\n"
+                                                    "Pass arguments as 'key=value' pairs, separated by spaces.\n"
+                                                    "Example: --custom 'key=val' 'key2=value2'",
+                                               metavar='CUSTOM ENTRY PROPERTIES',
+                                               dest='custom_info',
+                                               nargs='*',
+                                               default={})
 
         # ===== Add Entry ===== #
 
@@ -283,7 +307,7 @@ class AddSubparser(Subparser):
                                            metavar='CUSTOM ENTRY PROPERTIES',
                                            dest='custom_info',
                                            nargs='*',
-                                           default=[])
+                                           default={})
 
         # ===== Add Scheduled Entry ===== #
 

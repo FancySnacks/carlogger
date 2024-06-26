@@ -29,8 +29,11 @@ class ComponentCollection:
     name: str
     components: list[CarComponent] = field(default_factory=list)
     collections: list[ComponentCollection] = field(default_factory=list)
+
     car: Car = None
     parent_collection: ComponentCollection = None
+
+    custom_info: dict[str, ...] = field(default_factory=dict)
     path: str = ""
 
     def __post_init__(self):
@@ -76,15 +79,17 @@ class ComponentCollection:
 
         return joined_entries
 
-    def create_component(self, name: str) -> CarComponent:
+    def create_component(self, name: str, **kwargs) -> CarComponent:
         """Create new car component, add it to the list and return object reference."""
         if not self._check_for_component_duplicates(name):
-            new_component = CarComponent(name, path=self.path.parent.joinpath('components'))
+            new_component = CarComponent(name, custom_info=kwargs, path=self.path.parent.joinpath('components'))
             new_component.parent = self
             self.components.append(new_component)
 
             Printer.print_msg(new_component,
-                              'ADD_SUCCESS', name=new_component.name, relation=f"{self.car.car_info.name}->{self.name}")
+                              'ADD_SUCCESS',
+                              name=new_component.name,
+                              relation=f"{self.car.car_info.name}->{self.name}")
 
             return new_component
 
@@ -144,6 +149,7 @@ class ComponentCollection:
              'parent_collection': self._get_parent_collection_path(self.parent_collection),
              'collections': [self._create_child_collection_reference(child, "json") for child in self.collections],
              'components': [self._create_child_reference(child, "json") for child in self.components],
+             'custom_info': self.custom_info,
              }
         return d
 
