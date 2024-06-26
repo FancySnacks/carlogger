@@ -2,14 +2,17 @@ from customtkinter import CTk, CTkFrame, CTkLabel, CTkButton, CTkEntry, CTkScrol
 
 from tkinter import StringVar
 
+from carlogger.util import dict_diff
 
-class AddCollectionPopup:
-    def __init__(self, master, root, parent_car):
+
+class EditCollectionPopup:
+    def __init__(self, master, root, parent_car, collection_ref):
         self.master = master
         self.root = root
         self.parent_car = parent_car
 
-        self.required_fields: list[str] = ['name', 'custom_info']
+        self.collection_ref = collection_ref
+        self.og_item_values = self.collection_ref.to_json()
 
         # ===== Overlay Frame ===== #
 
@@ -39,7 +42,7 @@ class AddCollectionPopup:
                                      command=self.close_menu)
         self.back_button.grid(row=0, column=0, pady=5, padx=10, sticky='w')
 
-        self.label = CTkLabel(self.top_frame, text="Add Collection", font=('Lato', 30))
+        self.label = CTkLabel(self.top_frame, text="Edit Collection", font=('Lato', 30))
         self.label.grid(row=0, column=1, pady=5, padx=10, sticky='w')
 
         self.separator = CTkLabel(self.main_frame, text='', bg_color='gray', height=1, font=('Arial', 2))
@@ -58,24 +61,24 @@ class AddCollectionPopup:
 
         # ===== Add Collection Button ===== #
 
-        self.addb_frame = CTkFrame(self.add_main_frame, fg_color='transparent')
-        self.addb_frame.grid(row=1, column=0, sticky='w', pady=10)
+        self.saveb_frame = CTkFrame(self.add_main_frame, fg_color='transparent')
+        self.saveb_frame.grid(row=1, column=0, sticky='w', pady=10)
 
-        self.add_button = CTkButton(self.addb_frame,
-                                    text="Create Collection",
-                                    font=('Lato', 20),
-                                    fg_color='green',
-                                    corner_radius=10,
-                                    command=self.add_collection,
-                                    state='disabled')
-        self.add_button.grid(row=0, column=0, sticky='w', padx=15, pady=5)
+        self.saveb_button = CTkButton(self.saveb_frame,
+                                      text="Update Collection",
+                                      font=('Lato', 20),
+                                      fg_color='green',
+                                      corner_radius=10,
+                                      command=self.update_collection,
+                                      state='disabled')
+        self.saveb_button.grid(row=0, column=0, sticky='w', padx=15, pady=5)
 
-        self.add_label = CTkLabel(self.addb_frame, text="", font=('Lato', 16))
-        self.add_label.grid(row=0, column=1, sticky='w')
+        self.saveb_label = CTkLabel(self.saveb_frame, text="", font=('Lato', 16))
+        self.saveb_label.grid(row=0, column=1, sticky='w')
 
         # ===== Name ===== #
 
-        self.name_var = StringVar()
+        self.name_var = StringVar(value=self.og_item_values['name'])
         self.name_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
         self.name_frame.grid(row=0, column=0, sticky='w', pady=10, padx=10)
 
@@ -148,39 +151,33 @@ class AddCollectionPopup:
             self.name_entry.configure(border_color='red')
 
         updated_data['custom_info'] = self.property_container.get_properties()
+        updated_data = dict_diff(updated_data, self.og_item_values)
 
         return updated_data
 
-    def _has_all_necessary_fields(self, values: dict) -> bool:
-        keys = list(values.keys())
-        return sorted(keys) == sorted(self.required_fields)
-
-    def add_collection(self):
+    def update_collection(self):
         coll_data = self.collect_changes()
 
-        if not self._has_all_necessary_fields(coll_data):
-            self.add_label.configure(text="There is missing information.")
-            return
-
-        self.root.app_session.add_new_collection(self.car_menu.get(), coll_data['name'])
-
-        self._post_entry_add()
+        self._reset_button()
+        self.root.app_session.update_component_or_collection(self.parent_car, self.collection_ref, coll_data)
 
     def track_changes(self, *args):
         changed_data = self.collect_changes()
 
-        if changed_data == {}:
+        if changed_data == self.og_item_values:
+            self._reset_button()
+        elif changed_data == {}:
             self._reset_button()
         else:
             self._enable_button()
 
     def _reset_button(self, *args):
-        self.add_button.configure(state='disabled')
-        self.add_label.configure(text='')
+        self.saveb_button.configure(state='disabled')
+        self.saveb_label.configure(text='')
 
     def _enable_button(self):
-        self.add_button.configure(state='normal')
-        self.add_label.configure(text='')
+        self.saveb_button.configure(state='normal')
+        self.saveb_label.configure(text="There are unsaved changes.")
 
     def _post_entry_add(self):
         self.close_menu()
@@ -193,7 +190,7 @@ class AddCollectionPopup:
 
 
 class PropertyContainer(CTkFrame):
-    def __init__(self, master, root: CTk, parent: AddCollectionPopup, **values):
+    def __init__(self, master, root: CTk, parent: EditCollectionPopup, **values):
         super().__init__(master, **values)
         self.master = master
         self.root = root

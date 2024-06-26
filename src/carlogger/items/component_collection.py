@@ -143,7 +143,7 @@ class ComponentCollection:
         d = {'name': self.name,
              'parent_collection': self._get_parent_collection_path(self.parent_collection),
              'collections': [self._create_child_collection_reference(child, "json") for child in self.collections],
-             'components': [self._create_child_reference(child, "json") for child in self.components]
+             'components': [self._create_child_reference(child, "json") for child in self.components],
              }
         return d
 
