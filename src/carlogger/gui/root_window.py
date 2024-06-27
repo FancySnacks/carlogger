@@ -3,6 +3,7 @@ from tkinter import Canvas
 
 from carlogger.gui.w_editcar import EditCarPopup
 from carlogger.gui.w_editcollection import EditCollectionPopup
+from carlogger.gui.w_editcomponent import EditComponentPopup
 from carlogger.gui.w_homepage import Homepage
 from carlogger.gui.c_carlist import CarList
 from carlogger.gui.w_carlist import CarFrame
@@ -23,8 +24,11 @@ class RootWindow(CTk):
         super().__init__()
         self.app_session = None
         self.cars = []
+
         self.selected_car = None
         self.selected_collection = None
+        self.selected_component = None
+
         self.current_page = None
 
         self.title('Carlogger')
@@ -130,10 +134,13 @@ class RootWindow(CTk):
         self.edit_car_popup = EditCarPopup(self.main_frame, self, self.selected_car)
 
     def open_collection_edit_window(self):
-        self.edit_car_popup = EditCollectionPopup(self.main_frame, self, self.selected_car, self.selected_collection)
+        self.edit_collection_popup = EditCollectionPopup(self.main_frame, self, self.selected_car,
+                                                         self.selected_collection)
 
     def open_component_edit_window(self):
-        print("[TO IMPLEMENT] RootWindow: open_component_edit_window()")
+        self.edit_component_popup = EditComponentPopup(self.main_frame, self, self.selected_car,
+                                                       self.selected_collection,
+                                                       self.selected_component)
 
     def create_cars(self):
         self.car_list.clear_cars()
@@ -181,6 +188,8 @@ class RootWindow(CTk):
         self.open_page(component_container, collection.name, collection)
 
     def go_to_component(self, component):
+        self.selected_component = component
+
         item_container = ItemContainer(self.scrollable_frame, parent_car=None, root=self, component=component)
         item_container.grid(row=0, column=0, sticky="nsew")
 

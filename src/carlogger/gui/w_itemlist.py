@@ -24,6 +24,22 @@ class ItemContainer(CTkFrame):
 
         self.item_list_widgets: list[SortableItemList] = []
 
+        if not self.homepage:
+            self.edit_button_frame = CTkFrame(self, fg_color='transparent')
+            self.edit_button_frame.pack(anchor='w')
+
+            self.edit_button = CTkButton(self.edit_button_frame,
+                                         text="Edit Collection",
+                                         font=('Lato', 18),
+                                         fg_color='green',
+                                         width=35,
+                                         corner_radius=0,
+                                         command=self.open_edit_window)
+            self.edit_button.grid(row=0, column=0, sticky='w', padx=5)
+
+    def open_edit_window(self):
+        self.root.open_component_edit_window()
+
     def create_items(self, items: list, header: str, filter_opts: list[str]):
         new_sortable_item_list = SortableItemList(self, self, header, items, len(self.item_list_widgets))
         self.item_list_widgets.append(new_sortable_item_list)
@@ -84,7 +100,7 @@ class SortableItemList(CTkFrame):
                                         width=35,
                                         corner_radius=0,
                                         command=self.open_entry_add_window)
-            self.add_button.grid(row=0, column=0, sticky='w', padx=5)
+            self.add_button.grid(row=0, column=1, sticky='w', padx=5)
 
             self.del_button = CTkButton(self.management_buttons_frame,
                                         text="Delete Entry",
@@ -94,7 +110,7 @@ class SortableItemList(CTkFrame):
                                         corner_radius=0,
                                         state='disabled',
                                         command=self.delete_entry)
-            self.del_button.grid(row=0, column=1, sticky='w', padx=5)
+            self.del_button.grid(row=0, column=2, sticky='w', padx=5)
 
         self.sort_buttons_frame = CTkFrame(master=self.parent, height=35, fg_color="cyan")
         self.sort_buttons_frame.pack(fill='x', padx=10, pady=10)
