@@ -1,4 +1,4 @@
-from customtkinter import CTkFrame, CTkButton
+from customtkinter import CTkFrame
 
 from carlogger.gui.c_itemlist import ItemList
 from carlogger.gui.w_itemlist import ItemContainer
@@ -31,11 +31,17 @@ class Homepage(CTkFrame):
 
     def homepage_init(self):
         if self.root.cars:
-            self.create_items(self._get_all_scheduled_entries()[:5:],
+            all_scheduled_entries = self._get_all_scheduled_entries()
+            scheduled_entries = self.item_list.sort_items(all_scheduled_entries, 'time_remaining')[
+                                :min(5, len(all_scheduled_entries)):]
+            self.create_items(scheduled_entries,
                               self.root.cars[0],
                               'Scheduled Log Entries',
-                              'oldest')
-            self.create_items(self._get_all_log_entries()[:5:],
+                              'time_remaining')
+
+            all_log_entries = self._get_all_log_entries()
+            log_entries = self.item_list.sort_items(all_log_entries, 'latest')[:min(5, len(all_log_entries)):]
+            self.create_items(log_entries,
                               self.root.cars[0],
                               'Log Entries')
 

@@ -13,6 +13,7 @@ class ItemSorter:
 
         self.sort_method_map = {'latest': self.sort_by_latest_entry,
                                 'oldest': self.sort_by_oldest_entry,
+                                'time_remaining': self.sort_by_time_remaining,
                                 'car': self.sort_by_parent_car}
 
     def get_sorted_list(self, reverse_order: bool = False) -> list:
@@ -61,7 +62,30 @@ class ItemSorter:
             else:
                 return False
 
-    def sort_by_latest_entry(self, items: list[LogEntry | ScheduledLogEntry], *args) -> list:
+    def sort_by_time_remaining(self, items: list, reversed=False):
+        if items[0].__class__.__name__ in ('LogEntry', 'ScheduledLogEntry'):
+            return self.sort_by_time_remaining_raw(items)
+
+        entry_map: list[tuple[Any, list]] = []
+
+        for item in items:
+            entry_map.append((item, [entry.get_time_remaining() for entry in item.get_all_entry_logs()]))
+
+        items = sorted(entry_map, key=lambda x: x[1], reverse=reversed)
+
+        return [e[0] for e in items]
+
+    def sort_by_time_remaining_raw(self, items: list[LogEntry | ScheduledLogEntry], reversed=False) -> list:
+        entry_map: list[tuple] = []
+
+        for item in items:
+            entry_map.append((item, item.get_time_remaining()))
+
+        items = sorted(entry_map, key=lambda x: x[1], reverse=reversed)
+
+        return [e[0] for e in items]
+
+    def sort_by_latest_entry(self, items: list, *args) -> list:
         if items[0].__class__.__name__ in ('LogEntry', 'ScheduledLogEntry'):
             return self.sort_by_latest_entry_raw(items)
 
@@ -74,7 +98,7 @@ class ItemSorter:
 
         return [e[0] for e in items]
 
-    def sort_by_oldest_entry(self, items: list[LogEntry | ScheduledLogEntry], *args) -> list:
+    def sort_by_oldest_entry(self, items: list, *args) -> list:
         if items[0].__class__.__name__ in ('LogEntry', 'ScheduledLogEntry'):
             return self.sort_by_oldest_entry_raw(items)
 
