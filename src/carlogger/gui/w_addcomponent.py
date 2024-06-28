@@ -1,6 +1,7 @@
 from customtkinter import CTk, CTkFrame, CTkLabel, CTkButton, CTkEntry, CTkScrollableFrame, CTkOptionMenu
 
 from tkinter import StringVar
+from typing import Literal
 
 
 class AddComponentPopup:
@@ -10,6 +11,7 @@ class AddComponentPopup:
         self.parent_collection = parent_collection
         self.parent_car = parent_car
 
+        self.add_mode: Literal['component', 'nested_collection']  = 'component'
         self.required_fields: list[str] = ['name', 'custom_info']
 
         # ===== Overlay Frame ===== #
@@ -40,8 +42,19 @@ class AddComponentPopup:
                                      command=self.close_menu)
         self.back_button.grid(row=0, column=0, pady=5, padx=10, sticky='w')
 
-        self.label = CTkLabel(self.top_frame, text="Add Component", font=('Lato', 30))
+        self.label = CTkLabel(self.top_frame, text="Add", font=('Lato', 30))
         self.label.grid(row=0, column=1, pady=5, padx=10, sticky='w')
+
+        self.b_add_comp = CTkButton(self.top_frame, text="Component", font=('Lato', 30), state='disabled',
+                                    command=self.switch_add_mode)
+        self.b_add_comp.grid(row=0, column=2, pady=5, padx=10, sticky='w')
+
+        self.separator_label = CTkLabel(self.top_frame, text="|", font=('Lato', 30))
+        self.separator_label.grid(row=0, column=3, pady=5, padx=10, sticky='w')
+
+        self.b_add_nested = CTkButton(self.top_frame, text="Nested Collection", font=('Lato', 30),
+                                      command=self.switch_add_mode)
+        self.b_add_nested.grid(row=0, column=4, pady=5, padx=10, sticky='w')
 
         self.separator = CTkLabel(self.main_frame, text='', bg_color='gray', height=1, font=('Arial', 2))
         self.separator.pack(fill='x', padx=10)
@@ -151,6 +164,242 @@ class AddComponentPopup:
 
         self.property_container.create_properties()
 
+    def switch_add_mode(self, *args):
+        match self.add_mode:
+            case 'component':
+                self.add_mode = 'nested_collection'
+                self._set_switch_button_state(self.b_add_comp, False)
+                self._set_switch_button_state(self.b_add_nested)
+            case 'nested_collection':
+                self.add_mode = 'component'
+                self._set_switch_button_state(self.b_add_comp)
+                self._set_switch_button_state(self.b_add_nested, False)
+
+        self.switch_widget()
+
+    def switch_widget(self):
+        match self.add_mode:
+            case 'component':
+                self.add_main_frame.destroy()
+
+                self.add_main_frame = CTkFrame(self.main_frame, fg_color='#403f3f')
+                self.add_main_frame.pack(anchor='center', fill='both', pady=10, padx=15)
+
+                self.add_left_frame = CTkFrame(self.add_main_frame, fg_color='#403f3f')
+                self.add_left_frame.grid(row=0, column=0, sticky='nsew', pady=10, padx=10)
+
+                self.add_mid_frame = CTkFrame(self.add_main_frame, fg_color='#403f3f')
+                self.add_mid_frame.grid(row=0, column=1, sticky='nsew', pady=10, padx=10)
+
+                # ===== Add Collection Button ===== #
+
+                self.addb_frame = CTkFrame(self.add_main_frame, fg_color='transparent')
+                self.addb_frame.grid(row=1, column=0, sticky='w', pady=10)
+
+                self.add_button = CTkButton(self.addb_frame,
+                                            text="Create Component",
+                                            font=('Lato', 20),
+                                            fg_color='green',
+                                            corner_radius=10,
+                                            command=self.add_component,
+                                            state='disabled')
+                self.add_button.grid(row=0, column=0, sticky='w', padx=15, pady=5)
+
+                self.add_label = CTkLabel(self.addb_frame, text="", font=('Lato', 16))
+                self.add_label.grid(row=0, column=1, sticky='w')
+
+                # ===== Name ===== #
+
+                self.name_var = StringVar()
+                self.name_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
+                self.name_frame.grid(row=0, column=0, sticky='w', pady=10, padx=10)
+
+                self.name_label = CTkLabel(self.name_frame, text="Name", font=('Lato', 20))
+                self.name_label.grid(row=0, column=0, sticky='w')
+
+                self.name_entry = CTkEntry(self.name_frame,
+                                           font=('Lato', 20),
+                                           textvariable=self.name_var,
+                                           width=250)
+                self.name_entry.grid(row=1, column=0, sticky='w')
+
+                self.name_var.trace_add('write', self.track_changes)
+
+                # ===== Parents ===== #
+
+                self.parent_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
+                self.parent_frame.grid(row=2, column=0, sticky='w', pady=10, columnspan=3, padx=10)
+
+                # Car
+                self.car_frame = CTkFrame(self.parent_frame, fg_color='transparent')
+                self.car_frame.grid(row=0, column=0, sticky='w', pady=10)
+
+                self.car_label = CTkLabel(self.car_frame, text="Car", font=('Lato', 20))
+                self.car_label.grid(row=0, column=0, sticky='w')
+
+                self.car_menu = CTkOptionMenu(self.car_frame,
+                                              values=self.get_car_names(),
+                                              command=self.on_car_changed)
+                self.car_menu.set(self.root.selected_car.car_info.name)
+                self.car_menu.grid(row=1, column=0, sticky='w')
+
+                separator = CTkLabel(self.car_frame, text="->", font=('Lato', 20))
+                separator.grid(row=1, column=1, sticky='w', padx=10)
+
+                # Collection
+                self.collection_frame = CTkFrame(self.parent_frame, fg_color='transparent')
+                self.collection_frame.grid(row=0, column=1, sticky='w', pady=10)
+
+                self.collection_label = CTkLabel(self.collection_frame, text="Collection", font=('Lato', 20))
+                self.collection_label.grid(row=0, column=0, sticky='w')
+
+                self.collection_menu = CTkOptionMenu(self.collection_frame,
+                                                     values=self.get_collection_names(),
+                                                     command=self.on_collection_changed)
+                self.collection_menu.grid(row=1, column=0, sticky='w')
+                self.collection_menu.set(self.parent_collection.name)
+
+                # ===== Custom Info ===== #
+
+                self.custom_frame = CTkScrollableFrame(self.add_mid_frame, fg_color='transparent', width=550, height=400)
+                self.custom_frame.grid(row=0, column=0, sticky='w', pady=10, padx=10)
+
+                self.custom_label = CTkLabel(self.custom_frame, text="Custom Properties", font=('Lato', 20))
+                self.custom_label.grid(row=0, column=0, sticky='w')
+
+                self.add_property_button = CTkButton(self.custom_frame,
+                                                     text="+",
+                                                     font=('Lato', 20),
+                                                     fg_color='green',
+                                                     width=35,
+                                                     corner_radius=0,
+                                                     command=self.add_new_property)
+                self.add_property_button.grid(row=0, column=1, sticky='w', padx=15, pady=5)
+
+                self.property_container = PropertyContainer(self.custom_frame,
+                                                            self.root,
+                                                            self,
+                                                            width=250,
+                                                            fg_color='transparent')
+                self.property_container.grid(row=1, column=0, columnspan=5, sticky='w')
+
+                self.property_container.create_properties()
+
+            case 'nested_collection':
+                self.add_main_frame.destroy()
+
+                self.add_main_frame = CTkFrame(self.main_frame, fg_color='#403f3f')
+                self.add_main_frame.pack(anchor='center', fill='both', pady=10, padx=15)
+
+                self.add_left_frame = CTkFrame(self.add_main_frame, fg_color='#403f3f')
+                self.add_left_frame.grid(row=0, column=0, sticky='nsew', pady=10, padx=10)
+
+                self.add_mid_frame = CTkFrame(self.add_main_frame, fg_color='#403f3f')
+                self.add_mid_frame.grid(row=0, column=1, sticky='nsew', pady=10, padx=10)
+
+                # ===== Add Collection Button ===== #
+
+                self.addb_frame = CTkFrame(self.add_main_frame, fg_color='transparent')
+                self.addb_frame.grid(row=1, column=0, sticky='w', pady=10)
+
+                self.add_button = CTkButton(self.addb_frame,
+                                            text="Create Collection",
+                                            font=('Lato', 20),
+                                            fg_color='green',
+                                            corner_radius=10,
+                                            state='disabled',
+                                            command=self.add_nested_collection)
+                self.add_button.grid(row=0, column=0, sticky='w', padx=15, pady=5)
+
+                self.add_label = CTkLabel(self.addb_frame, text="", font=('Lato', 16))
+                self.add_label.grid(row=0, column=1, sticky='w')
+
+                # ===== Name ===== #
+
+                self.name_var = StringVar()
+                self.name_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
+                self.name_frame.grid(row=0, column=0, sticky='w', pady=10, padx=10)
+
+                self.name_label = CTkLabel(self.name_frame, text="Name", font=('Lato', 20))
+                self.name_label.grid(row=0, column=0, sticky='w')
+
+                self.name_entry = CTkEntry(self.name_frame,
+                                           font=('Lato', 20),
+                                           textvariable=self.name_var,
+                                           width=250)
+                self.name_entry.grid(row=1, column=0, sticky='w')
+
+                self.name_var.trace_add('write', self.track_changes)
+
+                # ===== Parents ===== #
+
+                self.parent_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
+                self.parent_frame.grid(row=2, column=0, sticky='w', pady=10, columnspan=3, padx=10)
+
+                # Car
+                self.car_frame = CTkFrame(self.parent_frame, fg_color='transparent')
+                self.car_frame.grid(row=0, column=0, sticky='w', pady=10)
+
+                self.car_label = CTkLabel(self.car_frame, text="Car", font=('Lato', 20))
+                self.car_label.grid(row=0, column=0, sticky='w')
+
+                self.car_menu = CTkOptionMenu(self.car_frame,
+                                              values=[car.car_info.name for car in self.root.cars])
+                self.car_menu.set(self.root.selected_car.car_info.name)
+                self.car_menu.grid(row=1, column=0, sticky='w')
+
+                separator = CTkLabel(self.car_frame, text="->", font=('Lato', 20))
+                separator.grid(row=1, column=1, sticky='w', padx=10)
+
+                # Collection
+                self.collection_frame = CTkFrame(self.parent_frame, fg_color='transparent')
+                self.collection_frame.grid(row=0, column=1, sticky='w', pady=10)
+
+                self.collection_label = CTkLabel(self.collection_frame, text="Collection", font=('Lato', 20))
+                self.collection_label.grid(row=0, column=0, sticky='w')
+
+                self.collection_menu = CTkOptionMenu(self.collection_frame,
+                                                     values=self.get_collection_names(),
+                                                     command=self.on_collection_changed)
+                self.collection_menu.grid(row=1, column=0, sticky='w')
+                self.collection_menu.set(self.parent_collection.name)
+
+                # ===== Custom Info ===== #
+
+                self.custom_frame = CTkScrollableFrame(self.add_mid_frame, fg_color='transparent', width=550,
+                                                       height=400)
+                self.custom_frame.grid(row=0, column=0, sticky='w', pady=10, padx=10)
+
+                self.custom_label = CTkLabel(self.custom_frame, text="Custom Properties", font=('Lato', 20))
+                self.custom_label.grid(row=0, column=0, sticky='w')
+
+                self.add_property_button = CTkButton(self.custom_frame,
+                                                     text="+",
+                                                     font=('Lato', 20),
+                                                     fg_color='green',
+                                                     width=35,
+                                                     corner_radius=0,
+                                                     command=self.add_new_property)
+                self.add_property_button.grid(row=0, column=1, sticky='w', padx=15, pady=5)
+
+                self.property_container = PropertyContainer(self.custom_frame,
+                                                            self.root,
+                                                            self,
+                                                            width=250,
+                                                            fg_color='transparent')
+                self.property_container.grid(row=1, column=0, columnspan=5, sticky='w')
+
+                self.property_container.create_properties()
+
+    def _set_switch_button_state(self, button_ref: CTkButton, chosen=True):
+        if chosen:
+            button_ref.configure(state='disabled')
+            button_ref.configure(border_color='green')
+            button_ref.configure(border_width=3)
+        else:
+            button_ref.configure(state='enabled')
+            button_ref.configure(border_width=0)
+
     def add_new_property(self):
         self.property_container.add_property()
         self.track_changes()
@@ -200,6 +449,18 @@ class AddComponentPopup:
 
         self.root.app_session.add_new_component(self.parent_car.car_info.name, self.parent_collection.name,
                                                 comp_data['name'])
+
+        self._post_entry_add()
+
+    def add_nested_collection(self):
+        coll_data = self.collect_changes()
+
+        if not self._has_all_necessary_fields(coll_data):
+            self.add_label.configure(text="There is missing information.")
+            return
+
+        self.root.app_session.add_new_nested_collection(self.parent_car.car_info.name, coll_data['name'],
+                                                        self.parent_collection.name)
 
         self._post_entry_add()
 
