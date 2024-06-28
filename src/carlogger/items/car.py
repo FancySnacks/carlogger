@@ -24,6 +24,11 @@ class Car:
         if self.path == "":
             self._create_path()
 
+    def get_non_nested_collections(self) -> list[ComponentCollection]:
+        """Get only collections belonging to this car that aren't children of other collections."""
+        non_nested = filter(lambda coll: coll.parent_collection in (None, ""), self.collections)
+        return list(non_nested)
+
     def get_all_entry_logs(self, include_scheduled=False) -> list[LogEntry]:
         """Get ALL log entries regarding this car.\n
         NOTE: it's a heavy operation, use it sparingly."""

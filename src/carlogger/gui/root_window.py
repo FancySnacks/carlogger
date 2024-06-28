@@ -171,7 +171,7 @@ class RootWindow(CTk):
                                                    root=self,
                                                    go_to_func=self.go_to_collection,
                                                    add_widget_func=self.open_collection_add_window)
-        collection_container.create_items(car.collections)
+        collection_container.create_items(car.get_non_nested_collections())
 
         self.open_page(collection_container, car.car_info.name, car)
         self.selected_car = car
@@ -183,7 +183,7 @@ class RootWindow(CTk):
                                                  root=self,
                                                  go_to_func=self.go_to_component,
                                                  add_widget_func=self.open_component_add_window)
-        component_container.create_items(collection.components)
+        component_container.create_items(collection.children)
 
         self.open_page(component_container, collection.name, collection)
 
