@@ -440,10 +440,15 @@ class PropertyContainer(CTkFrame):
         self.property_widgets.append(new_item)
         self.properties[name] = value
 
-    def delete_property(self, index: int, key: str):
+    def delete_property(self, key: str):
         self.properties.pop(key)
-        item = self.property_widgets.pop(index)
-        item.property_frame.destroy()
+
+        for widget in self.property_widgets:
+            if widget.property_name.get() == key:
+                widget.property_frame.destroy()
+                self.property_widgets.remove(widget)
+                break
+
         self.track_changes()
 
     def create_properties(self):
@@ -505,7 +510,7 @@ class PropertyItem:
         self.delete_button.grid(row=0, column=3, sticky='w', padx=3, pady=5)
 
     def delete_property(self):
-        self.master.delete_property(self.index, self.property_name.get())
+        self.master.delete_property(self.property_name.get())
 
     def on_property_update(self, *args):
         conditions = any((self.property_name.get() != self.og_property_name, 
