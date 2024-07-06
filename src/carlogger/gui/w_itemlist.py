@@ -466,6 +466,8 @@ class ScheduledLogEntryItem(Item):
                                          command=self.mark_entry_as_complete)
         self.complete_button.grid(row=0, column=1, sticky="nse", padx=3)
 
+        self._set_time_remaining_text_color()
+
     def _get_item_name(self) -> str:
         properties = self.item_ref.to_json().get('name', ''), self.item_ref.to_json().get('desc', ''), ''
         return sorted(properties, reverse=True)[0]
@@ -476,6 +478,12 @@ class ScheduledLogEntryItem(Item):
                    f"({self.item_ref.time_remaining_to_str()})"
 
         return self.item_ref.date
+
+    def _set_time_remaining_text_color(self):
+        if self.item_ref.get_time_remaining() < 0:
+            self.date_label.configure(text_color='red')
+        else:
+            self.date_label.configure(text_color='white')
 
     def _get_mileage(self):
         if self.item_ref.get_schedule_rule() == 'mileage':
