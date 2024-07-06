@@ -352,7 +352,7 @@ class Item(CTkFrame):
         self.mileage_label = CTkLabel(self,
                                       text=self._get_mileage(),
                                       font=('Lato', 17),
-                                      width=150,
+                                      width=115,
                                       justify='left',
                                       anchor='w')
         self.mileage_label.grid(row=0, column=5+self.homepage, padx=5, pady=2)
@@ -367,7 +367,7 @@ class Item(CTkFrame):
             return
 
         self.option_buttons_frame = CTkFrame(self, fg_color='transparent')
-        self.option_buttons_frame.grid(row=0, column=9+self.homepage, sticky="nse", padx=3, pady=5)
+        self.option_buttons_frame.grid(row=0, column=10+self.homepage, sticky="nse", padx=3, pady=5)
 
         self.option_buttons_frame.rowconfigure(0, weight=1)
 
@@ -399,7 +399,7 @@ class Item(CTkFrame):
                                  width=150,
                                  justify='left',
                                  anchor='w')
-            new_label.grid(row=0, column=index + 5, padx=5, pady=2)
+            new_label.grid(row=0, column=index + 6, padx=5, pady=2)
 
             self.custom_info_labels.append(new_label)
 
