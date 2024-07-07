@@ -393,7 +393,7 @@ class Item(CTkFrame):
 
         for index, item in enumerate(self.item_ref.custom_info.items()):
             new_label = CTkLabel(self,
-                                 text=item[1],
+                                 text=self._format_info(item),
                                  font=('Lato', 17),
                                  wraplength=135,
                                  width=150,
@@ -402,6 +402,9 @@ class Item(CTkFrame):
             new_label.grid(row=0, column=index + 6, padx=5, pady=2)
 
             self.custom_info_labels.append(new_label)
+
+    def _format_info(self, item: tuple[str, ...]) -> str:
+        return f"{item[0]}: {item[1]}"
 
     def update_date(self):
         self.date_label.configure(text=self._get_date())
@@ -413,14 +416,13 @@ class Item(CTkFrame):
         self.parent_label.configure(text=self.item_ref.component.name)
 
     def update_category(self):
-        self.category_label.configure(text=self.item_ref.category)
+        self.category_label.configure(text=self._get_item_category())
 
     def update_mileage(self):
         self.mileage_label.configure(text=self._get_mileage())
 
     def update_custom_info(self):
-        for info, label in zip(self.item_ref.custom_info.values(), self.custom_info_labels):
-            label.configure(text=info)
+        self.create_custom_info()
 
     def update_all_info(self):
         self.update_desc()
