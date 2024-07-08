@@ -387,24 +387,67 @@ class Item(CTkFrame):
         self.parent.set_delete_button_message()
 
     def create_custom_info(self):
+        """Refresh and recreate custom info widget from parent item reference."""
+
         for w in self.custom_info_labels:
             w.destroy()
+
         self.custom_info_labels.clear()
+        self._destroy_custom_info_placeholder()
+        self.create_custom_info_widgets()
 
+    def create_custom_info_widgets(self):
+        """Create custom info widgets from item ref's custom info dictionary."""
         for index, item in enumerate(self.item_ref.custom_info.items()):
-            new_label = CTkLabel(self,
-                                 text=self._format_info(item),
-                                 font=('Lato', 17),
-                                 wraplength=135,
-                                 width=150,
-                                 justify='left',
-                                 anchor='w')
-            new_label.grid(row=0, column=index + 6, padx=5, pady=2)
 
-            self.custom_info_labels.append(new_label)
+            if self._is_max_custom_info_display_count_reached():
+                try:
+                    self.custom_info_clamp_count_label.configure(text=f"+{self._get_clamped_custom_info_count()}")
+                except AttributeError:
+                    placeholder_index = self._last_custom_info_index + 1
+                    self._add_custom_info_placeholder_widget(placeholder_index)
+
+                return
+            else:
+                new_label = CTkLabel(self,
+                                     text=self._format_info(item),
+                                     font=('Lato', 17),
+                                     wraplength=135,
+                                     width=150,
+                                     justify='left',
+                                     anchor='w')
+                new_label.grid(row=0, column=index + 6, padx=5, pady=2)
+
+                self._last_custom_info_index = index + 6
+
+                self.custom_info_labels.append(new_label)
 
     def _format_info(self, item: tuple[str, ...]) -> str:
         return f"{item[0]}: {item[1]}"
+
+    def _is_max_custom_info_display_count_reached(self):
+        if len(self.custom_info_labels) > 2:
+            return True
+        return False
+
+    def _add_custom_info_placeholder_widget(self, index: int):
+        """Create placeholder widget for custom info if the cap has been reached."""
+        self.custom_info_clamp_count_label = CTkLabel(self,
+                                                      text=f"+{self._get_clamped_custom_info_count()}",
+                                                      font=('Lato', 17),
+                                                      width=100,
+                                                      anchor='w')
+        self.custom_info_clamp_count_label.grid(row=0, column=index, padx=5, pady=2)
+
+    def _destroy_custom_info_placeholder(self):
+        try:
+            self.custom_info_clamp_count_label.destroy()
+            del self.custom_info_clamp_count_label
+        except AttributeError:
+            return
+
+    def _get_clamped_custom_info_count(self) -> int:
+        return len(self.item_ref.custom_info.keys())-len(self.custom_info_labels)
 
     def update_date(self):
         self.date_label.configure(text=self._get_date())
