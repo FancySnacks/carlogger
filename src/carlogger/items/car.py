@@ -24,6 +24,12 @@ class Car:
         if self.path == "":
             self._create_path()
 
+    def __getattr__(self, item):
+        if item in self.car_info.to_json().keys():
+            return self.car_info.to_json()[item]
+        else:
+            getattr(self, item)
+
     def get_non_nested_collections(self) -> list[ComponentCollection]:
         """Get only collections belonging to this car that aren't children of other collections."""
         non_nested = filter(lambda coll: coll.parent_collection in (None, ""), self.collections)
