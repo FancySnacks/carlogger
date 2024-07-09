@@ -15,7 +15,7 @@ from carlogger.gui.w_addentry import AddEntryPopup
 from carlogger.gui.w_addcar import AddCarPopup
 from carlogger.gui.w_addcollection import AddCollectionPopup
 from carlogger.gui.w_addcomponent import AddComponentPopup
-from carlogger.gui.w_collectionlist import CollectionContainer
+from carlogger.gui.w_itempage import CarPage, CollectionPage, ComponentPage
 from carlogger.gui.w_componentlist import ComponentContainer
 
 
@@ -156,7 +156,7 @@ class RootWindow(CTk):
 
         if self.current_page:
             self.current_page.destroy()
-        self.current_page = car_frame
+        self.current_page = self.homepage
 
         if not self.car_list:
             self.car_list = CarList(car_frame)
@@ -167,41 +167,41 @@ class RootWindow(CTk):
         self.homepage.homepage_init()
 
     def go_to_car(self, car):
-        collection_container = CollectionContainer(self.scrollable_frame,
-                                                   root=self,
-                                                   go_to_func=self.go_to_collection,
-                                                   add_widget_func=self.open_collection_add_window)
-        collection_container.create_items(car.get_non_nested_collections())
+        car_page = CarPage(self.scrollable_frame,
+                           root=self,
+                           item_ref=car,
+                           go_to_func=self.go_to_collection,
+                           add_widget_func=self.open_collection_add_window)
+        car_page.create_items(car.get_non_nested_collections())
 
-        self.open_page(collection_container, car.car_info.name, car)
+        self.open_page(car_page, car.car_info.name, car)
         self.selected_car = car
 
     def go_to_collection(self, collection):
         self.selected_collection = collection
 
-        component_container = ComponentContainer(self.scrollable_frame,
-                                                 root=self,
-                                                 go_to_func=self.go_to_component,
-                                                 add_widget_func=self.open_component_add_window)
-        component_container.create_items(collection.children)
+        collection_page = CollectionPage(self.scrollable_frame,
+                                         root=self,
+                                         item_ref=collection,
+                                         go_to_func=self.go_to_component,
+                                         add_widget_func=self.open_component_add_window)
 
-        self.open_page(component_container, collection.name, collection)
+        collection_page.create_items(collection.children)
+
+        self.open_page(collection_page, collection.name, collection)
 
     def go_to_component(self, component):
         self.selected_component = component
 
-        item_container = ItemContainer(self.scrollable_frame, parent_car=None, root=self, component=component)
-        item_container.grid(row=0, column=0, sticky="nsew")
+        component_page = ComponentPage(self.scrollable_frame, root=self, item_ref=component)
 
-        item_list = ItemList(self.scrollable_frame, widget=item_container, app_session=self.app_session)
+        component_page.item_container.parent = component_page.item_list
+        component_page.item_container.app_session = self.app_session
 
-        item_container.parent = item_list
-        item_container.app_session = self.app_session
+        component_page.item_list.create_items(component.scheduled_log_entries, 'Scheduled Log Entries', 'oldest')
+        component_page.item_list.create_items(component.log_entries, 'Log Entries', 'latest')
 
-        item_list.create_items(component.scheduled_log_entries, 'Scheduled Log Entries', 'oldest')
-        item_list.create_items(component.log_entries, 'Log Entries', 'latest')
-
-        self.open_page(item_container, component.name, component)
+        self.open_page(component_page, component.name, component)
 
     def open_page(self, new_page, name, item_ref):
         if self.current_page:

@@ -78,7 +78,8 @@ class Container(CTkFrame, ABC):
         self.add_widget_func = add_widget_func
         self.widget_items = []
 
-        self.grid(row=0, column=0, sticky='nsew')
+        self.grid(row=1, column=0, sticky='nsew')
+        self.configure(fg_color='transparent')
 
         row = self._get_row() + 1
         column = len(self.widget_items) % 7
