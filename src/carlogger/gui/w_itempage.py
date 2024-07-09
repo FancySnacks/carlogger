@@ -15,6 +15,8 @@ class ItemPage:
         self.main_frame = CTkFrame(master)
         self.main_frame.grid(row=0, column=0, sticky='nsew')
 
+        self.main_frame.grid_columnconfigure(0, weight=1)
+
         self.item_info_box = ItemInfoBox(self.main_frame, item_ref)
 
         self.container = container(self.main_frame,
@@ -45,6 +47,8 @@ class ComponentPage:
 
         self.main_frame = CTkFrame(master)
         self.main_frame.grid(row=0, column=0, sticky='nsew')
+
+        self.main_frame.grid_columnconfigure(0, weight=1)
 
         self.item_info_box = ItemInfoBox(self.main_frame, item_ref)
 
