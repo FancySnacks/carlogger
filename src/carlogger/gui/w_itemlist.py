@@ -29,13 +29,22 @@ class ItemContainer(CTkFrame):
             self.edit_button_frame.pack(anchor='w')
 
             self.edit_button = CTkButton(self.edit_button_frame,
-                                         text="Edit Collection",
+                                         text="Edit Component",
                                          font=('Lato', 18),
                                          fg_color='green',
                                          width=35,
                                          corner_radius=0,
                                          command=self.open_edit_window)
             self.edit_button.grid(row=0, column=0, sticky='w', padx=5)
+
+            self.del_button = CTkButton(self.edit_button_frame,
+                                        text="Delete Component",
+                                        font=('Lato', 18),
+                                        fg_color='red',
+                                        width=35,
+                                        corner_radius=0,
+                                        command=NotImplemented)
+            self.del_button.grid(row=0, column=1, sticky='w', padx=5)
 
     def open_edit_window(self):
         self.root.open_component_edit_window()

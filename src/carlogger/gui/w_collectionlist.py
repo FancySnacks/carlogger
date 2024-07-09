@@ -24,6 +24,15 @@ class CollectionContainer(Container):
                                      command=self.open_edit_window)
         self.edit_button.grid(row=0, column=0, sticky='w', padx=5)
 
+        self.del_button = CTkButton(self.management_buttons_frame,
+                                    text="Delete Car",
+                                    font=('Lato', 18),
+                                    fg_color='red',
+                                    width=35,
+                                    corner_radius=0,
+                                    command=NotImplemented)
+        self.del_button.grid(row=0, column=1, sticky='w', padx=5)
+
     def add_item(self, item_ref: ITEM, widget_item_class=CollectionItem):
         super().add_item(item_ref)
 
