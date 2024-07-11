@@ -22,7 +22,7 @@ class CollectionContainer(Container):
                                      width=35,
                                      corner_radius=0,
                                      command=self.open_edit_window)
-        self.edit_button.grid(row=0, column=0, sticky='w', padx=5)
+        self.edit_button.grid(row=0, column=0, sticky='w', padx=5, pady=10)
 
         self.del_button = CTkButton(self.management_buttons_frame,
                                     text="Delete Car",

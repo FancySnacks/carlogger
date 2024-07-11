@@ -13,7 +13,7 @@ class ComponentContainer(Container):
         super().__init__(master, root, go_to_func, add_widget_func)
 
         self.management_buttons_frame = CTkFrame(self, fg_color='transparent')
-        self.management_buttons_frame.grid(row=0, column=0, sticky='ew')
+        self.management_buttons_frame.grid(row=0, column=0, sticky='ew', pady=10)
 
         self.edit_button = CTkButton(self.management_buttons_frame,
                                      text="Edit Collection",

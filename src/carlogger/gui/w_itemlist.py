@@ -26,7 +26,7 @@ class ItemContainer(CTkFrame):
 
         if not self.homepage:
             self.edit_button_frame = CTkFrame(self, fg_color='transparent')
-            self.edit_button_frame.pack(anchor='w')
+            self.edit_button_frame.pack(anchor='w', pady=10)
 
             self.edit_button = CTkButton(self.edit_button_frame,
                                          text="Edit Component",
