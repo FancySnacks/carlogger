@@ -160,5 +160,8 @@ class Car:
 
         return result
 
+    def to_json(self) -> dict:
+        return self.car_info.to_json()
+
     def _create_path(self):
         self.path = create_car_dir_path(self.car_info.to_json())
