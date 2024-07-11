@@ -6,9 +6,10 @@ from carlogger.util import dict_diff
 
 
 class EditCarPopup:
-    def __init__(self, master, root, car_ref):
+    def __init__(self, master, root, car_ref, itembox_ref):
         self.master = master
         self.root = root
+        self.itembox_ref = itembox_ref
 
         self.car_ref = car_ref
         self.og_item_values = self.car_ref.car_info.to_json()
@@ -254,6 +255,7 @@ class EditCarPopup:
     def close_menu(self, *args):
         self.overlay_frame.destroy()
         self.popup_frame.destroy()
+        self.itembox_ref.refresh_info()
         del self
 
 

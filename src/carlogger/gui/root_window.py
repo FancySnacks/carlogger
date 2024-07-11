@@ -128,16 +128,19 @@ class RootWindow(CTk):
         self.add_component_popup = AddComponentPopup(self.main_frame, self, self.selected_collection, self.selected_car)
 
     def open_car_edit_window(self):
-        self.edit_car_popup = EditCarPopup(self.main_frame, self, self.selected_car)
+        self.edit_car_popup = EditCarPopup(self.main_frame, self, self.selected_car,
+                                           self.current_page.item_info_box)
 
     def open_collection_edit_window(self):
         self.edit_collection_popup = EditCollectionPopup(self.main_frame, self, self.selected_car,
-                                                         self.selected_collection)
+                                                         self.selected_collection,
+                                                         self.current_page.item_info_box)
 
     def open_component_edit_window(self):
         self.edit_component_popup = EditComponentPopup(self.main_frame, self, self.selected_car,
                                                        self.selected_collection,
-                                                       self.selected_component)
+                                                       self.selected_component,
+                                                       self.current_page.item_info_box)
 
     def create_cars(self):
         self.car_list.clear_cars()

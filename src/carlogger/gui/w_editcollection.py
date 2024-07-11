@@ -6,11 +6,12 @@ from carlogger.util import dict_diff
 
 
 class EditCollectionPopup:
-    def __init__(self, master, root, parent_car, collection_ref):
+    def __init__(self, master, root, parent_car, collection_ref, itembox_ref):
         self.master = master
         self.root = root
-        self.parent_car = parent_car
+        self.itembox_ref = itembox_ref
 
+        self.parent_car = parent_car
         self.collection_ref = collection_ref
         self.og_item_values = self.collection_ref.to_json()
 
@@ -187,6 +188,7 @@ class EditCollectionPopup:
     def close_menu(self, *args):
         self.overlay_frame.destroy()
         self.popup_frame.destroy()
+        self.itembox_ref.refresh_info()
         del self
 
 
