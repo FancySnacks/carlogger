@@ -4,20 +4,22 @@ from carlogger.gui.c_itemlist import ItemList
 from carlogger.gui.w_genericlist import Container
 from carlogger.gui.w_collectionlist import CollectionContainer
 from carlogger.gui.w_componentlist import ComponentContainer
-from carlogger.gui.w_item_infobox import ItemInfoBox
+from carlogger.gui.w_item_infobox import ItemInfoBox, CollectionInfoBox, ComponentInfoBox
 from carlogger.gui.w_itemlist import ItemContainer
 
 
 class ItemPage:
-    def __init__(self, master, root, item_ref, go_to_func, add_widget_func, container=Container):
+    def __init__(self, master, root, item_ref, go_to_func, add_widget_func, container=Container,
+                 itembox_widget=ItemInfoBox):
         self.item_ref = item_ref
+        self.itembox_widget = itembox_widget
 
         self.main_frame = CTkFrame(master)
         self.main_frame.grid(row=0, column=0, sticky='nsew')
 
         self.main_frame.grid_columnconfigure(0, weight=1)
 
-        self.item_info_box = ItemInfoBox(self.main_frame, item_ref)
+        self.item_info_box = itembox_widget(self.main_frame, item_ref)
 
         self.container = container(self.main_frame,
                                    root=root,
@@ -32,25 +34,28 @@ class ItemPage:
 
 
 class CarPage(ItemPage):
-    def __init__(self, master, root, item_ref, go_to_func, add_widget_func, container=CollectionContainer):
-        super().__init__(master, root, item_ref, go_to_func, add_widget_func, container)
+    def __init__(self, master, root, item_ref, go_to_func, add_widget_func, container=CollectionContainer,
+                 itembox_widget=ItemInfoBox):
+        super().__init__(master, root, item_ref, go_to_func, add_widget_func, container, itembox_widget)
 
 
 class CollectionPage(ItemPage):
-    def __init__(self, master, root, item_ref, go_to_func, add_widget_func, container=ComponentContainer):
-        super().__init__(master, root, item_ref, go_to_func, add_widget_func, container)
+    def __init__(self, master, root, item_ref, go_to_func, add_widget_func, container=ComponentContainer,
+                 itembox_widget=CollectionInfoBox):
+        super().__init__(master, root, item_ref, go_to_func, add_widget_func, container, itembox_widget)
 
 
 class ComponentPage:
-    def __init__(self, master, root, item_ref):
+    def __init__(self, master, root, item_ref, itembox_widget=ComponentInfoBox):
         self.item_ref = item_ref
+        self.itembox_widget = itembox_widget
 
         self.main_frame = CTkFrame(master)
         self.main_frame.grid(row=0, column=0, sticky='nsew')
 
         self.main_frame.grid_columnconfigure(0, weight=1)
 
-        self.item_info_box = ItemInfoBox(self.main_frame, item_ref)
+        self.item_info_box = self.itembox_widget(self.main_frame, item_ref)
 
         self.item_container = ItemContainer(self.main_frame, parent_car=None, root=root, component=self.item_ref)
         self.item_container.grid(row=1, column=0, sticky="nsew")

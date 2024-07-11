@@ -8,15 +8,12 @@ from carlogger.gui.w_homepage import Homepage
 from carlogger.gui.c_carlist import CarList
 from carlogger.gui.w_carlist import CarFrame
 from carlogger.gui.w_navigation import NavigationBar
-from carlogger.gui.w_itemlist import ItemContainer
-from carlogger.gui.c_itemlist import ItemList
 from carlogger.gui.w_editentry import EditEntryPopup
 from carlogger.gui.w_addentry import AddEntryPopup
 from carlogger.gui.w_addcar import AddCarPopup
 from carlogger.gui.w_addcollection import AddCollectionPopup
 from carlogger.gui.w_addcomponent import AddComponentPopup
 from carlogger.gui.w_itempage import CarPage, CollectionPage, ComponentPage
-from carlogger.gui.w_componentlist import ComponentContainer
 
 
 class RootWindow(CTk):
