@@ -20,6 +20,12 @@ class ItemInfoBox:
         self.right_frame = CTkFrame(self.main_frame)
         self.right_frame.grid(row=0, column=1, sticky='nsew')
 
+        self.left_frame1 = CTkFrame(self.main_frame)
+        self.left_frame1.grid(row=0, column=2, sticky='nsew')
+
+        self.right_frame1 = CTkFrame(self.main_frame)
+        self.right_frame1.grid(row=0, column=3, sticky='nsew')
+
         # ===== General Info ===== #
         for key, val in self._get_item_properties():
 
@@ -27,6 +33,15 @@ class ItemInfoBox:
             new_label.grid(column=0, sticky='w', padx=20, pady=5)
 
             new_label1 = CTkLabel(self.right_frame, text=val, font=('Lato', 18))
+            new_label1.grid(column=0, sticky='w', padx=20, pady=5)
+
+        # ===== Custom Info ===== #
+        for key, val in self._get_custom_info():
+
+            new_label = CTkLabel(self.left_frame1, text=self._get_key_as_name(key), font=('Lato', 22))
+            new_label.grid(column=0, sticky='w', padx=20, pady=5)
+
+            new_label1 = CTkLabel(self.right_frame1, text=val, font=('Lato', 18))
             new_label1.grid(column=0, sticky='w', padx=20, pady=5)
 
     def _get_key_as_name(self, key: str) -> str:
@@ -38,9 +53,13 @@ class ItemInfoBox:
         return key
 
     def _get_item_properties(self):
-        properties = self.item_ref.to_json()
+        properties = self.item_ref.to_json().copy()
         properties.pop('custom_info')
         return properties.items()
+
+    def _get_custom_info(self):
+        custom_info = self.item_ref.to_json()['custom_info']
+        return custom_info.items()
 
 
 class CollectionInfoBox(ItemInfoBox):
@@ -49,7 +68,8 @@ class CollectionInfoBox(ItemInfoBox):
         super().__init__(master, item_ref, **kwargs)
 
     def _get_item_properties(self):
-        properties = self.item_ref.to_json()
+        properties = self.item_ref.to_json().copy()
+        properties.pop('custom_info')
         properties.pop('parent_collection')
         properties.pop('collections')
         properties.pop('components')
@@ -62,7 +82,9 @@ class ComponentInfoBox(ItemInfoBox):
         super().__init__(master, item_ref, **kwargs)
 
     def _get_item_properties(self):
-        properties = self.item_ref.to_json()
+        properties = self.item_ref.to_json().copy()
+        properties['current_part'] = properties['current_part']['name']
+        properties.pop('custom_info')
         properties.pop('type')
         properties.pop('log_entries')
         properties.pop('scheduled_log_entries')

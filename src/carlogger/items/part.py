@@ -2,8 +2,6 @@
 
 from dataclasses import dataclass, field
 
-from carlogger.items.log_entry import LogEntry
-
 
 @dataclass(order=True)
 class Part:
