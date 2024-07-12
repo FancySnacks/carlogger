@@ -67,6 +67,20 @@ class NavigationBar(CTkFrame):
         self.current_item = self.nav_items[-1] if self.nav_items else None
         self.go_to(self.current_item)
 
+    def go_back(self):
+        if len(self.nav_widgets) <= 3:
+            self.go_to_previous_page(self.nav_widgets[0])
+            return
+
+        i = -2
+        c = self.nav_widgets[i]
+
+        while type(c) != NavItem:
+            i -= 1
+            c = self.nav_widgets[i]
+
+        self.go_to_previous_page(c)
+
     def go_to(self, item_ref):
         if item_ref is None:
             self.root.go_to_homepage()

@@ -24,7 +24,8 @@ class ItemPage:
         self.container = container(self.main_frame,
                                    root=root,
                                    go_to_func=go_to_func,
-                                   add_widget_func=add_widget_func)
+                                   add_widget_func=add_widget_func,
+                                   item_page_ref=self)
 
     def create_items(self, items: list):
         self.container.create_items(items)
@@ -57,7 +58,8 @@ class ComponentPage:
 
         self.item_info_box = self.itembox_widget(self.main_frame, item_ref)
 
-        self.item_container = ItemContainer(self.main_frame, parent_car=None, root=root, component=self.item_ref)
+        self.item_container = ItemContainer(self.main_frame, parent_car=None, root=root, component=self.item_ref,
+                                            item_page_ref=self)
         self.item_container.grid(row=1, column=0, sticky="nsew")
 
         self.item_list = ItemList(self.main_frame, widget=self.item_container, app_session=root.app_session)

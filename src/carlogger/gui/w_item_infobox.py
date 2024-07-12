@@ -95,7 +95,8 @@ class ComponentInfoBox(ItemInfoBox):
 
     def _get_item_properties(self):
         properties = self.item_ref.to_json().copy()
-        properties['current_part'] = properties['current_part']['name']
+        if cpart := properties['current_part']:
+            properties['current_part'] = cpart['current_part']['name']
         properties.pop('custom_info')
         properties.pop('type')
         properties.pop('log_entries')

@@ -12,11 +12,12 @@ if TYPE_CHECKING:
 
 
 class ItemContainer(CTkFrame):
-    def __init__(self, master, parent_car, root: RootWindow, homepage=False, **values):
+    def __init__(self, master, parent_car, root: RootWindow, homepage=False, item_page_ref=None, **values):
         super().__init__(master)
         self.root = root
         self.parent_car = parent_car
         self.homepage = homepage
+        self.item_page_ref = item_page_ref
 
         self.parent: ItemList = ...
         self.app_session = ...
@@ -43,11 +44,19 @@ class ItemContainer(CTkFrame):
                                         fg_color='red',
                                         width=35,
                                         corner_radius=0,
-                                        command=NotImplemented)
+                                        command=self.delete_component)
             self.del_button.grid(row=0, column=1, sticky='w', padx=5)
 
     def open_edit_window(self):
         self.root.open_component_edit_window()
+
+    def delete_component(self):
+        parent_car_name = self.item_page_ref.item_ref.parent.car.name
+        parent_coll_name = self.item_page_ref.item_ref.parent.name
+        comp_to_del_name = self.item_page_ref.item_ref.name
+        self.root.app_session.delete_component(parent_car_name, parent_coll_name, comp_to_del_name)
+
+        self.root.navigation.go_back()
 
     def create_items(self, items: list, header: str, filter_opts: list[str]):
         new_sortable_item_list = SortableItemList(self, self, header, items, len(self.item_list_widgets))

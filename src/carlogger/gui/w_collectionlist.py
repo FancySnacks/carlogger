@@ -9,8 +9,8 @@ class CollectionItem(ContainerItem):
 
 
 class CollectionContainer(Container):
-    def __init__(self, master, root, go_to_func, add_widget_func):
-        super().__init__(master, root, go_to_func, add_widget_func)
+    def __init__(self, master, root, go_to_func, add_widget_func, item_page_ref, **kwargs):
+        super().__init__(master, root, go_to_func, add_widget_func, item_page_ref, **kwargs)
 
         self.management_buttons_frame = CTkFrame(self, fg_color='transparent')
         self.management_buttons_frame.grid(row=0, column=0, sticky='ew')
@@ -30,11 +30,17 @@ class CollectionContainer(Container):
                                     fg_color='red',
                                     width=35,
                                     corner_radius=0,
-                                    command=NotImplemented)
+                                    command=self.delete_car)
         self.del_button.grid(row=0, column=1, sticky='w', padx=5)
 
     def add_item(self, item_ref: ITEM, widget_item_class=CollectionItem):
         super().add_item(item_ref)
+
+    def delete_car(self):
+        car_name = self.item_page_ref.item_ref.name
+        self.root.app_session.delete_car(car_name)
+
+        self.root.navigation.go_back()
 
     def open_edit_window(self):
         self.root.open_car_edit_window()

@@ -70,10 +70,11 @@ class DummyContainerItem(ABC):
 
 
 class Container(CTkFrame, ABC):
-    def __init__(self, master, root, go_to_func: Callable, add_widget_func: Callable, **kwargs):
+    def __init__(self, master, root, go_to_func: Callable, add_widget_func: Callable, item_page_ref=None, **kwargs):
         super().__init__(master, **kwargs)
         self.master = master
         self.root = root
+        self.item_page_ref = item_page_ref
         self.go_to_func = go_to_func
         self.add_widget_func = add_widget_func
         self.widget_items = []
