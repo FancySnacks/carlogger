@@ -5,6 +5,7 @@ from customtkinter import CTkFrame, CTkButton, CTkLabel, CTkCheckBox, BooleanVar
 from typing import TYPE_CHECKING
 
 from carlogger.gui.c_itemlist import ItemList
+from carlogger.gui.w_deletion_confirmation import DeletionConfirmation
 from carlogger.const import ITEM
 
 if TYPE_CHECKING:
@@ -44,11 +45,17 @@ class ItemContainer(CTkFrame):
                                         fg_color='red',
                                         width=35,
                                         corner_radius=0,
-                                        command=self.delete_component)
+                                        command=self.attempt_delete)
             self.del_button.grid(row=0, column=1, sticky='w', padx=5)
 
     def open_edit_window(self):
         self.root.open_component_edit_window()
+
+    def attempt_delete(self):
+        if len(self.item_page_ref.item_ref.children) > 0:
+            DeletionConfirmation(self.master, self.root, self.item_page_ref.item_ref, self.delete_component)
+        else:
+            self.delete_component()
 
     def delete_component(self):
         parent_car_name = self.item_page_ref.item_ref.parent.car.name

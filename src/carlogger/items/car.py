@@ -25,10 +25,14 @@ class Car:
             self._create_path()
 
     def __getattr__(self, item):
-        if item in self.car_info.to_json().keys():
-            return self.car_info.to_json()[item]
+        if item in self.__dict__.keys():
+            return getattr(self, item)
         else:
-            getattr(self, item)
+            return self.car_info.to_json()[item]
+
+    @property
+    def children(self) -> list[ComponentCollection]:
+        return self.collections
 
     def get_non_nested_collections(self) -> list[ComponentCollection]:
         """Get only collections belonging to this car that aren't children of other collections."""

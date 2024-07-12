@@ -1,5 +1,6 @@
 from customtkinter import CTkFrame, CTkButton
 
+from carlogger.gui.w_deletion_confirmation import DeletionConfirmation
 from carlogger.gui.w_genericlist import Container, ContainerItem
 from carlogger.const import ITEM
 
@@ -30,11 +31,17 @@ class CollectionContainer(Container):
                                     fg_color='red',
                                     width=35,
                                     corner_radius=0,
-                                    command=self.delete_car)
+                                    command=self.attempt_delete)
         self.del_button.grid(row=0, column=1, sticky='w', padx=5)
 
     def add_item(self, item_ref: ITEM, widget_item_class=CollectionItem):
         super().add_item(item_ref)
+
+    def attempt_delete(self):
+        if len(self.item_page_ref.item_ref.children) > 0:
+            DeletionConfirmation(self.master, self.root, self.item_page_ref.item_ref, self.delete_car)
+        else:
+            self.delete_car()
 
     def delete_car(self):
         car_name = self.item_page_ref.item_ref.name
