@@ -161,7 +161,7 @@ class CarComponent:
     def mark_scheduled_entry_as_done(self, entry_id: str):
         entry = self.get_entry_by_id(entry_id)
         entry.date = TODAY
-        self.create_entry(entry.to_json())
+        new_entry_id = self.create_entry(entry.to_json())
 
         if not entry.repeating:
             self.delete_entry_by_id(entry_id)
@@ -172,6 +172,11 @@ class CarComponent:
                                    f"{entry.get_new_date()} and",
                               relation=self.name)
             entry.repeat()
+
+            new_entry = self.get_entry_by_id(new_entry_id)
+            self._update_current_part(new_entry)
+            self._update_mileage(new_entry)
+
             return entry
 
     def update_entry(self, entry_id: str, changes: dict):
@@ -302,8 +307,16 @@ class CarComponent:
                 self.part_list.append(self.current_part)
 
     def _update_mileage(self, entry: LogEntry):
-        if entry.mileage > self.current_mileage:
-            self.current_mileage = entry.mileage
+        new_mileage = entry.mileage
+
+        if new_mileage > self.current_mileage:
+            self.current_mileage = new_mileage
+
+    def car_mileage_needs_update(self, entry: LogEntry) -> bool:
+        if entry.mileage > self.parent.car.car_info.mileage:
+            return True
+        else:
+            return False
 
     def _clamp_scheduled_entry_mileage(self, entry_data) -> int:
         if entry_data['rule'] == 'mileage':
