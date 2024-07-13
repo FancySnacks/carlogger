@@ -551,9 +551,13 @@ class ScheduledLogEntryItem(Item):
 
     def _set_time_remaining_text_color(self):
         if self.item_ref.get_time_remaining() < 0:
-            self.date_label.configure(text_color='red')
+            match self.item_ref.get_schedule_rule():
+                case 'date': self.date_label.configure(text_color='red')
+                case 'mileage': self.mileage_label.configure(text_color='red')
         else:
-            self.date_label.configure(text_color='white')
+            match self.item_ref.get_schedule_rule():
+                case 'date': self.date_label.configure(text_color='white')
+                case 'mileage': self.mileage_label.configure(text_color='white')
 
     def _get_mileage(self):
         if self.item_ref.get_schedule_rule() == 'mileage':
