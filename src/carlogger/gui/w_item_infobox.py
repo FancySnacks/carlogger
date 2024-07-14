@@ -20,14 +20,16 @@ class ItemInfoBox:
         self.right_frame = CTkFrame(self.main_frame)
         self.right_frame.grid(row=0, column=1, sticky='nsew')
 
-        self.custom_left_frame = CTkFrame(self.main_frame)
-        self.custom_left_frame.grid(row=0, column=2, sticky='nsew')
-
-        self.custom_right_frame = CTkFrame(self.main_frame)
-        self.custom_right_frame.grid(row=0, column=3, sticky='nsew')
-
         self.create_general_info()
-        self.create_custom_info()
+
+        if self.item_ref.custom_info:
+            self.custom_left_frame = CTkFrame(self.main_frame)
+            self.custom_left_frame.grid(row=0, column=2, sticky='nsew', padx=50)
+
+            self.custom_right_frame = CTkScrollableFrame(self.main_frame, fg_color='transparent',)
+            self.custom_right_frame.grid(row=0, column=3, sticky='nsew')
+
+            self.create_custom_info()
 
     def create_general_info(self):
         for key, val in self._get_item_properties():
@@ -94,7 +96,7 @@ class ComponentInfoBox(ItemInfoBox):
         super().__init__(master, item_ref, **kwargs)
 
         self.partlist_right_frame = CTkScrollableFrame(self.main_frame, fg_color='transparent', width=400)
-        self.partlist_right_frame.grid(row=0, column=4, sticky='w', pady=10, padx=10)
+        self.partlist_right_frame.grid(row=0, column=4, sticky='w', pady=10, padx=50)
 
         self.part_frame = CTkFrame(self.partlist_right_frame)
         self.part_frame.grid(row=0, column=0, sticky='nsew')
