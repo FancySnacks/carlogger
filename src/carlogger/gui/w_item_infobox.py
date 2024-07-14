@@ -50,7 +50,9 @@ class ItemInfoBox:
             new_value.grid(column=0, sticky='w', padx=20, pady=5)
 
     def refresh_info(self):
-        children = self.left_frame.winfo_children() + self.right_frame.winfo_children() + self.custom_left_frame.winfo_children() + self.custom_right_frame.winfo_children()
+        children = self.left_frame.winfo_children() + self.right_frame.winfo_children()
+        if self.item_ref.custom_info:
+            children += self.custom_left_frame.winfo_children() + self.custom_right_frame.winfo_children()
 
         for child in children:
             child.destroy()

@@ -19,7 +19,7 @@ class EditCarPopup:
         self.overlay_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
 
         # ===== Main Popup Frame ===== #
-        self.popup_frame = CTkFrame(self.master, width=965, height=600, corner_radius=10, bg_color='transparent')
+        self.popup_frame = CTkFrame(self.master, width=1200, height=600, corner_radius=10, bg_color='transparent')
         self.popup_frame.place(relx=0.5, rely=0.5, anchor='center')
 
         # ===== Widget ===== #
