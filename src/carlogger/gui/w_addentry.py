@@ -209,7 +209,7 @@ class AddEntryPopup:
 
         # ===== Custom Info ===== #
 
-        self.custom_frame = CTkScrollableFrame(self.add_mid_frame, fg_color='transparent', width=550, height=800)
+        self.custom_frame = CTkScrollableFrame(self.add_mid_frame, fg_color='transparent', width=625, height=800)
         self.custom_frame.grid(row=0, column=0, sticky='w', pady=10, padx=10)
 
         self.custom_label = CTkLabel(self.custom_frame, text="Custom Properties", font=('Lato', 20))
@@ -227,9 +227,9 @@ class AddEntryPopup:
         self.property_container = PropertyContainer(self.custom_frame,
                                                     self.root,
                                                     self,
-                                                    width=250,
+                                                    width=300,
                                                     fg_color='transparent')
-        self.property_container.grid(row=1, column=0, columnspan=5, sticky='w')
+        self.property_container.grid(row=1, column=0, columnspan=6, sticky='w')
 
         self.property_container.create_properties()
 
@@ -435,6 +435,30 @@ class PropertyContainer(CTkFrame):
 
         return d
 
+    def move_property(self, offset: int, property_item):
+        new_index = min(max(self.property_widgets.index(property_item) + offset, 0), len(self.property_widgets)-1)
+
+        items = list(self.properties.items())
+
+        # Delete the original item so it can be reinserted at other index
+        i_to_del = -1
+        for i in range(0, len(items)):
+            if items[i][0] == property_item.property_name.get():
+                i_to_del = i
+        if i_to_del > -1:
+            items.pop(i_to_del)
+
+        items.insert(new_index, (property_item.property_name.get(), property_item.property_value.get()))
+
+        self.properties = {k: v for k, v in items}
+
+        for widget in self.property_widgets:
+            widget.property_frame.destroy()
+            del widget
+
+        self.property_widgets.clear()
+        self.create_properties()
+
     def add_property(self, name: str = 'New Property', value='Enter value'):
         new_item = PropertyItem(self, self.root, name, value, len(self.property_widgets))
         self.property_widgets.append(new_item)
@@ -474,7 +498,7 @@ class PropertyItem:
 
         # ===== Widget ===== #
 
-        self.property_frame = CTkFrame(self.master, fg_color='gray', width=500)
+        self.property_frame = CTkFrame(self.master, fg_color='gray')
         self.property_frame.pack(fill='x', anchor='w', padx=2, pady=2)
 
         self.property_name_entry = CTkEntry(self.property_frame, 
@@ -493,12 +517,28 @@ class PropertyItem:
 
         self.property_value_entry = CTkEntry(self.property_frame, 
                                              font=('Lato', 17), 
-                                             width=280,
+                                             width=240,
                                              textvariable=self.property_value)
         self.property_value_entry.grid(row=0, column=2, sticky='w', padx=3, pady=2)
         
         self.property_name.trace_add('write', self.on_property_update)
         self.property_value.trace_add('write', self.on_property_update)
+
+        self.move_up_button = CTkButton(self.property_frame,
+                                        text="^",
+                                        font=('Lato', 20),
+                                        width=35,
+                                        corner_radius=0,
+                                        command=self.move_property_up)
+        self.move_up_button.grid(row=0, column=3, sticky='w', padx=3, pady=5)
+
+        self.move_down_button = CTkButton(self.property_frame,
+                                          text="v",
+                                          font=('Lato', 20),
+                                          width=35,
+                                          corner_radius=0,
+                                          command=self.move_property_down)
+        self.move_down_button.grid(row=0, column=4, sticky='w', padx=3, pady=5)
 
         self.delete_button = CTkButton(self.property_frame,
                                        text="x",
@@ -507,10 +547,16 @@ class PropertyItem:
                                        text_color='red',
                                        fg_color='gray',
                                        command=self.delete_property)
-        self.delete_button.grid(row=0, column=3, sticky='w', padx=3, pady=5)
+        self.delete_button.grid(row=0, column=5, sticky='w', padx=3, pady=5)
 
     def delete_property(self):
         self.master.delete_property(self.property_name.get())
+
+    def move_property_up(self):
+        self.master.move_property(-1, self)
+
+    def move_property_down(self):
+        self.master.move_property(1, self)
 
     def on_property_update(self, *args):
         conditions = any((self.property_name.get() != self.og_property_name, 
