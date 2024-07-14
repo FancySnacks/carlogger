@@ -1,4 +1,4 @@
-from customtkinter import CTkFrame, CTkLabel
+from customtkinter import CTkFrame, CTkLabel, CTkScrollableFrame
 
 from carlogger.const import ITEM
 
@@ -93,6 +93,24 @@ class ComponentInfoBox(ItemInfoBox):
         self.item_ref = item_ref
         super().__init__(master, item_ref, **kwargs)
 
+        self.partlist_right_frame = CTkScrollableFrame(self.main_frame, fg_color='transparent', width=400)
+        self.partlist_right_frame.grid(row=0, column=4, sticky='w', pady=10, padx=10)
+
+        self.part_frame = CTkFrame(self.partlist_right_frame)
+        self.part_frame.grid(row=0, column=0, sticky='nsew')
+
+        self.create_part_list()
+
+    def create_part_list(self):
+        for part in self.item_ref.part_list:
+            new_value = CTkLabel(self.part_frame, text=f"* [{self._get_part_date(part)}] {part.name}", font=('Lato', 18))
+            new_value.grid(column=0, sticky='w', padx=20, pady=5)
+
+    def _get_part_date(self, part) -> str:
+        entry_id = part.parent_entry_id
+        entry = self.item_ref.get_entry_by_id(entry_id)
+        return entry.date
+
     def _get_item_properties(self):
         properties = self.item_ref.to_json().copy()
         if cpart := properties.get('current_part'):
@@ -102,4 +120,5 @@ class ComponentInfoBox(ItemInfoBox):
         properties.pop('log_entries')
         properties.pop('scheduled_log_entries')
         properties.pop('search_tags')
+        properties.pop('part_list')
         return properties.items()
