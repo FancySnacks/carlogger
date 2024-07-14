@@ -672,7 +672,7 @@ class ImportSubparser(Subparser):
                                 type=str)
 
     def add_nochild_arg(self):
-        for sp_name, sp_obj in list(self.import_parsers.choices.items())[1:]:
+        for sp_name, sp_obj in list(self.import_parsers.choices.items()):
             sp_obj.add_argument('--nochildren',
                                 help="Import item without child elements.",
                                 action='store_true')

@@ -243,7 +243,13 @@ class AppSession:
         match item_class_name:
             case 'car':
                 data = self.directory_manager.data_manager.load_file(path)
-                self.add_new_car(data)
+                new_car = self.add_new_car(data)
+
+                if not no_children and data.get('collections'):
+                    for coll in data['collections']:
+                        new_car.create_collection(coll)
+
+                self.directory_manager.update_car_directory(new_car)
             case 'collection':
                 car_name = parents.get('car')
                 car = self.get_car_by_name(car_name)
