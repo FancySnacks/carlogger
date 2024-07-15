@@ -45,6 +45,14 @@ class ComponentCollection:
     def children(self) -> list:
         return self.collections + self.components
 
+    @property
+    def parent(self) -> Car:
+        return self.car
+
+    @parent.setter
+    def parent(self, val):
+        self.car = val
+
     @staticmethod
     def filter_options() -> list[str]:
         return ['name', 'comp #', 'coll #', 'latest']

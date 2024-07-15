@@ -9,6 +9,7 @@ from carlogger.cli.arg_executor import ArgExecutor, AddArgExecutor, ReadArgExecu
 from carlogger.items.component_collection import ComponentCollection
 from carlogger.items.car_component import CarComponent
 from carlogger.items.log_entry import ScheduledLogEntry
+from carlogger.rename_agent import RenameAgent
 from carlogger.util import check_file_extension_validity, is_scheduled_entry
 
 
@@ -200,12 +201,16 @@ class AppSession:
 
         # Create new directory and copy items over when changing name of the car
         if 'name' in updated_data.keys():
+            car.name = updated_data['name']
             self.directory_manager.rename_car_dir(car, legacy_car_info_path)
         else:
             self.directory_manager.update_car_directory(car)
 
     def update_component_or_collection(self, parent_car: Car, item, updated_data: dict[str, ...]):
         self.directory_manager.remove_item(item)
+
+        if 'name' in updated_data.keys():
+            r = RenameAgent(item, updated_data['name'], self.directory_manager.data_manager)
 
         for key, value in updated_data.items():
             setattr(item, key, value)

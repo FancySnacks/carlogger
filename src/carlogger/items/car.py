@@ -22,7 +22,7 @@ class Car:
 
     def __post_init__(self):
         if self.path == "":
-            self._create_path()
+            self.path = self.get_target_path()
 
     def __getattr__(self, item):
         if item in self.__dict__.keys():
@@ -167,5 +167,5 @@ class Car:
     def to_json(self) -> dict:
         return self.car_info.to_json()
 
-    def _create_path(self):
-        self.path = create_car_dir_path(self.car_info.to_json())
+    def get_target_path(self, s=''):
+        return create_car_dir_path(self.car_info.to_json())
