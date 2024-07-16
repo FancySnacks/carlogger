@@ -100,7 +100,7 @@ class EditComponentPopup:
         self.parent_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
         self.parent_frame.grid(row=2, column=0, sticky='w', pady=10, columnspan=3, padx=10)
 
-        # Car
+        ## Car
         self.car_frame = CTkFrame(self.parent_frame, fg_color='transparent')
         self.car_frame.grid(row=0, column=0, sticky='w', pady=10)
 
@@ -108,9 +108,26 @@ class EditComponentPopup:
         self.car_label.grid(row=0, column=0, sticky='w')
 
         self.car_menu = CTkOptionMenu(self.car_frame,
-                                      values=[car.car_info.name for car in self.root.cars])
+                                      values=self.get_car_names(),
+                                      command=self.on_car_changed)
         self.car_menu.set(self.root.selected_car.car_info.name)
         self.car_menu.grid(row=1, column=0, sticky='w')
+
+        separator = CTkLabel(self.car_frame, text="->", font=('Lato', 20))
+        separator.grid(row=1, column=1, sticky='w', padx=10)
+
+        # Collection
+        self.collection_frame = CTkFrame(self.parent_frame, fg_color='transparent')
+        self.collection_frame.grid(row=0, column=1, sticky='w', pady=10)
+
+        self.collection_label = CTkLabel(self.collection_frame, text="Collection", font=('Lato', 20))
+        self.collection_label.grid(row=0, column=0, sticky='w')
+
+        self.collection_menu = CTkOptionMenu(self.collection_frame,
+                                             values=self.get_collection_names(),
+                                             command=self.on_collection_changed)
+        self.collection_menu.grid(row=1, column=0, sticky='w')
+        self.collection_menu.set(self.collection_ref.name)
 
         # ===== Custom Info ===== #
 
@@ -143,6 +160,25 @@ class EditComponentPopup:
         self.property_container.add_property()
         self.track_changes()
 
+    def get_collection_names(self) -> list[str]:
+        return [coll.name for coll in self.parent_car.collections]
+
+    def get_car_names(self) -> list[str]:
+        return [car.car_info.name for car in self.root.cars]
+
+    def on_car_changed(self, choice):
+        car_choice = choice
+        self.new_car = self.root.app_session.get_car_by_name(car_choice)
+        collection_names = [coll.name for coll in self.parent_car.collections]
+        self.collection_menu.configure(values=collection_names)
+        self.collection_menu.set(collection_names[0])
+        self.track_changes()
+
+    def on_collection_changed(self, choice):
+        coll_choice = choice
+        self.new_coll = self.parent_car.get_collection_by_name(coll_choice)
+        self.track_changes()
+
     def collect_changes(self):
         updated_data: dict = dict()
 
@@ -162,6 +198,11 @@ class EditComponentPopup:
         comp_data = self.collect_changes()
 
         self._reset_button()
+        try:
+            if self.new_coll != self.component_ref.parent:
+                comp_data['parent'] = self.new_coll
+        except Exception as e:
+            pass
         self.root.app_session.update_component_or_collection(self.parent_car, self.component_ref, comp_data)
 
     def track_changes(self, *args):
@@ -171,6 +212,14 @@ class EditComponentPopup:
             self._reset_button()
         else:
             self._enable_button()
+
+        try:
+            if self.new_coll != self.component_ref.parent:
+                self._enable_button()
+            else:
+                self._reset_button()
+        except Exception as e:
+            pass
 
     def _reset_button(self, *args):
         self.saveb_button.configure(state='disabled')

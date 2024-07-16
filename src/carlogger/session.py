@@ -209,6 +209,13 @@ class AppSession:
     def update_component_or_collection(self, parent_car: Car, item, updated_data: dict[str, ...]):
         self.directory_manager.remove_item(item)
 
+        if 'parent' in updated_data.keys():
+            old_parent = item.parent
+            old_parent.delete_component(item.name)
+            new_parent = updated_data.get('parent')
+            new_parent.components.append(item)
+            updated_data.pop('parent')
+
         if 'name' in updated_data.keys():
             r = RenameAgent(item, updated_data['name'], self.directory_manager.data_manager)
 
