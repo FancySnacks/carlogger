@@ -209,12 +209,7 @@ class AppSession:
     def update_component_or_collection(self, parent_car: Car, item, updated_data: dict[str, ...]):
         self.directory_manager.remove_item(item)
 
-        if 'parent' in updated_data.keys():
-            old_parent = item.parent
-            old_parent.delete_component(item.name)
-            new_parent = updated_data.get('parent')
-            new_parent.components.append(item)
-            updated_data.pop('parent')
+        self._reparent_item(updated_data, item)
 
         if 'name' in updated_data.keys():
             r = RenameAgent(item, updated_data['name'], self.directory_manager.data_manager)
@@ -223,6 +218,22 @@ class AppSession:
             setattr(item, key, value)
 
         self.directory_manager.update_car_directory(parent_car)
+        
+    def _reparent_item(self, data: dict, item_ref):
+        if 'parent' in data.keys():
+            match item_ref.__class__.__name__:
+                case 'ComponentCollection':
+                    old_parent = item_ref.car
+                    old_parent.delete_collection(item_ref.name)
+                    new_parent = data.get('parent')
+                    new_parent.collections.append(item_ref)
+                    data.pop('parent')
+                case _:
+                    old_parent = item_ref.parent
+                    old_parent.delete_component(item_ref.name)
+                    new_parent = data.get('parent')
+                    new_parent.components.append(item_ref)
+                    data.pop('parent')
 
     def update_entry(self, parent_car: Car, entry, updated_data: dict[str, ...]):
         """Update values of target entry and update the save file."""

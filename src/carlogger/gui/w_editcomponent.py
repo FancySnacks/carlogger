@@ -100,7 +100,7 @@ class EditComponentPopup:
         self.parent_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
         self.parent_frame.grid(row=2, column=0, sticky='w', pady=10, columnspan=3, padx=10)
 
-        ## Car
+        # Car
         self.car_frame = CTkFrame(self.parent_frame, fg_color='transparent')
         self.car_frame.grid(row=0, column=0, sticky='w', pady=10)
 
