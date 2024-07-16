@@ -583,6 +583,10 @@ class UpdateSubparser(Subparser):
                                                    help='Update collection name.',
                                                    type=str)
 
+        self.update_collection_parser.add_argument('--parent',
+                                                   help='Move collection to another car by specifying name ',
+                                                   type=str)
+
         # ===== UPDATE COMPONENT ===== #
 
         self.update_component_parser = self.update_subparsers.add_parser('component')
@@ -604,6 +608,11 @@ class UpdateSubparser(Subparser):
                                                   help='Update component name.',
                                                   type=str)
 
+        self.update_component_parser.add_argument('--parent',
+                                                  help='Move component to another collection by specifying name '
+                                                       '(from the same car).',
+                                                  type=str)
+
         # ===== UPDATE ENTRY ===== #
 
         self.update_entry_parser = self.update_subparsers.add_parser('entry')
@@ -619,6 +628,11 @@ class UpdateSubparser(Subparser):
                                               help="Parent car.",
                                               type=str,
                                               required=True)
+
+        self.update_component_parser.add_argument('--parent',
+                                                  help='Move component to another component by specifying name '
+                                                       '(from the same car).',
+                                                  type=str)
 
         self.update_entry_parser.add_argument('--desc',
                                               help='Short entry description.',
