@@ -162,7 +162,8 @@ class AddCollectionPopup:
             self.add_label.configure(text="There is missing information.")
             return
 
-        self.root.app_session.add_new_collection(self.car_menu.get(), coll_data['name'])
+        new_collection = self.root.app_session.add_new_collection(self.car_menu.get(), coll_data['name'])
+        new_collection.custom_info = coll_data.get('custom_info', {})
 
         self._post_entry_add()
 

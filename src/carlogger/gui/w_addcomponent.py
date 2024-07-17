@@ -447,8 +447,11 @@ class AddComponentPopup:
             self.add_label.configure(text="There is missing information.")
             return
 
-        self.root.app_session.add_new_component(self.parent_car.car_info.name, self.parent_collection.name,
-                                                comp_data['name'])
+        new_comp = self.root.app_session.add_new_component(self.parent_car.car_info.name,
+                                                           self.parent_collection.name,
+                                                           comp_data['name'])
+
+        new_comp.custom_info = comp_data.get('custom_info', {})
 
         self._post_entry_add()
 

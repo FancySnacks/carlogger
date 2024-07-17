@@ -91,17 +91,22 @@ class AppSession:
         car = self.get_car_by_name(car_name)
         self.directory_manager.update_car_directory(car)
 
-    def add_new_collection(self, car_name: str, collection_name: str):
+    def add_new_collection(self, car_name: str, collection_name: str) -> ComponentCollection:
         """Add new collection to specified car and update save directory."""
         car = self.get_car_by_name(car_name)
-        car.create_collection(collection_name)
+        new_collection = car.create_collection(collection_name)
         self.directory_manager.update_car_directory(car)
 
-    def add_new_nested_collection(self, car_name: str, collection_name: str, parent_collection_name: str):
+        return new_collection
+
+    def add_new_nested_collection(self, car_name: str, collection_name: str,
+                                  parent_collection_name: str) -> ComponentCollection:
         """Add new nested collection to specified car and parent collection and update save directory."""
         car = self.get_car_by_name(car_name)
-        car.create_nested_collection(collection_name, parent_collection_name)
+        new_nested_collection = car.create_nested_collection(collection_name, parent_collection_name)
         self.directory_manager.update_car_directory(car)
+
+        return new_nested_collection
 
     def delete_collection(self, car_name: str, collection_name: str):
         """Delete collection from target car by name."""
@@ -132,13 +137,15 @@ class AppSession:
                 self.delete_collection_children(car.car_info.name, ch)
             self.delete_collection(car.car_info.name, ch.name)
 
-    def add_new_component(self, car_name: str, collection_name: str, component_name: str):
+    def add_new_component(self, car_name: str, collection_name: str, component_name: str) -> CarComponent:
         """Add new collection to specified car and update save directory."""
         car = self.get_car_by_name(car_name)
         collection = car.get_collection_by_name(collection_name)
         new_comp = collection.create_component(component_name)
         new_comp.parent = collection
         self.directory_manager.update_car_directory(car)
+
+        return new_comp
 
     def delete_component(self, car_name: str, collection_name: str, component_name: str):
         """Delete component by name from target collection from specified car."""
