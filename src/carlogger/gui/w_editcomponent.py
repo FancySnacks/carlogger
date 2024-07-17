@@ -169,9 +169,12 @@ class EditComponentPopup:
     def on_car_changed(self, choice):
         car_choice = choice
         self.new_car = self.root.app_session.get_car_by_name(car_choice)
+        self.new_coll = self.new_car.collections[0]
+
         collection_names = [coll.name for coll in self.new_car.collections]
         self.collection_menu.configure(values=collection_names)
         self.collection_menu.set(collection_names[0])
+
         self.track_changes()
 
     def on_collection_changed(self, choice):
@@ -199,8 +202,9 @@ class EditComponentPopup:
 
         self._reset_button()
         try:
-            if self.new_coll != self.component_ref.parent:
+            if self.new_coll != self.component_ref.parent or self.new_car:
                 comp_data['parent'] = self.new_coll
+                comp_data['car'] = self.new_car
         except Exception as e:
             pass
         self.root.app_session.update_component_or_collection(self.parent_car, self.component_ref, comp_data)

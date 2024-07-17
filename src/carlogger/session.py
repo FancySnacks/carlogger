@@ -1,6 +1,8 @@
 """Class that combines everything together, the heart of the program"""
 import shutil
 
+from pathlib import Path
+
 from carlogger.gui.root_window import RootWindow
 from carlogger.directory_manager import DirectoryManager
 from carlogger.items.car import Car
@@ -237,10 +239,14 @@ class AppSession:
                     item_ref.parent.components.remove(item_ref)
                     new_parent.components.append(item_ref)
                     item_ref.parent = new_parent
+                    item_ref.path = Path(new_parent.path).parent.joinpath('components')
 
-                    new_path = item_ref.get_target_path(self.directory_manager.data_manager.suffix)
-                    item_ref.path = new_path
                     data.pop('parent')
+
+                    if car := data.get('car'):
+                        self.directory_manager.data_manager.save_file(item_ref)
+                        self.directory_manager.update_car_directory(car)
+                        data.pop('car')
 
                     return item_ref
 
