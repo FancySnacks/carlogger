@@ -1,4 +1,5 @@
 """Class that combines everything together, the heart of the program"""
+import shutil
 
 from carlogger.gui.root_window import RootWindow
 from carlogger.directory_manager import DirectoryManager
@@ -209,7 +210,7 @@ class AppSession:
     def update_component_or_collection(self, parent_car: Car, item, updated_data: dict[str, ...]):
         self.directory_manager.remove_item(item)
 
-        self._reparent_item(updated_data, item)
+        item = self._reparent_item(updated_data, item) or item
 
         if 'name' in updated_data.keys():
             r = RenameAgent(item, updated_data['name'], self.directory_manager.data_manager)
@@ -218,22 +219,30 @@ class AppSession:
             setattr(item, key, value)
 
         self.directory_manager.update_car_directory(parent_car)
-        
+
     def _reparent_item(self, data: dict, item_ref):
         if 'parent' in data.keys():
             match item_ref.__class__.__name__:
                 case 'ComponentCollection':
-                    old_parent = item_ref.car
-                    old_parent.delete_collection(item_ref.name)
-                    new_parent = data.get('parent')
-                    new_parent.collections.append(item_ref)
-                    data.pop('parent')
-                case _:
                     old_parent = item_ref.parent
-                    old_parent.delete_component(item_ref.name)
                     new_parent = data.get('parent')
-                    new_parent.components.append(item_ref)
+                    item_ref.parent = new_parent
+                    new_coll = new_parent.create_collection(item_ref.name)
+                    old_parent.delete_collection(item_ref.name)
                     data.pop('parent')
+                    return new_coll
+                case _:
+                    new_parent = data.get('parent')
+
+                    item_ref.parent.components.remove(item_ref)
+                    new_parent.components.append(item_ref)
+                    item_ref.parent = new_parent
+
+                    new_path = item_ref.get_target_path(self.directory_manager.data_manager.suffix)
+                    item_ref.path = new_path
+                    data.pop('parent')
+
+                    return item_ref
 
     def update_entry(self, parent_car: Car, entry, updated_data: dict[str, ...]):
         """Update values of target entry and update the save file."""

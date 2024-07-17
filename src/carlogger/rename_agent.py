@@ -7,18 +7,22 @@ class RenameAgent:
         self.data_manager = data_manager
         self.item_to_rename = item_to_rename
 
+        self.is_coll = item_to_rename.__class__.__name__ == 'ComponentCollection'
+
         try:
             children = item_to_rename.children
         except Exception as e:
             pass
 
-        old_files_to_del = [child.get_target_path(self.data_manager.suffix) for child in children]
+        if self.is_coll:
+            old_files_to_del = [child.get_target_path(self.data_manager.suffix) for child in children]
 
         item_to_rename.name = new_name
 
-
         self.update_children(children)
-        self.delete_old_files(old_files_to_del)
+
+        if self.is_coll:
+            self.delete_old_files(old_files_to_del)
 
         self.data_manager.save_file(item_to_rename)
 

@@ -169,7 +169,7 @@ class EditComponentPopup:
     def on_car_changed(self, choice):
         car_choice = choice
         self.new_car = self.root.app_session.get_car_by_name(car_choice)
-        collection_names = [coll.name for coll in self.parent_car.collections]
+        collection_names = [coll.name for coll in self.new_car.collections]
         self.collection_menu.configure(values=collection_names)
         self.collection_menu.set(collection_names[0])
         self.track_changes()

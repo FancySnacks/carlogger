@@ -22,14 +22,13 @@ class ItemInfoBox:
 
         self.create_general_info()
 
-        if self.item_ref.custom_info:
-            self.custom_left_frame = CTkFrame(self.main_frame)
-            self.custom_left_frame.grid(row=0, column=2, sticky='nsew', padx=50)
+        self.custom_left_frame = CTkFrame(self.main_frame)
+        self.custom_left_frame.grid(row=0, column=2, sticky='nsew', padx=50)
 
-            self.custom_right_frame = CTkScrollableFrame(self.main_frame, fg_color='transparent',)
-            self.custom_right_frame.grid(row=0, column=3, sticky='nsew')
+        self.custom_right_frame = CTkScrollableFrame(self.main_frame, fg_color='transparent',)
+        self.custom_right_frame.grid(row=0, column=3, sticky='nsew')
 
-            self.create_custom_info()
+        self.create_custom_info()
 
     def create_general_info(self):
         for key, val in self._get_item_properties():
@@ -51,8 +50,10 @@ class ItemInfoBox:
 
     def refresh_info(self):
         children = self.left_frame.winfo_children() + self.right_frame.winfo_children()
-        if self.item_ref.custom_info:
+        try:
             children += self.custom_left_frame.winfo_children() + self.custom_right_frame.winfo_children()
+        except Exception as e:
+            pass
 
         for child in children:
             child.destroy()

@@ -630,9 +630,9 @@ class UpdateSubparser(Subparser):
                                               required=True)
 
         self.update_entry_parser.add_argument('--parent',
-                                                  help='Move component to another component by specifying name '
-                                                       '(from the same car).',
-                                                  type=str)
+                                              help='Move component to another component by specifying name '
+                                                   '(from the same car).',
+                                              type=str)
 
         self.update_entry_parser.add_argument('--desc',
                                               help='Short entry description.',
