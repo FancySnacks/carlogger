@@ -1,5 +1,5 @@
 """Class that combines everything together, the heart of the program"""
-import shutil
+import os
 
 from pathlib import Path
 
@@ -226,13 +226,17 @@ class AppSession:
         if 'parent' in data.keys():
             match item_ref.__class__.__name__:
                 case 'ComponentCollection':
-                    old_parent = item_ref.parent
                     new_parent = data.get('parent')
+
+                    new_parent.collections.append(item_ref)
+                    item_ref.parent.collections.remove(item_ref)
                     item_ref.parent = new_parent
-                    new_coll = new_parent.create_collection(item_ref.name)
-                    old_parent.delete_collection(item_ref.name)
+                    item_ref.path = Path(new_parent.path).joinpath('collections')
+
+                    self._reparent_child_elements(item_ref)
+
                     data.pop('parent')
-                    return new_coll
+
                 case _:
                     new_parent = data.get('parent')
 
@@ -249,6 +253,23 @@ class AppSession:
                         data.pop('car')
 
                     return item_ref
+
+    def _reparent_child_elements(self, item_ref):
+        to_del = []
+        for comp in item_ref.components:
+            to_del.append(comp.get_target_path(self.directory_manager.data_manager.suffix))
+            self._reparent_item({'parent': item_ref}, comp)
+
+        for coll in item_ref.collections:
+            to_del.append(coll.get_target_path(self.directory_manager.data_manager.suffix))
+            self._reparent_item({'parent': item_ref.car}, coll)
+
+        for pa in to_del:
+            os.remove(pa)
+
+        self.directory_manager.update_car_directory(item_ref.car)
+
+        return item_ref
 
     def update_entry(self, parent_car: Car, entry, updated_data: dict[str, ...]):
         """Update values of target entry and update the save file."""

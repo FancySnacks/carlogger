@@ -118,12 +118,17 @@ class ComponentInfoBox(ItemInfoBox):
 
     def _get_item_properties(self):
         properties = self.item_ref.to_json().copy()
-        if cpart := properties.get('current_part'):
-            properties['current_part'] = cpart['name']
-        properties.pop('custom_info')
-        properties.pop('type')
-        properties.pop('log_entries')
-        properties.pop('scheduled_log_entries')
-        properties.pop('search_tags')
-        properties.pop('part_list')
+
+        try:
+            if cpart := properties.get('current_part'):
+                properties['current_part'] = cpart['name']
+            properties.pop('custom_info')
+            properties.pop('type')
+            properties.pop('log_entries')
+            properties.pop('scheduled_log_entries')
+            properties.pop('search_tags')
+            properties.pop('part_list')
+        except Exception as e:
+            pass
+
         return properties.items()
