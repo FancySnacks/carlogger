@@ -65,7 +65,24 @@ class NavigationBar(CTkFrame):
         self.nav_widgets = self.nav_widgets[:item_index + 1]
         self.nav_items = self.nav_items[:(item_index // 2) + 1]
         self.current_item = self.nav_items[-1] if self.nav_items else None
-        self.go_to(self.current_item)
+        self._go_to(self.current_item)
+
+    def go_to_page_at_index(self, index: int = 0):
+        index = index + 1
+        if self.nav_widgets[index].item_ref == self.current_item:
+            return
+
+        if len(self.nav_items) < 2:
+            return
+
+        for widget in self.nav_widgets[index + 1:]:
+            widget.button.grid_forget() if isinstance(widget, NavItem) else widget.separator.grid_forget()
+            widget.destroy()
+
+        self.nav_widgets = self.nav_widgets[:index + 1]
+        self.nav_items = self.nav_items[:(index // 2) + 1]
+        self.current_item = self.nav_items[-1] if self.nav_items else None
+        self._go_to(self.current_item)
 
     def go_back(self):
         if len(self.nav_widgets) <= 3:
@@ -81,7 +98,7 @@ class NavigationBar(CTkFrame):
 
         self.go_to_previous_page(c)
 
-    def go_to(self, item_ref):
+    def _go_to(self, item_ref):
         if item_ref is None:
             self.root.go_to_homepage()
 

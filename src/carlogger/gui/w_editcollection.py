@@ -177,6 +177,9 @@ class EditCollectionPopup:
             pass
         self.root.app_session.update_component_or_collection(self.parent_car, self.collection_ref, coll_data)
 
+        self.close_menu()
+        self.root.navigation.go_to_page_at_index(1)
+
     def track_changes(self, *args):
         changed_data = self.collect_changes()
 
