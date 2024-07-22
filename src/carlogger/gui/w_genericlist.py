@@ -5,8 +5,12 @@ from typing import Callable
 
 from carlogger.const import ITEM
 
+from carlogger.gui.const_gui import get_img_from_path, collection_icon
+
 
 class ContainerItem(ABC):
+    image = collection_icon
+
     def __init__(self, master, item_ref: ITEM, column: int, row=0, **kwargs):
         self.master = master
         self.item_ref = item_ref
@@ -31,8 +35,15 @@ class ContainerItem(ABC):
                                 width=250,
                                 height=175,
                                 text='',
+                                image=self.get_item_image(),
                                 command=self.go_to)
         self.button.grid(row=1, column=0, padx=5, pady=5, sticky='nsew')
+
+    def get_item_image(self):
+        if img := self.item_ref.custom_info.get('image'):
+            return get_img_from_path(img)
+        else:
+            return self.image
 
     def go_to(self):
         self.master.go_to(self.item_ref)

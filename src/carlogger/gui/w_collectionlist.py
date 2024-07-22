@@ -2,11 +2,13 @@ from customtkinter import CTkFrame, CTkButton
 
 from carlogger.gui.w_deletion_confirmation import DeletionConfirmation
 from carlogger.gui.w_genericlist import Container, ContainerItem
+from carlogger.gui.const_gui import collection_icon
+
 from carlogger.const import ITEM
 
 
 class CollectionItem(ContainerItem):
-    pass
+    image = collection_icon
 
 
 class CollectionContainer(Container):
@@ -35,7 +37,7 @@ class CollectionContainer(Container):
         self.del_button.grid(row=0, column=1, sticky='w', padx=5)
 
     def add_item(self, item_ref: ITEM, widget_item_class=CollectionItem):
-        super().add_item(item_ref)
+        super().add_item(item_ref, widget_item_class)
 
     def attempt_delete(self):
         if len(self.item_page_ref.item_ref.children) > 0:

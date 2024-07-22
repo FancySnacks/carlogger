@@ -1,7 +1,11 @@
 from customtkinter import CTkFrame, CTkLabel, CTkButton
 
+from carlogger.gui.const_gui import car_icon, get_img_from_path
+
 
 class CarCard(CTkFrame):
+    image = car_icon
+
     def __init__(self, master, car, row=0, col=0, **values):
         super().__init__(master, **values)
         self.master: CarFrame = master
@@ -27,8 +31,15 @@ class CarCard(CTkFrame):
                                 width=250,
                                 height=175,
                                 text='',
-                                command=self.go_to_car)
+                                command=self.go_to_car,
+                                image=self.get_item_image())
         self.button.grid(row=1, column=0, padx=5, pady=5, sticky='nsew')
+
+    def get_item_image(self):
+        if img := self.car.custom_info.get('image'):
+            return get_img_from_path(img)
+        else:
+            return self.image
 
     def go_to_car(self):
         self.master.go_to_car(self.car)
