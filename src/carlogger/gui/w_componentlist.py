@@ -3,7 +3,7 @@ from customtkinter import CTkFrame, CTkButton
 from carlogger.gui.w_deletion_confirmation import DeletionConfirmation
 from carlogger.gui.w_genericlist import Container, ContainerItem
 
-from carlogger.gui.const_gui import component_icon
+from carlogger.gui.const_gui import component_icon, collection_icon
 
 from carlogger.const import ITEM
 
@@ -13,6 +13,8 @@ class ComponentItem(ContainerItem):
 
 
 class ComponentContainer(Container):
+    image = collection_icon
+
     def __init__(self, master, root, go_to_func, add_widget_func, item_page_ref, **kwargs):
         super().__init__(master, root, go_to_func, add_widget_func, item_page_ref, **kwargs)
 

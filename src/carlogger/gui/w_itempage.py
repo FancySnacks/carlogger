@@ -6,6 +6,7 @@ from carlogger.gui.w_collectionlist import CollectionContainer
 from carlogger.gui.w_componentlist import ComponentContainer
 from carlogger.gui.w_item_infobox import ItemInfoBox, CollectionInfoBox, ComponentInfoBox
 from carlogger.gui.w_itemlist import ItemContainer
+from carlogger.gui.const_gui import component_icon
 
 
 class ItemPage:
@@ -19,7 +20,7 @@ class ItemPage:
 
         self.main_frame.grid_columnconfigure(0, weight=1)
 
-        self.item_info_box = itembox_widget(self.main_frame, item_ref)
+        self.item_info_box = itembox_widget(self.main_frame, item_ref, image=container.image)
 
         self.container = container(self.main_frame,
                                    root=root,
@@ -56,7 +57,7 @@ class ComponentPage:
 
         self.main_frame.grid_columnconfigure(0, weight=1)
 
-        self.item_info_box = self.itembox_widget(self.main_frame, item_ref)
+        self.item_info_box = self.itembox_widget(self.main_frame, item_ref, image=component_icon)
 
         self.item_container = ItemContainer(self.main_frame, parent_car=None, root=root, component=self.item_ref,
                                             item_page_ref=self)

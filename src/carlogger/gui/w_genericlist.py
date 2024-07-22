@@ -81,6 +81,8 @@ class DummyContainerItem(ABC):
 
 
 class Container(CTkFrame, ABC):
+    image = collection_icon
+
     def __init__(self, master, root, go_to_func: Callable, add_widget_func: Callable, item_page_ref=None, **kwargs):
         super().__init__(master, **kwargs)
         self.master = master

@@ -4,9 +4,10 @@ from carlogger.const import ITEM
 
 
 class ItemInfoBox:
-    def __init__(self, master, item_ref: ITEM, **kwargs):
+    def __init__(self, master, item_ref: ITEM, image, **kwargs):
         self.master = master
         self.item_ref = item_ref
+        self.image = image
 
         # ===== Widget ===== #
 
@@ -14,19 +15,22 @@ class ItemInfoBox:
         self.main_frame = CTkFrame(self.master, bg_color='transparent', height=200, fg_color='transparent')
         self.main_frame.grid(row=0, column=0, sticky='nsew', padx=5, pady=10)
 
+        self.image = CTkLabel(self.main_frame, image=self.image, text="")
+        self.image.grid(row=0, column=0, sticky='w')
+
         self.left_frame = CTkFrame(self.main_frame)
-        self.left_frame.grid(row=0, column=0, sticky='nsew')
+        self.left_frame.grid(row=0, column=1, sticky='nsew')
 
         self.right_frame = CTkFrame(self.main_frame)
-        self.right_frame.grid(row=0, column=1, sticky='nsew')
+        self.right_frame.grid(row=0, column=2, sticky='nsew')
 
         self.create_general_info()
 
         self.custom_left_frame = CTkFrame(self.main_frame)
-        self.custom_left_frame.grid(row=0, column=2, sticky='nsew', padx=50)
+        self.custom_left_frame.grid(row=0, column=3, sticky='nsew', padx=50)
 
         self.custom_right_frame = CTkScrollableFrame(self.main_frame, fg_color='transparent',)
-        self.custom_right_frame.grid(row=0, column=3, sticky='nsew')
+        self.custom_right_frame.grid(row=0, column=4, sticky='nsew')
 
         self.create_custom_info()
 
@@ -94,12 +98,13 @@ class CollectionInfoBox(ItemInfoBox):
 
 
 class ComponentInfoBox(ItemInfoBox):
-    def __init__(self, master, item_ref: ITEM, **kwargs):
+    def __init__(self, master, item_ref: ITEM, image, **kwargs):
+        self.image = image
         self.item_ref = item_ref
-        super().__init__(master, item_ref, **kwargs)
+        super().__init__(master, item_ref, image, **kwargs)
 
         self.partlist_right_frame = CTkScrollableFrame(self.main_frame, fg_color='transparent', width=400)
-        self.partlist_right_frame.grid(row=0, column=4, sticky='w', pady=10, padx=50)
+        self.partlist_right_frame.grid(row=0, column=5, sticky='w', pady=10, padx=50)
 
         self.part_frame = CTkFrame(self.partlist_right_frame)
         self.part_frame.grid(row=0, column=0, sticky='nsew')
