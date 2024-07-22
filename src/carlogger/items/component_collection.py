@@ -92,6 +92,8 @@ class ComponentCollection:
         if not self._check_for_component_duplicates(name):
             new_component = CarComponent(name, custom_info=kwargs, path=self.path.parent.joinpath('components'))
             new_component.parent = self
+            new_component.current_mileage = self.car.mileage
+
             self.components.append(new_component)
 
             Printer.print_msg(new_component,

@@ -423,18 +423,18 @@ class AddComponentPopup:
         self.parent_collection = self.parent_car.get_collection_by_name(coll_choice)
 
     def collect_changes(self):
-        updated_data: dict = dict()
+        comp_data: dict = dict()
 
         name = self.name_entry.get()
         if name:
-            updated_data['name'] = name
+            comp_data['name'] = name
             self.name_entry.configure(border_color='')
         else:
             self.name_entry.configure(border_color='red')
 
-        updated_data['custom_info'] = self.property_container.get_properties()
+        comp_data['custom_info'] = self.property_container.get_properties()
 
-        return updated_data
+        return comp_data
 
     def _has_all_necessary_fields(self, values: dict) -> bool:
         keys = list(values.keys())
