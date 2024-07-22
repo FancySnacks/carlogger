@@ -161,7 +161,13 @@ class AppSession:
         car = self.get_car_by_name(car_name)
         collection = car.get_collection_by_name(collection_name)
         component = collection.get_component_by_name(component_name)
-        component.create_entry(entry_data)
+
+        new_entry_id = component.create_entry(entry_data)
+        new_entry = component.get_entry_by_id(new_entry_id)
+
+        if component.car_mileage_needs_update(new_entry):
+            self.update_car_info(car, {'mileage': new_entry.mileage})
+
         self.directory_manager.update_car_directory(car)
 
     def add_new_scheduled_entry(self, car_name: str, collection_name: str, component_name: str, entry_data: dict):
@@ -169,7 +175,13 @@ class AppSession:
         car = self.get_car_by_name(car_name)
         collection = car.get_collection_by_name(collection_name)
         component = collection.get_component_by_name(component_name)
-        component.create_scheduled_entry(entry_data)
+
+        new_entry_id = component.create_scheduled_entry(entry_data)
+        new_entry = component.get_entry_by_id(new_entry_id)
+
+        if component.car_mileage_needs_update(new_entry):
+            self.update_car_info(car, {'mileage': new_entry.mileage})
+
         self.directory_manager.update_car_directory(car)
 
     def delete_entry_by_index(self, car_name: str, component_name: str, entry_index: int):
