@@ -19,6 +19,10 @@ component_icon = CTkImage(light_image=component_png,
                           size=(165, 165))
 
 
-def get_img_from_path(path) -> CTkImage:
+def get_img_from_path(path, item) -> CTkImage:
+    try:
         img = Image.open(path)
-        return CTkImage(light_image=img, dark_image=img, size=(165, 165))
+    except OSError:
+        return item.image
+
+    return CTkImage(light_image=img, dark_image=img, size=(165, 165))

@@ -41,7 +41,7 @@ class ContainerItem(ABC):
 
     def get_item_image(self):
         if img := self.item_ref.custom_info.get('image'):
-            return get_img_from_path(img)
+            return get_img_from_path(img, self)
         else:
             return self.image
 
