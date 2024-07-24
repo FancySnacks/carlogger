@@ -156,7 +156,12 @@ class DateFilterWorker(FilterWorker):
 class IDFilterWorker(FilterWorker):
     @classmethod
     def eq(cls, item: ITEM, key: str, val: str) -> bool:
-        if getattr(item, 'id') == val:
+        item_val = getattr(item, 'id')
+
+        if len(val) == 8:
+            item_val = item_val[:8:]
+
+        if item_val == val:
             return True
         else:
             return False
