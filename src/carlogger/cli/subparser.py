@@ -394,6 +394,20 @@ class DeleteSubparser(Subparser):
             sp_obj.add_argument('--clear', action='store_true',
                                 help="Clear children inside of specified item, instead of deleting the item itself.")
 
+    def add_filter_parser(self):
+        for sp_name, sp_obj in list(self.delete_subparsers.choices.items()):
+            sp_obj.add_argument('--filter',
+                                type=str,
+                                help="Additional filter options stored as list.\n"
+                                     "Pass arguments as string 'key=value' pairs, separated by commas.\n"
+                                     "Supports operands: '=' (equal), '<', '>', '<=' '>='\n"
+                                     "Example: --filter 'date=01-01-2000' 'mileage<1000'\n"
+                                     "Also supports value ranges, ex.: 'key=lower-upper'",
+                                metavar='FILTER OPTIONS',
+                                dest='filters',
+                                nargs='*',
+                                default=['*'])
+
     def create_subparser(self):
         self.delete_parser = self.parser_parent.subparsers.add_parser('delete',
                                                                       help="Delete specified car, collection, component or log entry.",
@@ -470,25 +484,21 @@ class DeleteSubparser(Subparser):
 
         self.delete_entry_parser = self.delete_subparsers.add_parser('entry')
 
-        self.delete_entry_parser.add_argument('-id',
-                                              '--id',
-                                              metavar="ID/INDEX",
-                                              help="Pass unique entry ID or it's index number in a component.\n"
-                                                   "When deleting via index it's mandatory to specify parent component.",
-                                              type=str,
-                                              required=True)
-
         self.delete_entry_parser.add_argument('--car',
                                               metavar="CAR_NAME",
                                               type=str,
                                               required=True)
 
-        self.delete_entry_parser.add_argument('--component',
-                                              metavar="COMPONENT_NAME",
-                                              help="Not mandatory, only used when deleting entry by index number.",
+        self.delete_entry_parser.add_argument('--index',
+                                              metavar="INDEX",
+                                              help="Not mandatory, only used when deleting entry by index number "
+                                                   "(latest to oldest).\n"
+                                                   "Stating 'parent=component_name' information in "
+                                                   "filter options is required.",
                                               type=str)
 
         self.add_clear_parser()
+        self.add_filter_parser()
 
 
 class UpdateSubparser(Subparser):

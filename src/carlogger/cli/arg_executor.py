@@ -58,7 +58,7 @@ class DeleteArgExecutor(ArgExecutor):
             car = self.app_session.get_car_by_name(car_name)
             self.app_session.delete_car_children(car)
         elif any([self._check_if_car_is_empty(car_name),
-                self.parsed_args.get('forced')]):
+                  self.parsed_args.get('forced')]):
             self.app_session.delete_car(car_name)
         else:
             print(f"ERROR: '{car_name}' cannot be removed because it's not empty!")
@@ -72,7 +72,7 @@ class DeleteArgExecutor(ArgExecutor):
             coll_to_clear = car.get_collection_by_name(collection_name)
             self.app_session.delete_collection_children(car_name, coll_to_clear)
         elif any([self._check_if_collection_is_empty(collection_name, car_name),
-            self.parsed_args.get('forced')]):
+                  self.parsed_args.get('forced')]):
             self.app_session.delete_collection(car_name, collection_name)
         else:
             print(f"ERROR: '{collection_name}' cannot be removed because it's not empty!")
@@ -87,35 +87,44 @@ class DeleteArgExecutor(ArgExecutor):
             comp_to_clear = car.get_component_by_name(component_name)
             self.app_session.delete_component_children(comp_to_clear, car)
         elif any([self._check_if_component_is_empty(component_name, car_name),
-            self.parsed_args.get('forced')]):
+                  self.parsed_args.get('forced')]):
             self.app_session.delete_component(car_name, collection_name, component_name)
         else:
             print(f"ERROR: '{component_name}' cannot be removed because it's not empty!")
 
     def delete_entry(self):
-        car_name = self.parsed_args['car']
-        entry = self.parsed_args['id']
+        car_name = self.parsed_args.get('car')
+        car = self.app_session.get_car_by_name(car_name)
+        entries: list[LogEntry] = car.get_all_entry_logs(include_scheduled=True)
+        filters = self.parsed_args.get('filters')
 
-        match self._get_entry_delete_method(entry):
-            case 'index':
-                component_name = self.parsed_args.get('component')
+        # Filter entries
+        if filters[0] != '*':
+            item_filter = ItemFilter()
+            entries = item_filter.filter_items(entries, filters)
 
-                if not component_name:
-                    print(f"ERROR: Could not delete entry of index '{entry}' because you have not specified which "
-                          f"component it belongs to")
-                    return
+        # Delete by index
+        if n := self.parsed_args.get('index'):
+            print('aaa')
+            component_name = self._get_parent(filters)
+            if component_name == '':
+                print(f"ERROR: Could not delete entry of index '{n}' because you have not specified which "
+                      f"parent component it belongs to.\nAdd 'parent=parent_name' filter flag.")
+                return
+            else:
+                self.app_session.delete_entry_by_index(car_name, component_name, int(n))
+                return
 
-                self.app_session.delete_entry_by_index(car_name, component_name, int(entry))
+        for entry in entries:
+            self.app_session.delete_entry_by_id(car_name, entry.id)
 
-            case 'id':
-                self.app_session.delete_entry_by_id(car_name, entry)
-
-    def _get_entry_delete_method(self, entry_arg: str) -> str:
-        if entry_arg.isdigit():
-            return 'index'
-
-        if is_valid_entry_id(entry_arg):
-            return 'id'
+    def _get_parent(self, filters: list[str]):
+        for filter_str in filters:
+            words = filter_str.split('=')
+            print(words)
+            if words[0] == 'parent':
+                return words[-1]
+        return ''
 
     def _recognize_context(self):
         """See which item user wants to delete."""

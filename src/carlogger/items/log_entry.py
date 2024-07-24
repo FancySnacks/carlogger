@@ -32,6 +32,10 @@ class LogEntry:
     def id(self) -> str:
         return self._id
 
+    @property
+    def parent(self) -> CarComponent:
+        return self.component
+
     def filter_options(self) -> list[str]:
         return ['id', 'desc', 'date', 'component', 'category', 'mileage'] + list(self.custom_info.keys())
 

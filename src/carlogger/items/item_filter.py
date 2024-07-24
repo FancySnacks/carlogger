@@ -23,7 +23,10 @@ class FilterWorker(ABC):
             case '>=':
                 return cls.gt_eq(item, key, value)
             case ' ':
-                return cls.range(item, key, cls._range_to_tuple(value))
+                if key == 'parent':
+                    return cls.eq(item, key, value)
+                else:
+                    return cls.range(item, key, cls._range_to_tuple(value))
             case _:
                 return False
 
@@ -107,6 +110,35 @@ class AttribFilterWorker(FilterWorker):
             return True
         else:
             return False
+
+
+class ParentFilterWorker(FilterWorker):
+    @classmethod
+    def eq(cls, item: ITEM, key: str, val: str) -> bool:
+        if getattr(item, key).name == val:
+            return True
+        else:
+            return False
+
+    @classmethod
+    def gt(cls, item: ITEM, key: str, val: str) -> bool:
+        raise ValueError("Parent Filter method does not support '>' operand")
+
+    @classmethod
+    def lt(cls, item: ITEM, key: str, val: str) -> bool:
+        raise ValueError("Parent Filter method does not support '<' operand")
+
+    @classmethod
+    def gt_eq(cls, item: ITEM, key: str, val: str) -> bool:
+        raise ValueError("Parent Filter method does not support '>=' operand")
+
+    @classmethod
+    def lt_eq(cls, item: ITEM, key: str, val: str) -> bool:
+        raise ValueError("Parent Filter method does not support '<=' operand")
+
+    @classmethod
+    def range(cls, item: ITEM, key: str, val_range: tuple[str, str]) -> bool:
+        raise ValueError("Parent Filter method does not support '>' operand")
         
 
 class DateFilterWorker(FilterWorker):
@@ -207,6 +239,7 @@ class ItemFilter:
         match filter_values[0]:
             case 'date': return DateFilterWorker.apply_filter(item, *filter_values)
             case 'id': return IDFilterWorker.apply_filter(item, *filter_values)
+            case 'parent': return ParentFilterWorker.apply_filter(item, *filter_values)
             case _: return AttribFilterWorker.apply_filter(item, *filter_values)
 
     def _get_filter_values(self, filter_str: str):
