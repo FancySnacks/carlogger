@@ -61,6 +61,11 @@ class ReadSubparser(Subparser):
                                 nargs='*',
                                 default=['*'])
 
+    def add_count_parser(self):
+        for sp_name, sp_obj in self.read_subparsers.choices.items():
+            sp_obj.add_argument('--count', type=int, metavar="MAX COUNT",
+                                help="Max amount of displayed entries, applied after filters.")
+
     def create_subparser(self):
         self.read_parser = self.parser_parent.subparsers.add_parser('read',
                                                                     help="Return car info, collection/component list"
@@ -126,6 +131,7 @@ class ReadSubparser(Subparser):
 
         self.add_sort_parser()
         self.add_filter_parser()
+        self.add_count_parser()
 
 
 class AddSubparser(Subparser):

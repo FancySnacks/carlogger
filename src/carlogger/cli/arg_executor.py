@@ -348,6 +348,9 @@ class ReadArgExecutor(ArgExecutor):
         sort_key = self.args.get('sort') or 'latest'
         reverse_sort = self.args.get('reverse')
 
+        if n := self.args.get('count'):
+            entries = entries[:n:]
+
         # Sort Entries
 
         if sort_key and len(entries) > 0:
