@@ -221,7 +221,7 @@ class IDFilterWorker(FilterWorker):
 
 class ItemFilter:
     def filter_items(self, item_list: list[ITEM], filters: list[str]) -> list[ITEM]:
-        if filters[0] == '*':
+        if '*' in filters:
             return item_list
 
         end_item_list = []

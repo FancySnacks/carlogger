@@ -95,8 +95,13 @@ class DeleteArgExecutor(ArgExecutor):
     def delete_entry(self):
         car_name = self.parsed_args.get('car')
         car = self.app_session.get_car_by_name(car_name)
-        entries: list[LogEntry] = car.get_all_entry_logs(include_scheduled=True)
         filters = self.parsed_args.get('filters')
+        component_name = self._get_parent(filters)
+
+        if component_name == '':
+            entries: list[LogEntry] = car.get_all_entry_logs(include_scheduled=True)
+        else:
+            entries: list[LogEntry] = car.get_component_by_name(component_name).children
 
         # Filter entries
         if filters[0] != '*':
@@ -105,8 +110,6 @@ class DeleteArgExecutor(ArgExecutor):
 
         # Delete by index
         if n := self.parsed_args.get('index'):
-            print('aaa')
-            component_name = self._get_parent(filters)
             if component_name == '':
                 print(f"ERROR: Could not delete entry of index '{n}' because you have not specified which "
                       f"parent component it belongs to.\nAdd 'parent=parent_name' filter flag.")
