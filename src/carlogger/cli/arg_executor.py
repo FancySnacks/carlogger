@@ -17,6 +17,7 @@ from carlogger.items.component_collection import ComponentCollection
 from carlogger.items.car_component import CarComponent
 from carlogger.items.log_entry import LogEntry
 from carlogger.items.entryfilter import EntryFilter
+from carlogger.items.item_filter import ItemFilter
 from carlogger.items.item_sorter import ItemSorter
 from carlogger.util import is_valid_entry_id, sort_key_is_attrib
 
@@ -332,54 +333,37 @@ class ReadArgExecutor(ArgExecutor):
 
     def get_entries(self):
         """Return list of log entries of cached car."""
-        entries = self.args.get('data') or []
-        entries: list[str] = list(set(entries))
-
-        loaded_entries: list[LogEntry] = []
-
         car_name = self.args.get('car')
         car = self.app.get_car_by_name(car_name)
+        entries: list[LogEntry] = car.get_all_entry_logs(include_scheduled=True)
 
-        entry_filter = EntryFilter()
-        entries = self._clamp_cli_entries(entries)
+        # Filter Entries
 
-        all_car_entries = car.get_all_entry_logs(include_scheduled=True)
-        filtered_entries = entry_filter.apply_filters_to_entry_list(entries, all_car_entries)
-        #print(entry_filter.filters)
+        filters = self.args.get('filters')
 
-        for entry in filtered_entries:
-            loaded_entries.append(entry)
-
-        loaded_entries = list(set(loaded_entries))
+        if filters[0] != '*':
+            item_filter = ItemFilter()
+            entries = item_filter.filter_items(entries, filters)
 
         sort_key = self.args.get('sort') or 'latest'
         reverse_sort = self.args.get('reverse')
-        if sort_key:
-            if sort_key_is_attrib(sort_key, loaded_entries[0]):
-                item_sorter = ItemSorter(items=loaded_entries, sort_method=sort_key)
-                loaded_entries = item_sorter.get_sorted_list(reverse_order=reverse_sort)
-            else:
-                item_sorter = ItemSorter(items=loaded_entries, sort_method=sort_key)
-                loaded_entries = item_sorter.get_sorted_list(reverse_order=reverse_sort)
 
-        self.print_entries(loaded_entries)
+        # Sort Entries
+
+        if sort_key and len(entries) > 0:
+            if sort_key_is_attrib(sort_key, entries[0]):
+                item_sorter = ItemSorter(items=entries, sort_method=sort_key)
+                entries = item_sorter.get_sorted_list(reverse_order=reverse_sort)
+            else:
+                item_sorter = ItemSorter(items=entries, sort_method=sort_key)
+                entries = item_sorter.get_sorted_list(reverse_order=reverse_sort)
+
+        self.print_entries(entries)
 
     def print_entries(self, entries: list[LogEntry]):
         """Print desired entries."""
         for entry in entries:
             print(entry.get_formatted_info())
-
-    def _clamp_cli_entries(self, entries: list[str]) -> list[str]:
-        if not entries:
-            entries.append('*')
-            return entries
-
-        if len(entries) == 1:
-            match = EntryFilter.count_flag_exists_in_arg_list(entries)
-            if len(match) > 0:
-                return ['*', match[0]]
-
-        return entries
 
 
 class UpdateArgExecutor(ArgExecutor):

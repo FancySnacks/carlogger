@@ -35,13 +35,17 @@ class LogEntry:
     def filter_options(self) -> list[str]:
         return ['id', 'desc', 'date', 'component', 'category', 'mileage'] + list(self.custom_info.keys())
 
+    def get_shortened_id(self) -> str:
+        div_index = self.id.find('-')
+        return self.id[:div_index:]
+
     def to_json(self) -> dict:
         return self.__dict__()
 
     def get_formatted_info(self) -> str:
         """Return well-formatted string representing data of this class."""
-        return f"[{self.date}] {self.desc} [Mileage: {self.mileage}] " \
-               f"[Type: {self.category}] [{self.id}]"
+        desc = self.desc.replace('\n', ' ')
+        return f"[{self.date}] [{self.get_shortened_id()}] {desc} [Mileage: {self.mileage}] [Type: {self.category}]"
 
     def __dict__(self) -> dict:
         d = {
