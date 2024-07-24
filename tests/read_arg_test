@@ -1,7 +1,7 @@
 carlogger read car CarTestPytest
 carlogger read collection Engine --car CarTestPytest
 carlogger read collection "Turbocharger" --car CarTestPytest
-carlogger read component "Spark_Plug" --car CarTestPytest
-carlogger read collection '*' --car CarTestPytest
-carlogger read component '*' --car CarTestPytest
+carlogger read component --car CarTestPytest --filter "name="Spark Plug"
+carlogger read collection --car CarTestPytest
+carlogger read component --car CarTestPytest
 carlogger read entry --car CarTestPytest

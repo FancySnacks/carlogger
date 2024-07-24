@@ -90,8 +90,7 @@ def test_arg_executor_creates_new_entry(directory_manager, add_cmd):
 # ===== Read ===== #
 
 def test_arg_executor_outputs_car(capsys, directory_manager, read_cmd):
-    expected_out = """\n=== CarTestPytest ===\nmanufacturer: Skoda \nmodel: Roomster \nyear: 2002 \nmileage: 198000 \nname: CarTestPytest \ncustom_info: {} \n\n[COLLECTION]
- Engine (1 Components | 0 Nested Collections)\n\n"""
+    expected_out = """=== CarTestPytest ===manufacturer: Skoda model: Roomster year: 2002 mileage: 198000 name: CarTestPytest custom_info: {} [COLLECTION] Engine (1 Components | 0 Nested Collections)"""
 
     args = read_cmd['car']
 
@@ -278,10 +277,7 @@ def test_arg_executor_deletes_entry(directory_manager, delete_cmd):
     car_name = args[args.index('--car')+1]
     car = session.get_car_by_name(car_name)
 
-    comp_name = args[args.index('--component')+1]
-    component = car.get_component_by_name(comp_name)
-
-    assert len(component.log_entries) == 0
+    assert len(car.get_all_components()[0].log_entries) == 0
 
 
 def test_arg_executor_deletes_component(directory_manager, delete_cmd):

@@ -1,4 +1,4 @@
-carlogger delete entry --id 0 --car CarTestPytest --component "Coil"
+carlogger delete entry --index 0 --car CarTestPytest --filter "parent=Coil"
 carlogger delete component --name "Coil" --collection "Engine_Sector" --car CarTestPytest
 carlogger delete component --name Airflow --car CarTestPytest --collection Turbocharger
 carlogger delete collection --name Intake --car CarTestPytest

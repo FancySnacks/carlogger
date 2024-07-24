@@ -16,10 +16,9 @@ from carlogger.items.car_info import CarInfo
 from carlogger.items.component_collection import ComponentCollection
 from carlogger.items.car_component import CarComponent
 from carlogger.items.log_entry import LogEntry
-from carlogger.items.entryfilter import EntryFilter
 from carlogger.items.item_filter import ItemFilter
 from carlogger.items.item_sorter import ItemSorter
-from carlogger.util import is_valid_entry_id, sort_key_is_attrib
+from carlogger.util import sort_key_is_attrib
 
 
 class ArgExecutor(ABC):
