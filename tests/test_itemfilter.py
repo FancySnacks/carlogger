@@ -31,3 +31,9 @@ def test_filter_entries_by_id(mock_log_entry, mock_component):
     entry_id = mock_component.create_entry(mock_log_entry)
     items = itemfilter.filter_items(mock_component.log_entries, [f"id={entry_id}"])
     assert len(items) == 1
+
+
+def test_filter_return_all_entries(mock_log_entry, mock_component):
+    mock_component.create_entry(mock_log_entry)
+    items = itemfilter.filter_items(mock_component.log_entries, ['*'])
+    assert len(items) == 2

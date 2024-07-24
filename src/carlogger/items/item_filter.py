@@ -184,6 +184,9 @@ class IDFilterWorker(FilterWorker):
 
 class ItemFilter:
     def filter_items(self, item_list: list[ITEM], filters: list[str]) -> list[ITEM]:
+        if filters[0] == '*':
+            return item_list
+
         end_item_list = []
         d = [(filter_str, item) for filter_str in filters for item in item_list]
 
