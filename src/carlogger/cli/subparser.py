@@ -47,6 +47,20 @@ class ReadSubparser(Subparser):
             sp_obj.add_argument('--reverse', action='store_true',
                                 help="Sort returned items in reversed way, does nothing without '--sort' flag.")
 
+    def add_filter_parser(self):
+        for sp_name, sp_obj in list(self.read_subparsers.choices.items()):
+            sp_obj.add_argument('--filter',
+                                type=str,
+                                help="Additional filter options stored as list.\n"
+                                     "Pass arguments as string 'key=value' pairs, separated by commas.\n"
+                                     "Supports operands: '=' (equal), '<', '>', '<=' '>='\n"
+                                     "Example: --filter 'date=01-01-2000' 'mileage<1000'\n"
+                                     "Also supports value ranges, ex.: 'key=lower-upper'",
+                                metavar='FILTER OPTIONS',
+                                dest='filters',
+                                nargs='*',
+                                default=['*'])
+
     def create_subparser(self):
         self.read_parser = self.parser_parent.subparsers.add_parser('read',
                                                                     help="Return car info, collection/component list"
@@ -71,11 +85,11 @@ class ReadSubparser(Subparser):
         self.read_collection_parser = self.read_subparsers.add_parser('collection')
 
         self.read_collection_parser.add_argument('name',
-                                          type=str,
-                                          metavar="COLLECTION_NAME",
-                                          help="Return collection via name."
-                                               "'*' (default) - returns all collections belonging to specified car.",
-                                          default='*')
+                                                 type=str,
+                                                 metavar="COLLECTION_NAME",
+                                                 help="Return collection via name."
+                                                      "'*' (default) - returns all collections belonging to specified car.",
+                                                 default='*')
 
         self.read_collection_parser.add_argument('--car',
                                                  type=str,
@@ -88,11 +102,11 @@ class ReadSubparser(Subparser):
         self.read_component_parser = self.read_subparsers.add_parser('component')
 
         self.read_component_parser.add_argument('name',
-                                          type=str,
-                                          metavar="COMPONENT_NAME",
-                                          help="Return component via name."
-                                               "'*' (default) - returns all components belonging to specified car.",
-                                          default='*')
+                                                type=str,
+                                                metavar="COMPONENT_NAME",
+                                                help="Return component via name."
+                                                     "'*' (default) - returns all components belonging to specified car.",
+                                                default='*')
 
         self.read_component_parser.add_argument('--car',
                                                 type=str,
@@ -104,31 +118,6 @@ class ReadSubparser(Subparser):
 
         self.read_entry_parser = self.read_subparsers.add_parser('entry')
 
-        self.read_entry_parser.add_argument('data',
-                                            type=str,
-                                            help="Return entry via name.\n"
-                                                 "Accepts multiple string arguments as filters:\n"
-                                                 "By default if no arg is present shows all entries in "
-                                                 "a given relation\n"
-                                                 "'*' - (default) shows all entries\n"
-                                                 "'entry id' - return entry of this id, trumps all other filters\n"
-                                                 "'category' - returns entries of this category"
-                                                 "['check', 'part swap', 'repair', 'fluid change', '"
-                                                 "fluid_add', 'other']\n"
-                                                 "'<mileage' - return entries assigned to a lesser mileage\n"
-                                                 "'>mileage' - return entries assigned to a greater mileage\n"
-                                                 "'mileage-mileage' - show entries created in this mileage range\n"
-                                                 "'DD-MM-YYYY' - show entries made on specific date\n"
-                                                 "'<DD-MM-YYYY' - show entries younger than specified date\n"
-                                                 "'>DD-MM-YYYY' - show entries older than specified date\n"
-                                                 "'DD-MM-YYYY-DD-MM-YYYY' - show entries created in this "
-                                                 "date range (inclusive)\n"
-                                                 "'[-]n' - show 'n' amount of entries from youngest to oldest, '-' "
-                                                 "before integer will show oldest to youngest instead\n",
-                                            nargs='*',
-                                            metavar='FILTER_OPTIONS',
-                                            default='*')
-
         self.read_entry_parser.add_argument('--car',
                                             type=str,
                                             metavar="CAR_NAME",
@@ -136,6 +125,7 @@ class ReadSubparser(Subparser):
                                             required=True)
 
         self.add_sort_parser()
+        self.add_filter_parser()
 
 
 class AddSubparser(Subparser):
@@ -727,7 +717,7 @@ class ImportSubparser(Subparser):
 
         self.add_path_arg()
         self.add_nochild_arg()
-        
+
 
 class ExportSubparser(Subparser):
     def __init__(self, parser_parent):
