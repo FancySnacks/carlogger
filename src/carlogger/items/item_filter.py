@@ -203,6 +203,35 @@ class DateFilterWorker(FilterWorker):
             return False
 
 
+class DescFilterWorker(FilterWorker):
+    @classmethod
+    def eq(cls, item: ITEM, key: str, val: str) -> bool:
+        if val.lower() in getattr(item, 'desc').lower():
+            return True
+        else:
+            return False
+
+    @classmethod
+    def gt(cls, item: ITEM, key: str, val: str) -> bool:
+        raise ValueError("Desc Filter method does not support '>' operand")
+
+    @classmethod
+    def lt(cls, item: ITEM, key: str, val: str) -> bool:
+        raise ValueError("Desc Filter method does not support '<' operand")
+
+    @classmethod
+    def gt_eq(cls, item: ITEM, key: str, val: str) -> bool:
+        raise ValueError("Desc Filter method does not support '=>' operand")
+
+    @classmethod
+    def lt_eq(cls, item: ITEM, key: str, val: str) -> bool:
+        raise ValueError("Desc Filter method does not support '<=' operand")
+
+    @classmethod
+    def range(cls, item: ITEM, key: str, val: str) -> bool:
+        raise ValueError("Desc Filter method does not support '-' (range) operand")
+
+
 class IDFilterWorker(FilterWorker):
     @classmethod
     def eq(cls, item: ITEM, key: str, val: str) -> bool:
@@ -260,6 +289,7 @@ class ItemFilter:
         match filter_values[0]:
             case 'date': return DateFilterWorker.apply_filter(item, *filter_values)
             case 'id': return IDFilterWorker.apply_filter(item, *filter_values)
+            case 'desc': return DescFilterWorker.apply_filter(item, *filter_values)
             case 'parent': return ParentFilterWorker.apply_filter(item, *filter_values)
             case _: return AttribFilterWorker.apply_filter(item, *filter_values)
 
