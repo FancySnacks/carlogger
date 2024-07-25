@@ -232,6 +232,37 @@ class DescFilterWorker(FilterWorker):
         raise ValueError("Desc Filter method does not support '-' (range) operand")
 
 
+class ScheduledEntryFilterWorker(FilterWorker):
+    @classmethod
+    def eq(cls, item: ITEM, key: str, val: str) -> bool:
+        val_is_true = val.lower() in ['true']
+
+        if is_scheduled := item.__class__.__name__ == "ScheduledLogEntry":
+            return is_scheduled * val_is_true
+        else:
+            return not val_is_true
+
+    @classmethod
+    def gt(cls, item: ITEM, key: str, val: str) -> bool:
+        raise ValueError("isScheduledEntry Filter method does not support '>' operand")
+
+    @classmethod
+    def lt(cls, item: ITEM, key: str, val: str) -> bool:
+        raise ValueError("isScheduledEntry Filter method does not support '<' operand")
+
+    @classmethod
+    def gt_eq(cls, item: ITEM, key: str, val: str) -> bool:
+        raise ValueError("isScheduledEntry Filter method does not support '=>' operand")
+
+    @classmethod
+    def lt_eq(cls, item: ITEM, key: str, val: str) -> bool:
+        raise ValueError("isScheduledEntry Filter method does not support '<=' operand")
+
+    @classmethod
+    def range(cls, item: ITEM, key: str, val: str) -> bool:
+        raise ValueError("isScheduledEntry Filter method does not support '-' (range) operand")
+
+
 class IDFilterWorker(FilterWorker):
     @classmethod
     def eq(cls, item: ITEM, key: str, val: str) -> bool:
@@ -291,6 +322,7 @@ class ItemFilter:
             case 'id': return IDFilterWorker.apply_filter(item, *filter_values)
             case 'desc': return DescFilterWorker.apply_filter(item, *filter_values)
             case 'parent': return ParentFilterWorker.apply_filter(item, *filter_values)
+            case 'scheduled': return ScheduledEntryFilterWorker.apply_filter(item, *filter_values)
             case _: return AttribFilterWorker.apply_filter(item, *filter_values)
 
     def _get_filter_values(self, filter_str: str):
