@@ -36,6 +36,12 @@ class LogEntry:
     def parent(self) -> CarComponent:
         return self.component
 
+    def __getattr__(self, item):
+        if val := self.custom_info.get(item):
+            return val
+        else:
+            return self.to_json()[item]
+
     def filter_options(self) -> list[str]:
         return ['id', 'desc', 'date', 'component', 'category', 'mileage'] + list(self.custom_info.keys())
 

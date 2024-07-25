@@ -69,46 +69,64 @@ class FilterWorker(ABC):
 class AttribFilterWorker(FilterWorker):
     @classmethod
     def eq(cls, item: ITEM, key: str, val: str) -> bool:
-        val_type = type(getattr(item, key))
+        try:
+            val_type = type(getattr(item, key))
 
-        if getattr(item, key) == val_type(val):
-            return True
-        else:
+            if getattr(item, key) == val_type(val):
+                return True
+            else:
+                return False
+        except KeyError:
             return False
 
     @classmethod
     def gt(cls, item: ITEM, key: str, val: str) -> bool:
-        if getattr(item, key) > int(val):
-            return True
-        else:
+        try:
+            if getattr(item, key) > int(val):
+                return True
+            else:
+                return False
+        except KeyError:
             return False
 
     @classmethod
     def lt(cls, item: ITEM, key: str, val: str) -> bool:
-        if getattr(item, key) < int(val):
+        try:
+            if getattr(item, key) < int(val):
+                return True
+            else:
+                return False
+        except KeyError:
             return True
-        else:
-            return False
 
     @classmethod
     def gt_eq(cls, item: ITEM, key: str, val: str) -> bool:
-        if getattr(item, key) >= int(val):
-            return True
-        else:
+        try:
+            if getattr(item, key) >= int(val):
+                return True
+            else:
+                return False
+        except KeyError:
             return False
 
     @classmethod
     def lt_eq(cls, item: ITEM, key: str, val: str) -> bool:
-        if getattr(item, key) <= int(val):
-            return True
-        else:
+        try:
+            if getattr(item, key) <= int(val):
+                return True
+            else:
+                return False
+        except KeyError:
             return False
 
     @classmethod
     def range(cls, item: ITEM, key: str, val_range: tuple[str, str]) -> bool:
-        if getattr(item, key) > int(val_range[0]) < int(val_range[1]):
-            return True
-        else:
+        try:
+            if getattr(item, key) > int(val_range[0]) < int(val_range[1]):
+                return True
+            else:
+                return False
+        except KeyError:
             return False
 
 
