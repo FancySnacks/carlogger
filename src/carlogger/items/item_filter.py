@@ -250,6 +250,9 @@ class ItemFilter:
 
             if item_is_valid:
                 end_item_list.append(item)
+            else:
+                if item in end_item_list:
+                    end_item_list.remove(item)
 
         return end_item_list
 
