@@ -1,10 +1,12 @@
 from customtkinter import CTkImage
 from PIL import Image
 
+from carlogger.const import PATH
 
-car_png = Image.open("./src/carlogger/gui/img/car.png")
-collection_png = Image.open("./src/carlogger/gui/img/collection.png")
-component_png = Image.open("./src/carlogger/gui/img/component.png")
+
+car_png = Image.open(PATH.joinpath("./src/carlogger/gui/img/car.png"))
+collection_png = Image.open(PATH.joinpath("./src/carlogger/gui/img/collection.png"))
+component_png = Image.open(PATH.joinpath("./src/carlogger/gui/img/component.png"))
 
 car_icon = CTkImage(light_image=car_png,
                     dark_image=car_png,
