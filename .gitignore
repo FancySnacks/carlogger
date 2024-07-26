@@ -12,6 +12,8 @@ todo_gui.md
 *.pytest_cache
 *.coverage
 
+rep.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -173,7 +175,3 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea
 .idea/
-!/gui_todo.md
-!/gui_todo.md
-!/todo_gui.md
-/todo_gui.md

@@ -32,14 +32,12 @@ class CarComponent:
 
     parent: ComponentCollection = field(init=False, default=None)
 
-    search_tags: set[str] = field(init=False, default_factory=set)
     custom_info: dict[str, ...] = field(default_factory=dict)
 
     path: str = ""
     _sort_index: str = field(init=False, repr=False, default='')
 
     def __post_init__(self):
-        self.search_tags.add(self.name)
         self.path = pathlib.Path(self.path)
         self._sort_index = self.name
 
@@ -77,7 +75,6 @@ class CarComponent:
 
             Printer.print_msg(new_entry, 'ADD_SUCCESS', name=f"Entry of id '{new_entry.id}'", relation=self.name)
 
-            self._add_search_tags_from_entry(new_entry)
             self._update_current_part(new_entry)
             self._update_mileage(new_entry)
 
@@ -96,7 +93,6 @@ class CarComponent:
                              custom_info=entry_data.get('custom_info') or {})
         self.log_entries.append(new_entry)
 
-        self._add_search_tags_from_entry(new_entry)
         self._update_current_part(new_entry)
         self._update_mileage(new_entry)
 
@@ -127,7 +123,6 @@ class CarComponent:
             Printer.print_msg(new_entry, 'ADD_SUCCESS',
                               name=f"Scheduled entry of id '{new_entry.id}'", relation=self.name)
             self.scheduled_log_entries.append(new_entry)
-            self._add_search_tags_from_entry(new_entry)
 
             return new_entry.id
 
@@ -157,8 +152,6 @@ class CarComponent:
                               reason=f"reason={e}")
         else:
             self.scheduled_log_entries.append(new_entry)
-
-            self._add_search_tags_from_entry(new_entry)
 
             return new_entry.id
 
@@ -194,7 +187,6 @@ class CarComponent:
             if k not in ("_id", "id"):
                 entry_to_update.to_json()[k] = v
 
-        self._add_search_tags_from_entry(entry_to_update)
         self._update_mileage(entry_to_update)
 
     def delete_entry_by_id(self, entry_id: str):
@@ -229,7 +221,6 @@ class CarComponent:
         """Delete all entry logs."""
         self.log_entries.clear()
         self.scheduled_log_entries.clear()
-        self.search_tags.clear()
 
         if clear_parts:
             self.current_part = None
@@ -263,7 +254,6 @@ class CarComponent:
              'part_list': [part.to_json() for part in self.part_list],
              'log_entries': [entry.to_json() for entry in self.log_entries],
              'scheduled_log_entries': [entry.to_json() for entry in self.scheduled_log_entries],
-             'search_tags': list(self.search_tags),
              'custom_info': self.custom_info,
              }
 
@@ -294,13 +284,6 @@ class CarComponent:
             result += f"{entry.get_formatted_info()}\n"
 
         return result
-
-    def _add_search_tags_from_entry(self, entry: LogEntry):
-        self.search_tags = set()
-        string_tags = entry.desc, *entry.tags, entry.component.name, entry.category, entry.date
-
-        for tag in string_tags:
-            self.search_tags.add(tag)
 
     def _update_current_part(self, entry: LogEntry):
         if new_part := entry.custom_info.get('part'):
