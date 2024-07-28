@@ -28,7 +28,10 @@ class Car:
         if item in self.__dict__.keys():
             return getattr(self, item)
         else:
-            return self.car_info.to_json()[item]
+            try:
+                return self.car_info.to_json()[item]
+            except KeyError:
+                return self.car_info.to_json()['custom_info'].get(item)
 
     @property
     def children(self) -> list[ComponentCollection]:

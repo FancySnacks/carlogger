@@ -1,6 +1,6 @@
 from customtkinter import CTkFrame, CTkButton, CTkLabel
 
-from carlogger.gui.const_gui import BG_GRAY_PRIMARY
+from carlogger.gui.const_gui import BG_GRAY_PRIMARY, get_img_from_class
 
 
 class NavigationBar(CTkFrame):
@@ -126,10 +126,14 @@ class NavItem(CTkButton):
                                 text=name,
                                 width=100,
                                 height=30,
+                                image=self.get_item_image(),
                                 font=('Lato', 17),
                                 command=self.go_to_page,
                                 **kwargs)
         self.button.grid(row=0, column=column, padx=5, pady=5)
+
+    def get_item_image(self):
+        return get_img_from_class(self.item_ref)
 
     def go_to_page(self):
         self.master.go_to_previous_page(self)
