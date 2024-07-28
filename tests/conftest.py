@@ -174,8 +174,9 @@ def mock_scheduled_log_entry() -> dict:
 
 
 @pytest.fixture
-def mock_component(mock_log_entry) -> CarComponent:
+def mock_component(mock_log_entry, mock_component_collection) -> CarComponent:
     comp = CarComponent("TestComponent")
+    comp.parent = mock_component_collection
     comp.create_entry(mock_log_entry)
 
     return comp
@@ -188,13 +189,16 @@ def mock_component_clean(mock_log_entry) -> CarComponent:
 
 
 @pytest.fixture
-def mock_component_collection() -> ComponentCollection:
+def mock_component_collection(mock_car) -> ComponentCollection:
     sp = CarComponent("Spark Plug")
     v = CarComponent("Valves")
     bat = CarComponent("Battery")
 
     engine_c = ComponentCollection("Engine")
     elec_c = ComponentCollection("Power")
+
+    elec_c.car = mock_car
+    engine_c.car = mock_car
 
     engine_c.children.append(sp)
     elec_c.children.append(bat)

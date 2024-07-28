@@ -119,9 +119,9 @@ def test_scheduled_log_entry_returns_mileage_remaining(mock_component, mock_log_
     assert entry.get_time_remaining() == 1000
 
 
-def test_scheduled_log_entry_completion(mock_component, mock_log_entry, mock_scheduled_log_entry):
+def test_scheduled_log_entry_completion(mock_component, mock_component_collection, mock_log_entry,
+                                        mock_scheduled_log_entry):
     c = mock_component
-    c = CarComponent("Coolant")
     c.create_scheduled_entry(mock_scheduled_log_entry)
 
     entry = c.scheduled_log_entries[0].id
