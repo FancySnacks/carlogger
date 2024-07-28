@@ -9,10 +9,11 @@ BG_GRAY_PRIMARY = '#1b1c1b'
 BG_GRAY_SECONDARY = '#2e2e2e'
 BLUE_1 = '#35383d'
 
-house_png = Image.open(PATH.joinpath("./src/carlogger/gui/img/house.png"))
 car_png = Image.open(PATH.joinpath("./src/carlogger/gui/img/car.png"))
 collection_png = Image.open(PATH.joinpath("./src/carlogger/gui/img/collection.png"))
 component_png = Image.open(PATH.joinpath("./src/carlogger/gui/img/component.png"))
+house_png = Image.open(PATH.joinpath("./src/carlogger/gui/img/house.png"))
+search_png = Image.open(PATH.joinpath("./src/carlogger/gui/img/search.png"))
 
 # ===== Item Icons ===== #
 
@@ -33,6 +34,10 @@ component_icon = CTkImage(light_image=component_png,
 house_icon_mini = CTkImage(light_image=house_png,
                            dark_image=house_png,
                            size=(25, 25))
+
+search_icon_mini = CTkImage(light_image=search_png,
+                            dark_image=search_png,
+                            size=(25, 25))
 
 car_icon_mini = CTkImage(light_image=car_png,
                          dark_image=car_png,
