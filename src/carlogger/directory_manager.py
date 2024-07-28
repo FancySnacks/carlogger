@@ -153,6 +153,8 @@ class DirectoryManager:
                     c.path = collections_path
 
                 for comp in components:
+                    if comp.current_mileage < new_collection.car.mileage:
+                        comp.current_mileage = new_collection.car.mileage
                     new_collection.components.append(comp)
 
                 collections.append(new_collection)
@@ -169,6 +171,7 @@ class DirectoryManager:
             try:
                 if "collections" not in child['path']:
                     item_data: dict = self.data_manager.load_file(child['path'])
+
                     c = CarComponent(item_data['name'],
                                      custom_info=item_data.get('custom_info', {}),
                                      path=collection.path.parent.joinpath('components'))

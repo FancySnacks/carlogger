@@ -157,6 +157,7 @@ class CarComponent:
 
     def mark_scheduled_entry_as_done(self, entry_id: str):
         entry = self.get_entry_by_id(entry_id)
+        entry.mileage = self.parent.car.mileage
         entry.date = TODAY
         new_entry_id = self.create_entry(entry.to_json())
 
