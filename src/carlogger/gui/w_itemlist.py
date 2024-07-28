@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING
 
 from carlogger.gui.c_itemlist import ItemList
 from carlogger.gui.w_deletion_confirmation import DeletionConfirmation
+from carlogger.gui.const_gui import BG_GRAY_PRIMARY, BLUE_1
+
 from carlogger.const import ITEM
 
 if TYPE_CHECKING:
@@ -137,10 +139,10 @@ class SortableItemList(CTkFrame):
                                         command=self.delete_entry)
             self.del_button.grid(row=0, column=2, sticky='w', padx=5)
 
-        self.sort_buttons_frame = CTkFrame(master=self.parent, height=35, fg_color="cyan")
+        self.sort_buttons_frame = CTkFrame(master=self.parent, height=35, fg_color=BG_GRAY_PRIMARY)
         self.sort_buttons_frame.pack(fill='x', padx=10, pady=10)
 
-        self.item_frame = CTkFrame(master=self.parent, fg_color="skyblue")
+        self.item_frame = CTkFrame(master=self.parent, fg_color=BG_GRAY_PRIMARY)
         self.item_frame.pack(fill='x', padx=10, pady=10)
 
         self.update_items(self.items)
@@ -314,7 +316,7 @@ class Item(CTkFrame):
     def __init__(self, master, parent: SortableItemList, item_ref: ITEM, row: int = 0, homepage=False, **kwargs):
         super().__init__(master,
                          height=100,
-                         fg_color='blue',
+                         fg_color=BLUE_1,
                          corner_radius=0,
                          **kwargs)
         self.parent = parent

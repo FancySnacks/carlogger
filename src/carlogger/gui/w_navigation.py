@@ -1,5 +1,7 @@
 from customtkinter import CTkFrame, CTkButton, CTkLabel
 
+from carlogger.gui.const_gui import BG_GRAY_PRIMARY
+
 
 class NavigationBar(CTkFrame):
     def __init__(self, master, root, **kwargs):
@@ -11,7 +13,7 @@ class NavigationBar(CTkFrame):
 
         self.current_item = None
 
-        self.main_frame = CTkFrame(master=self, height=150, fg_color='red')
+        self.main_frame = CTkFrame(master=self, height=150, fg_color=BG_GRAY_PRIMARY)
         self.main_frame.pack(expand=True, fill='both', padx=10, pady=10)
 
         self.main_frame.grid_columnconfigure(0, weight=1)

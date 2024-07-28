@@ -4,6 +4,13 @@ from PIL import Image
 from carlogger.const import PATH
 
 
+# ===== Colors ===== #
+
+BG_GRAY_PRIMARY = '#1b1c1b'
+BG_GRAY_SECONDARY = '#2e2e2e'
+BLUE_1 = '#35383d'
+
+
 car_png = Image.open(PATH.joinpath("./src/carlogger/gui/img/car.png"))
 collection_png = Image.open(PATH.joinpath("./src/carlogger/gui/img/collection.png"))
 component_png = Image.open(PATH.joinpath("./src/carlogger/gui/img/component.png"))
