@@ -104,7 +104,7 @@ class ComponentInfoBox(ItemInfoBox):
         super().__init__(master, item_ref, image, **kwargs)
 
         self.partlist_right_frame = CTkScrollableFrame(self.main_frame, fg_color='transparent', width=400)
-        self.partlist_right_frame.grid(row=0, column=5, sticky='w', pady=10, padx=50)
+        self.partlist_right_frame.grid(row=0, column=6, sticky='w', pady=10, padx=50)
 
         self.part_frame = CTkFrame(self.partlist_right_frame)
         self.part_frame.grid(row=0, column=0, sticky='nsew')
@@ -131,7 +131,6 @@ class ComponentInfoBox(ItemInfoBox):
             properties.pop('type')
             properties.pop('log_entries')
             properties.pop('scheduled_log_entries')
-            properties.pop('search_tags')
             properties.pop('part_list')
         except Exception as e:
             pass
