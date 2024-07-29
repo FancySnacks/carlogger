@@ -11,8 +11,8 @@ class ArgParser:
     def __init__(self):
         self.parser = argparse.ArgumentParser(prog="Car Logger",
                                               usage="carlogger [-args]",
-                                              description="description",
-                                              epilog="epilog",
+                                              description="Choose 'carlogger --gui' for visual interface.",
+                                              epilog="Made by FancySnacks | 2024 | MIT License",
                                               formatter_class=argparse.RawDescriptionHelpFormatter)
         self.subparsers = self.parser.add_subparsers(help="Subcommands")
 
