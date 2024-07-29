@@ -5,7 +5,7 @@ import pathlib
 import shutil
 
 from carlogger.items.car import Car
-from carlogger.filedata_manager import FiledataManager, JSONFiledataManager, TxtFiledataManager
+from carlogger.filedata_manager import FiledataManager, JSONFiledataManager, TxtFiledataManager, CSVFiledataManager
 from carlogger.items.component_collection import ComponentCollection
 from carlogger.items.car_component import CarComponent
 from carlogger.items.car_info import CarInfo
@@ -202,3 +202,7 @@ class DirectoryManager:
                 return TxtFiledataManager()
             case '.json':
                 return JSONFiledataManager()
+            case '.csv':
+                return CSVFiledataManager()
+            case _:
+                return TxtFiledataManager()

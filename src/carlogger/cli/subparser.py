@@ -756,7 +756,7 @@ class ExportSubparser(Subparser):
     def add_values_arg(self):
         for sp_name, sp_obj in list(self.export_parsers.choices.items()):
             sp_obj.add_argument('--values',
-                                help="Select which values to export. All by default.",
+                                help="Select which values to export by providing names. All by default.",
                                 metavar='VALUES TO EXPORT',
                                 dest='values',
                                 nargs='*',

@@ -1,6 +1,7 @@
 """Save and load collections, components, logs."""
 
 import json
+import csv
 import os
 
 from abc import ABC, abstractmethod
@@ -104,6 +105,48 @@ class TxtFiledataManager(FiledataManager):
 
         with open(filepath, "w+") as file:
             file.write(str(data_to_save))
+
+    def delete_file(self, obj):
+        """Remove target savefile from the system."""
+        os.remove(obj.get_target_path(self.suffix))
+
+    def delete_file_raw(self, filepath: str):
+        os.remove(filepath)
+
+    def export_selected_values(self, keys_to_export, data_to_save: dict):
+        values_to_export = {}
+        for key in data_to_save.keys():
+            if key in keys_to_export:
+                values_to_export[key] = data_to_save[key]
+        data_to_save = values_to_export
+
+        return data_to_save
+
+
+class CSVFiledataManager(FiledataManager):
+    suffix = "csv"
+
+    def load_file(self, filepath) -> list[str]:
+        """Load data from target txt file."""
+        with open(filepath, "r") as file:
+            return file.readlines()
+
+    def save_file(self, obj, filepath=None, *values):
+        """Save item to target path as a csv file."""
+        data_to_save: dict = obj.to_json()
+
+        if values:
+            data_to_save = self.export_selected_values(*values, data_to_save)
+
+        fields = data_to_save.keys()
+
+        if filepath is None:
+            filepath = obj.get_target_path(self.suffix)
+
+        with open(filepath, "w+") as file:
+            writer = csv.DictWriter(file, fieldnames=fields)
+            writer.writeheader()
+            writer.writerow(data_to_save)
 
     def delete_file(self, obj):
         """Remove target savefile from the system."""
