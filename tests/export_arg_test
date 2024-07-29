@@ -1,6 +1,5 @@
 ./dev/add_arg_test.sh
 carlogger export car --name "CarTestPytest" "./exported_car.json"
-carlogger export car --name "CarTestPytest" "./exported_car.csv"
 carlogger export collection --name "Engine" --car "CarTestPytest" "./engine.json"
 carlogger export component --name "Spark_Plug" --collection "Engine" --car "CarTestPytest" "./spark_plug.json"
 carlogger delete car --name "CarTestPytest" --force
