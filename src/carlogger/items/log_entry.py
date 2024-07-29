@@ -59,13 +59,13 @@ class LogEntry:
 
     def __dict__(self) -> dict:
         d = {
-            'desc': self.desc,
             'date': self.date,
+            'id': self.get_shortened_id(),
+            'desc': self.desc,
             'mileage': self.mileage,
             'category': self.category.name,
             'tags': self.tags,
             'component': self.component.name,
-            'id': self.id,
             'custom_info': self.custom_info
         }
 
@@ -260,17 +260,17 @@ class ScheduledLogEntry(LogEntry):
 
     def __dict__(self) -> dict:
         d = {
-                'desc': self.desc,
-                'date': self.date,
-                'mileage': self.mileage,
-                'category': self.category.name,
-                'tags': self.tags,
-                'component': self.component.name,
-                'id': self.id,
-                'custom_info': self.custom_info,
-                'rule': self.rule,
-                'frequency': self.frequency,
-                'repeating': self.repeating
+            'date': self.date,
+            'id': self.get_shortened_id(),
+            'desc': self.desc,
+            'mileage': self.mileage,
+            'category': self.category.name,
+            'tags': self.tags,
+            'component': self.component.name,
+            'custom_info': self.custom_info,
+            'rule': self.rule,
+            'frequency': self.frequency,
+            'repeating': self.repeating
             }
         return d
 
