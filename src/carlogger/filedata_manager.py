@@ -131,16 +131,19 @@ class CSVFiledataManager(FiledataManager):
         with open(filepath, "r") as file:
             return file.readlines()
 
-    def save_file(self, obj, filepath=None, *values):
+    def save_file(self, obj, filepath=None, *values: list):
         """Save item to target path as a csv file."""
+        values = list(values)
         data_to_save: dict = obj.to_json()
         children = None
 
         if values:
-            data_to_save = self.export_selected_values(*values, data_to_save)
+            data_to_save = self.export_selected_values(values, data_to_save)
 
         if list(data_to_save.keys())[0] in ['log_entries', 'children', 'components', 'collections']:
             children = list(data_to_save.values())[0]
+            values.remove(list(data_to_save.keys())[0])
+            children = [self.export_selected_values(values, child) for child in children]
             fields = list(children[0].keys())
         else:
             fields = data_to_save.keys()
