@@ -134,19 +134,28 @@ class CSVFiledataManager(FiledataManager):
     def save_file(self, obj, filepath=None, *values):
         """Save item to target path as a csv file."""
         data_to_save: dict = obj.to_json()
+        children = None
 
         if values:
             data_to_save = self.export_selected_values(*values, data_to_save)
 
-        fields = data_to_save.keys()
+        if list(data_to_save.keys())[0] in ['log_entries', 'children', 'components', 'collections']:
+            children = list(data_to_save.values())[0]
+            fields = list(children[0].keys())
+        else:
+            fields = data_to_save.keys()
 
         if filepath is None:
             filepath = obj.get_target_path(self.suffix)
 
-        with open(filepath, "w+") as file:
+        with open(filepath, "w+", newline='', encoding='utf-8') as file:
             writer = csv.DictWriter(file, fieldnames=fields)
             writer.writeheader()
-            writer.writerow(data_to_save)
+            if children:
+                for ch in children:
+                    writer.writerow(ch)
+            else:
+                writer.writerow(data_to_save)
 
     def delete_file(self, obj):
         """Remove target savefile from the system."""
