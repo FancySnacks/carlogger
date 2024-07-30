@@ -12,7 +12,7 @@ from carlogger.items.car_info import CarInfo
 from carlogger.const import CARS_PATH
 from carlogger.items.item_sorter import ItemSorter
 from carlogger.printer import Printer
-from carlogger.util import get_car_dirs
+from carlogger.util import get_car_dirs, is_date
 
 
 class DirectoryManager:
@@ -176,6 +176,11 @@ class DirectoryManager:
                                      custom_info=item_data.get('custom_info', {}),
                                      path=collection.path.parent.joinpath('components'))
                     c.parent = collection
+
+                    for part in item_data['part_list']:
+                        if is_date(part.get('parent_entry_id')):
+                            c.add_part(part)
+
                     self._add_entries_to_component(item_data, c)
                     coms.append(c)
 

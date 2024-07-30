@@ -286,6 +286,10 @@ class CarComponent:
 
         return result
 
+    def add_part(self, part_info: dict):
+        new_part = Part(**part_info)
+        self.part_list.append(new_part)
+
     def _update_current_part(self, entry: LogEntry):
         if new_part := entry.custom_info.get('part'):
 

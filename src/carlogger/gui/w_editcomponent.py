@@ -2,7 +2,9 @@ from customtkinter import CTk, CTkFrame, CTkLabel, CTkButton, CTkEntry, CTkScrol
 
 from tkinter import StringVar
 
+from carlogger.items.part import Part
 from carlogger.util import dict_diff
+from carlogger.const import TODAY
 
 
 class EditComponentPopup:
@@ -23,7 +25,7 @@ class EditComponentPopup:
 
         # ===== Main Popup Frame ===== #
 
-        self.popup_frame = CTkFrame(self.master, width=1200, height=600, corner_radius=10, bg_color='transparent')
+        self.popup_frame = CTkFrame(self.master, width=1500, height=600, corner_radius=10, bg_color='transparent')
         self.popup_frame.place(relx=0.5, rely=0.5, anchor='center')
 
         # ===== Widget ===== #
@@ -60,6 +62,9 @@ class EditComponentPopup:
 
         self.add_mid_frame = CTkFrame(self.add_main_frame, fg_color='#403f3f')
         self.add_mid_frame.grid(row=0, column=1, sticky='nsew', pady=10, padx=10)
+
+        self.add_right_frame = CTkFrame(self.add_main_frame, fg_color='#403f3f')
+        self.add_right_frame.grid(row=0, column=2, sticky='nsew', pady=10, padx=10)
 
         # ===== Add Collection Button ===== #
 
@@ -156,8 +161,39 @@ class EditComponentPopup:
 
         self.property_container.create_properties()
 
+        # ===== Part List ===== #
+
+        self.parts_frame = CTkScrollableFrame(self.add_right_frame, fg_color='transparent', width=625, height=400)
+        self.parts_frame.grid(row=0, column=0, sticky='w', pady=10, padx=10)
+
+        self.parts_label = CTkLabel(self.parts_frame, text="Part List", font=('Lato', 20))
+        self.parts_label.grid(row=0, column=0, sticky='w')
+
+        self.add_part_button = CTkButton(self.parts_frame,
+                                         text="+",
+                                         font=('Lato', 20),
+                                         fg_color='green',
+                                         width=35,
+                                         corner_radius=0,
+                                         command=self.add_new_part)
+        self.add_part_button.grid(row=0, column=1, sticky='w', padx=15, pady=5)
+
+        self.part_container = PartContainer(self.parts_frame,
+                                            self.root,
+                                            self,
+                                            item_ref=self.component_ref,
+                                            width=250,
+                                            fg_color='transparent')
+        self.part_container.grid(row=1, column=0, columnspan=5, sticky='w')
+
+        self.part_container.create_properties()
+
     def add_new_property(self):
         self.property_container.add_property()
+        self.track_changes()
+
+    def add_new_part(self):
+        self.part_container.add_part()
         self.track_changes()
 
     def get_collection_names(self) -> list[str]:
@@ -193,6 +229,8 @@ class EditComponentPopup:
             self.name_entry.configure(border_color='red')
 
         updated_data['custom_info'] = self.property_container.get_properties()
+        updated_data['part_list'] = [Part(**info) for info in self.part_container.get_parts()]
+
         updated_data = dict_diff(updated_data, self.og_item_values)
 
         return updated_data
@@ -243,6 +281,142 @@ class EditComponentPopup:
         del self
 
 
+class PartContainer(CTkFrame):
+    def __init__(self, master, root: CTk, parent: EditComponentPopup, item_ref, **values):
+        super().__init__(master, **values)
+        self.master = master
+        self.root = root
+        self.parent = parent
+        self.item_ref = item_ref
+
+        self.properties: list[dict[str, ...]] = []
+        self.property_widgets: list[PartItem] = []
+
+    def get_parts(self) -> list[dict]:
+        for pw, pp in zip(self.property_widgets, self.properties):
+            pp['name'] = pw.part_name.get()
+
+            if not pp.get('parent_entry_id'):
+                pp['parent_entry_id'] = TODAY
+
+        return self.properties
+
+    def add_part(self, part=None):
+        if part is None:
+            part = {'name': 'Enter Name',
+                    'parent_entry_id': '',
+                    'custom_info': {},
+                    }
+
+        new_item = PartItem(self, self.root, part, len(self.properties))
+        self.property_widgets.append(new_item)
+
+        if part not in self.properties:
+            self.properties.append(part)
+
+    def delete_property(self, index: id):
+        self.properties.pop(index)
+        self.property_widgets[index].property_frame.destroy()
+        self.property_widgets.pop(index)
+
+        self.track_changes()
+
+    def create_properties(self):
+        for p in [part.to_json() for part in self.item_ref.part_list.copy()]:
+            self.add_part(p)
+
+    def track_changes(self):
+        self.parent.track_changes()
+
+    def move_property(self, offset: int, property_item):
+        new_index = min(max(self.property_widgets.index(property_item) + offset, 0), len(self.property_widgets) - 1)
+
+        items = self.properties
+
+        # Delete the original item so it can be reinserted at other index
+        i_to_del = -1
+        for i in range(0, len(items)):
+            if items[i]['name'] == property_item.part_name.get():
+                i_to_del = i
+        if i_to_del > -1:
+            items.pop(i_to_del)
+
+        items.insert(new_index, property_item.part_ref)
+
+        self.properties = items
+
+        for widget in self.property_widgets:
+            widget.property_frame.destroy()
+            del widget
+
+        self.property_widgets.clear()
+        self.create_properties()
+        self.track_changes()
+
+
+class PartItem:
+    def __init__(self, master, root: CTk, part_ref, index: int):
+        self.master = master
+        self.root = root
+        self.index: int = index
+        self.part_ref = part_ref
+
+        self.part_name = StringVar(value=self.part_ref.get('name'))
+
+        # ===== Widget ===== #
+
+        self.property_frame = CTkFrame(self.master, fg_color='gray', width=500)
+        self.property_frame.pack(fill='x', anchor='w', padx=2, pady=2)
+
+        self.property_name_car = CTkEntry(self.property_frame,
+                                          font=('Lato', 17),
+                                          width=200,
+                                          textvariable=self.part_name)
+        self.property_name_car.grid(row=0, column=0, sticky='w', padx=3, pady=2)
+
+        self.part_name.trace_add('write', self.on_property_update)
+
+        self.move_up_button = CTkButton(self.property_frame,
+                                        text="^",
+                                        font=('Lato', 20),
+                                        width=35,
+                                        corner_radius=0,
+                                        command=self.move_property_up)
+        self.move_up_button.grid(row=0, column=3, sticky='w', padx=3, pady=5)
+
+        self.move_down_button = CTkButton(self.property_frame,
+                                          text="v",
+                                          font=('Lato', 20),
+                                          width=35,
+                                          corner_radius=0,
+                                          command=self.move_property_down)
+        self.move_down_button.grid(row=0, column=4, sticky='w', padx=3, pady=5)
+
+        self.delete_button = CTkButton(self.property_frame,
+                                       text="x",
+                                       width=5,
+                                       font=('Lato', 20),
+                                       text_color='red',
+                                       fg_color='gray',
+                                       command=self.delete_property)
+        self.delete_button.grid(row=0, column=5, sticky='w', padx=3, pady=5)
+
+    def delete_property(self):
+        self.master.delete_property(self.index)
+
+    def move_property_up(self):
+        self.master.move_property(-1, self)
+
+    def move_property_down(self):
+        self.master.move_property(1, self)
+
+    def on_property_update(self, *args):
+        conditions = self.part_name.get() != self.part_ref.get('name')
+
+        if conditions:
+            self.master.track_changes()
+
+
 class PropertyContainer(CTkFrame):
     def __init__(self, master, root: CTk, parent: EditComponentPopup, item_ref, **values):
         super().__init__(master, **values)
@@ -251,7 +425,7 @@ class PropertyContainer(CTkFrame):
         self.parent = parent
         self.item_ref = item_ref
 
-        self.properties: dict[str, ...] = item_ref.custom_info.copy()
+        self.properties: dict[str, ...] = self.item_ref.custom_info.copy()
         self.property_widgets: list[PropertyItem] = []
 
     def get_properties(self) -> dict:
@@ -267,7 +441,7 @@ class PropertyContainer(CTkFrame):
         self.properties[name] = value
 
     def move_property(self, offset: int, property_item):
-        new_index = min(max(self.property_widgets.index(property_item) + offset, 0), len(self.property_widgets)-1)
+        new_index = min(max(self.property_widgets.index(property_item) + offset, 0), len(self.property_widgets) - 1)
 
         items = list(self.properties.items())
 

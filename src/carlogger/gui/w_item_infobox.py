@@ -1,6 +1,7 @@
 from customtkinter import CTkFrame, CTkLabel, CTkScrollableFrame
 
 from carlogger.const import ITEM
+from carlogger.util import is_date
 
 
 class ItemInfoBox:
@@ -117,9 +118,12 @@ class ComponentInfoBox(ItemInfoBox):
             new_value.grid(column=0, sticky='w', padx=20, pady=5)
 
     def _get_part_date(self, part) -> str:
-        entry_id = part.parent_entry_id
-        entry = self.item_ref.get_entry_by_id(entry_id)
-        return entry.date
+        if not is_date(part.parent_entry_id):
+            entry_id = part.parent_entry_id
+            entry = self.item_ref.get_entry_by_id(entry_id)
+            return entry.date
+
+        return part.parent_entry_id
 
     def _get_item_properties(self):
         properties = self.item_ref.to_json().copy()
