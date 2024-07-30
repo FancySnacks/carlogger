@@ -1,5 +1,6 @@
 """Sorts list of items via key or criterion"""
 
+import uuid
 from typing import Callable, Any
 
 from carlogger.items.log_entry import LogEntry, ScheduledLogEntry
@@ -40,7 +41,10 @@ class ItemSorter:
 
     def _clamp_attrib(self, item, attrib_name: str) -> Any:
         if attrib_name == 'date':
-            return date_string_to_date(getattr(item, attrib_name))
+            return date_string_to_date(getattr(item, 'date'))
+
+        if attrib_name == 'id':
+            return uuid.UUID(hex=getattr(item, 'id'))
 
         atb = getattr(item, attrib_name)
 

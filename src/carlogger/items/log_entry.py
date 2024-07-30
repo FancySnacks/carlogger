@@ -60,7 +60,7 @@ class LogEntry:
     def __dict__(self) -> dict:
         d = {
             'date': self.date,
-            'id': self.get_shortened_id(),
+            'id': self.id,
             'desc': self.desc,
             'mileage': self.mileage,
             'category': self.category.name,
