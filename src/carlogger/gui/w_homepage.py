@@ -1,4 +1,4 @@
-from customtkinter import CTkFrame
+from customtkinter import CTkFrame, CTkButton
 
 from carlogger.gui.c_itemlist import ItemList
 from carlogger.gui.w_itemlist import ItemContainer
@@ -18,10 +18,37 @@ class Homepage(CTkFrame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
+        self.management_buttons_frame = CTkFrame(self)
+        self.management_buttons_frame.grid(row=1, column=0, sticky="nsew")
+
+        self.add_button = CTkButton(self.management_buttons_frame,
+                                    text="+ Add Entry",
+                                    font=('Lato', 18),
+                                    fg_color='green',
+                                    width=35,
+                                    command=self.open_entry_add_window,
+                                    corner_radius=0)
+        self.add_button.grid(row=0, column=1, sticky='w', padx=5)
+
+        self.add_button1 = CTkButton(self.management_buttons_frame,
+                                     text="+ Add Scheduled Entry",
+                                     font=('Lato', 18),
+                                     fg_color='green',
+                                     width=35,
+                                     command=self.open_scheduled_entry_add_window,
+                                     corner_radius=0)
+        self.add_button1.grid(row=0, column=2, sticky='w', padx=5)
+
         self.item_container = ItemContainer(self, parent_car=None, root=self.root, homepage=True)
-        self.item_container.grid(row=1, column=0, sticky="nsew")
+        self.item_container.grid(row=2, column=0, sticky="nsew")
 
         self.item_list = ItemList(self, widget=self.item_container, app_session=self.root.app_session)
+
+    def open_entry_add_window(self):
+        self.root.open_entry_add_window_homepage(self, False)
+
+    def open_scheduled_entry_add_window(self):
+        self.root.open_entry_add_window_homepage(self, True)
 
     def create_items(self, items, parent_car, header, sort_key: str = '*'):
         self.item_container.parent = self.item_list

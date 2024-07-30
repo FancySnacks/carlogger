@@ -90,6 +90,14 @@ class RootWindow(CTk):
                                              parent_component=self.navigation.current_item,
                                              scheduled_entry=scheduled_entry)
 
+    def open_entry_add_window_homepage(self, item_container, scheduled_entry: bool = False):
+        self.add_entry_popup = AddEntryPopup(self.main_frame,
+                                             self,
+                                             item_container,
+                                             parent_component=self.cars[0].collections[0].components[0],
+                                             scheduled_entry=scheduled_entry)
+
+
     def open_car_add_window(self):
         self.add_car_popup = AddCarPopup(self.main_frame, self)
 

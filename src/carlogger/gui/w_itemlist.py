@@ -222,7 +222,11 @@ class SortableItemList(CTkFrame):
 
     def refresh_items(self):
         self.parent.refresh_items()
-        self.item_label.configure(text=f"{self.header} [{len(self.widget_items)}]")
+
+        try:
+            self.item_label.configure(text=f"{self.header} [{len(self.widget_items)}]")
+        except Exception:
+            pass
 
     def create_item(self, item_obj, row=-1):
         if item_obj.__class__.__name__ == 'ScheduledLogEntry':

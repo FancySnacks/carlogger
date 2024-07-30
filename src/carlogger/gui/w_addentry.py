@@ -134,7 +134,7 @@ class AddEntryPopup:
         self.car_menu = CTkOptionMenu(self.car_frame,
                                       values=self.car_names,
                                       command=self.on_car_selection_change)
-        self.car_menu.set(self.root.selected_car.car_info.name)
+        self.car_menu.set(self.parent_car.car_info.name)
         self.car_menu.grid(row=1, column=0, sticky='w')
 
         separator = CTkLabel(self.car_frame, text="->", font=('Lato', 20))
@@ -317,7 +317,7 @@ class AddEntryPopup:
         self.track_changes(selected_option)
 
     def get_collection_names(self) -> list[str]:
-        return [coll.name for coll in self.root.selected_car.collections]
+        return [coll.name for coll in self.parent_car.collections]
 
     def get_component_names(self) -> list[str]:
         return [comp.name for comp in self.current_collection.components]
@@ -381,12 +381,12 @@ class AddEntryPopup:
             return
 
         if self.is_scheduled_entry:
-            self.root.app_session.add_new_scheduled_entry(self.root.selected_car.car_info.name,
+            self.root.app_session.add_new_scheduled_entry(self.parent_car.car_info.name,
                                                           self.current_collection.name,
                                                           self.current_component.name,
                                                           entry_data)
         else:
-            self.root.app_session.add_new_entry(self.root.selected_car.car_info.name,
+            self.root.app_session.add_new_entry(self.parent_car.car_info.name,
                                                 self.current_collection.name,
                                                 self.current_component.name,
                                                 entry_data)
@@ -411,7 +411,10 @@ class AddEntryPopup:
 
     def _post_entry_add(self):
         self.close_menu()
-        self.item_list.refresh_items()
+        try:
+            self.item_list.refresh_items()
+        except AttributeError:
+            pass
 
     def close_menu(self, *args):
         self.main_frame.destroy()
