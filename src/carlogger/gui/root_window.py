@@ -1,4 +1,4 @@
-from customtkinter import CTk, CTkScrollbar, CTkFrame
+from customtkinter import CTk, CTkScrollbar, CTkFrame, CTkScrollableFrame
 from tkinter import Canvas
 
 from carlogger.gui.w_editcar import EditCarPopup
@@ -43,36 +43,8 @@ class RootWindow(CTk):
         self.navigation = NavigationBar(master=self.main_frame, root=self)
         self.navigation.grid(row=0, column=0, sticky='ew')
 
-        # Create a canvas to allow for scrolling
-        self.canvas = Canvas(self.main_frame,
-                             bg="black",
-                             background='black',
-                             bd=0,
-                             border=0,
-                             borderwidth=0,
-                             highlightthickness=0)
-        self.canvas.grid(row=1, column=0, sticky="nsew")
-
-        self.scrollbar = CTkScrollbar(self.main_frame,
-                                      orientation='vertical',
-                                      command=self.canvas.yview,
-                                      bg_color='transparent')
-        self.scrollbar.grid(row=1, column=1, sticky='ns')
-
-        self.canvas.configure(yscrollcommand=self.scrollbar.set)
-        self.canvas.bind('<Configure>', lambda e: self.canvas.configure(scrollregion=self.canvas.bbox('all')))
-
-        # Bind mouse scroll to the canvas
-        self.canvas.bind_all("<MouseWheel>", self._on_mousewheel)
-        self.canvas.bind_all("<Button-4>", self._on_mousewheel)  # For Linux systems
-        self.canvas.bind_all("<Button-5>", self._on_mousewheel)  # For Linux systems
-
-        self.scrollable_frame = CTkFrame(self.canvas, corner_radius=0, fg_color="transparent")
-        self.canvas.create_window((0.0, 0.0),
-                                  window=self.scrollable_frame,
-                                  anchor='nw',
-                                  height=self.canvas.winfo_screenheight(),
-                                  width=self.canvas.winfo_screenwidth())
+        self.scrollable_frame = CTkScrollableFrame(self.main_frame, corner_radius=0, fg_color="transparent")
+        self.scrollable_frame.grid(row=1, column=0, sticky="nsew")
 
         self.scrollable_frame.grid_columnconfigure(0, weight=1)
         self.scrollable_frame.grid_rowconfigure(0, weight=1)
