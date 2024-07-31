@@ -41,7 +41,6 @@ class Car:
     @property
     def latest_entry(self) -> LogEntry:
         comps = self.get_all_components()
-        print(comps)
         entries = [comp.latest_entry for comp in comps]
         return entries[-1]
 

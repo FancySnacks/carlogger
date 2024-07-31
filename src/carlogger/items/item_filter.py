@@ -23,7 +23,7 @@ class FilterWorker(ABC):
             case '>=':
                 return cls.gt_eq(item, key, value)
             case ' ':
-                if key == 'parent':
+                if key in ['parent', 'name', 'desc']:
                     return cls.eq(item, key, value)
                 else:
                     return cls.range(item, key, cls._range_to_tuple(value))

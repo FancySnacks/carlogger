@@ -78,23 +78,9 @@ class ReadSubparser(Subparser):
 
         self.read_car_parser = self.read_subparsers.add_parser('car')
 
-        self.read_car_parser.add_argument('name',
-                                          type=str,
-                                          metavar="CAR_NAME",
-                                          help="Return car info via name."
-                                               "'*' (default) - returns all cars in a save directory.",
-                                          default='*')
-
         # ===== READ COLLECTION ===== #
 
         self.read_collection_parser = self.read_subparsers.add_parser('collection')
-
-        self.read_collection_parser.add_argument('name',
-                                                 type=str,
-                                                 metavar="COLLECTION_NAME",
-                                                 help="Return collection via name."
-                                                      "'*' (default) - returns all collections belonging to specified car.",
-                                                 default='*')
 
         self.read_collection_parser.add_argument('--car',
                                                  type=str,

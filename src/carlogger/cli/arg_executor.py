@@ -257,23 +257,32 @@ class ReadArgExecutor(ArgExecutor):
 
     def get_car(self):
         """Find car by name and return car info."""
-        car_name = self.args.get('name')
+        filters = self.args.get('filters')
+        all_cars = self.app.directory_manager.load_all_car_dir()
 
-        if car_name == '*':
-            sort_key = self.args.get('sort')
-            reverse_sort = self.args.get('reverse')
-            all_cars = self.app.directory_manager.load_all_car_dir()
-            all_car_infos = [c.car_info for c in all_cars]
+        # Filter Cars
 
-            if sort_key:
-                if sort_key_is_attrib(sort_key, all_cars[0]):
-                    item_sorter = ItemSorter(items=all_car_infos, sort_method=sort_key)
-                    all_car_infos = item_sorter.get_sorted_list(reverse_order=reverse_sort)
-                    print([car.name for car in all_car_infos])
-                else:
-                    print([c.name for c in all_car_infos])
-        else:
-            car = self.app.get_car_by_name(car_name)
+        if filters[0] != '*':
+            item_filter = ItemFilter()
+            all_cars = item_filter.filter_items(all_cars, filters)
+
+        sort_key = self.args.get('sort') or 'latest'
+        reverse_sort = self.args.get('reverse')
+
+        if n := self.args.get('count'):
+            all_cars = all_cars[:n:]
+
+        # Sort Cars
+
+        if sort_key and len(all_cars) > 0:
+            if sort_key_is_attrib(sort_key, all_cars[0]):
+                item_sorter = ItemSorter(items=all_cars, sort_method=sort_key)
+                all_cars = item_sorter.get_sorted_list(reverse_order=reverse_sort)
+            else:
+                item_sorter = ItemSorter(items=all_cars, sort_method=sort_key)
+                all_cars = item_sorter.get_sorted_list(reverse_order=reverse_sort)
+
+        for car in all_cars:
             self.print_car_info(car)
 
     def print_car_info(self, car: Car):
@@ -284,29 +293,35 @@ class ReadArgExecutor(ArgExecutor):
     def get_collection(self):
         """Return list of component collections of target car."""
         car_name = self.args.get('car')
-        collection_name = self.args.get('name')
         car = self.app.get_car_by_name(car_name)
+        filters = self.args.get('filters')
 
-        # Print ALL collections
-        if collection_name == '*':
-            sort_key = self.args.get('sort')
-            reverse_sort = self.args.get('reverse')
-            all_collections = car.collections
+        # Filter Collection
 
-            if sort_key:
-                if sort_key_is_attrib(sort_key, all_collections[0]):
-                    item_sorter = ItemSorter(items=all_collections, sort_method=sort_key)
-                    all_collections = item_sorter.get_sorted_list(reverse_order=reverse_sort)
-                else:
-                    item_sorter = ItemSorter(items=all_collections, sort_method=sort_key)
-                    all_collections = item_sorter.get_sorted_list(reverse_order=reverse_sort)
+        colls = car.collections
 
-            print(*all_collections)
+        if filters[0] != '*':
+            item_filter = ItemFilter()
+            comps = item_filter.filter_items(colls, filters)
 
-        # Print single collection via name
-        else:
-            collection = car.get_collection_by_name(collection_name)
-            self.print_collection(collection)
+        sort_key = self.args.get('sort') or 'latest'
+        reverse_sort = self.args.get('reverse')
+
+        if n := self.args.get('count'):
+            colls = colls[:n:]
+
+        # Sort Collections
+
+        if sort_key and len(colls) > 0:
+            if sort_key_is_attrib(sort_key, colls[0]):
+                item_sorter = ItemSorter(items=colls, sort_method=sort_key)
+                colls = item_sorter.get_sorted_list(reverse_order=reverse_sort)
+            else:
+                item_sorter = ItemSorter(items=colls, sort_method=sort_key)
+                colls = item_sorter.get_sorted_list(reverse_order=reverse_sort)
+
+        for coll in colls:
+            self.print_collection(coll)
 
     def print_collection(self, collection: ComponentCollection):
         """Print desired collections."""
