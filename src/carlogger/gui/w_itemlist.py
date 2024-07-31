@@ -515,8 +515,10 @@ class Item(CTkFrame):
         return sep.capitalize()
 
     def _get_item_category(self) -> str:
-        category = self.item_ref.category.replace('_', ' ')
-        return category.capitalize()
+        cat_str = self.item_ref.category.replace('_', ' ')
+        cat_str = cat_str.split(' ')
+        cat_str = ' '.join([c.capitalize() for c in cat_str])
+        return cat_str
 
     def _get_date(self):
         return self.item_ref.date
