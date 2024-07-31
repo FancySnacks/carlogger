@@ -348,6 +348,8 @@ class EditEntryPopup:
 
         self._reset_button()
         self.root.app_session.update_entry(self.root.selected_car, self.item_ref, changed_data)
+        self.root.current_page.item_info_box.reset_part_list()
+        self.root.current_page.item_info_box.refresh_info()
 
     def track_changes(self, *args):
         changed_data = self.collect_changes()

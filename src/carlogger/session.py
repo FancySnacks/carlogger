@@ -301,6 +301,8 @@ class AppSession:
         if entry.component.car_mileage_needs_update(entry):
             self.update_car_info(parent_car, {'mileage': entry.mileage})
 
+        entry.component.refresh_parts()
+
         path = entry.component.get_target_path(self.directory_manager.data_manager.suffix)
         self.directory_manager.data_manager.save_file(entry.component, path)
 

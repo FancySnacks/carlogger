@@ -117,6 +117,12 @@ class ComponentInfoBox(ItemInfoBox):
             new_value = CTkLabel(self.part_frame, text=f"* [{self._get_part_date(part)}] {part.name}", font=('Lato', 18))
             new_value.grid(column=0, sticky='w', padx=20, pady=5)
 
+    def reset_part_list(self):
+        for widget in self.part_frame.winfo_children():
+            widget.destroy()
+
+        self.create_part_list()
+
     def _get_part_date(self, part) -> str:
         if not is_date(part.parent_entry_id):
             entry_id = part.parent_entry_id

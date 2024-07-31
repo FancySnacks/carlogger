@@ -195,6 +195,8 @@ class CarComponent:
         entry_to_delete = self.get_entry_by_id(entry_id)
 
         if entry_to_delete:
+            self.refresh_parts()
+
             match entry_to_delete.__class__.__name__:
                 case 'LogEntry':
                     self.log_entries.remove(entry_to_delete)
@@ -211,10 +213,11 @@ class CarComponent:
         """Removes log entry from list at target index, removes last one by default."""
         try:
             deleted_entry = self.log_entries.pop(entry_index)
+            self.refresh_parts()
             Printer.print_msg(LogEntry, 'DEL_SUCCESS',
                               name=f"Entry of id '{deleted_entry.id}'", relation=self.name)
         except IndexError:
-            Printer.print_msg(LogEntry, 'DEL_SUCCESS',
+            Printer.print_msg(LogEntry, 'DEL_FAIL',
                               name=f"entry'",
                               relation=self.name, reason=f"as it was not found  at index {entry_index}")
 
@@ -265,6 +268,25 @@ class CarComponent:
             return self.current_part.to_json()
         else:
             return ''
+
+    def refresh_parts(self):
+        parts = []
+
+        for entry in self.log_entries:
+            keys = [k.lower() for k in entry.custom_info.keys()]
+            try:
+                part_id = keys.index('part')
+                name = list(entry.custom_info.values())[part_id]
+                parts.append(Part(name=name, parent_entry_id=entry.id, custom_info={}))
+            except ValueError:
+                pass
+
+        self.part_list = parts
+
+        if len(self.part_list) > 0:
+            self.current_part = self.part_list[-1]
+        else:
+            self.current_part = ''
 
     def get_target_path(self, extension: str) -> str:
         """Extension without the dot"""
