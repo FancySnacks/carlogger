@@ -57,6 +57,11 @@ class ComponentCollection:
     def filter_options() -> list[str]:
         return ['name', 'comp #', 'coll #', 'latest']
 
+    @property
+    def latest_entry(self) -> LogEntry:
+        entries = [comp.latest_entry for comp in self.components]
+        return entries[-1]
+
     def get_all_components(self) -> list[CarComponent]:
         """Returns all CarComponent items from all components collections."""
         n = [coll.children for coll in self.collections]
