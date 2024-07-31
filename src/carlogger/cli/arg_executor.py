@@ -315,28 +315,35 @@ class ReadArgExecutor(ArgExecutor):
     def get_component(self):
         """Return list of components of target car."""
         car_name = self.args.get('car')
-        component_name = self.args.get('name')
         car = self.app.get_car_by_name(car_name)
+        filters = self.args.get('filters')
 
-        if component_name == '*':
-            sort_key = self.args.get('sort')
-            reverse_sort = self.args.get('reverse')
-            components = [c.components for c in car.collections]
-            all_components = []
-            [all_components.extend(clist) for clist in components]
+        # Filter Component
 
-            if sort_key:
-                if sort_key_is_attrib(sort_key, all_components[0]):
-                    item_sorter = ItemSorter(items=all_components, sort_method=sort_key)
-                    all_components = item_sorter.get_sorted_list(reverse_order=reverse_sort)
-                else:
-                    item_sorter = ItemSorter(items=all_components, sort_method=sort_key)
-                    all_components = item_sorter.get_sorted_list(reverse_order=reverse_sort)
+        comps = car.get_all_components()
 
-            print(*all_components)
-        else:
-            component = car.get_component_by_name(component_name)
-            self.print_component(component)
+        if filters[0] != '*':
+            item_filter = ItemFilter()
+            comps = item_filter.filter_items(comps, filters)
+
+        sort_key = self.args.get('sort') or 'latest'
+        reverse_sort = self.args.get('reverse')
+
+        if n := self.args.get('count'):
+            comps = comps[:n:]
+
+        # Sort Components
+
+        if sort_key and len(comps) > 0:
+            if sort_key_is_attrib(sort_key, comps[0]):
+                item_sorter = ItemSorter(items=comps, sort_method=sort_key)
+                comps = item_sorter.get_sorted_list(reverse_order=reverse_sort)
+            else:
+                item_sorter = ItemSorter(items=comps, sort_method=sort_key)
+                comps = item_sorter.get_sorted_list(reverse_order=reverse_sort)
+
+        for comp in comps:
+            self.print_component(comp)
     
     def print_component(self, component: CarComponent):
         """Print desired components from cached car."""

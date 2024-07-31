@@ -221,7 +221,7 @@ def mock_car_full(mock_car_info, mock_log_entry) -> Car:
     car = Car(car_info)
     coll = car.create_collection('TestCollection')
     comp = coll.create_component('TestComponent')
-    comp.create_entry(**mock_log_entry)
+    comp.create_entry(mock_log_entry)
     return car
 
 

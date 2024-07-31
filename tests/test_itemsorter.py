@@ -19,11 +19,13 @@ def test_cars_are_sorted_by_attribute_in_reverse(mock_car_dict_list):
     assert sorted_items == [car_infos[1], car_infos[0]]
 
 
-def test_items_are_sorted_by_latest_entry(mock_cars_full):
+def test_items_are_sorted_by_latest_entry(mock_car_full, mock_entry_dict_list):
+    mock_cars_full = [mock_car_full, mock_car_full]
+    mock_cars_full[1].collections[0].components[0].create_entry(mock_entry_dict_list)
     item_sorter = ItemSorter(mock_cars_full, 'latest')
     sorted_items = item_sorter.get_sorted_list(reverse_order=True)
 
-    assert sorted_items == [mock_cars_full[0], mock_cars_full[1]]
+    assert sorted_items == [mock_cars_full[1], mock_cars_full[0]]
 
 
 def test_items_are_sorted_by_oldest_entry(mock_cars_full):

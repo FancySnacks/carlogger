@@ -130,6 +130,53 @@ class AttribFilterWorker(FilterWorker):
             return False
 
 
+class ChildrenFilterWorker(FilterWorker):
+    @classmethod
+    def eq(cls, item: ITEM, key: str, val: str) -> bool:
+        if len(getattr(item, key)) == int(val):
+            return True
+        else:
+            return False
+
+    @classmethod
+    def gt(cls, item: ITEM, key: str, val: str) -> bool:
+        if len(getattr(item, key)) > int(val):
+            return True
+        else:
+            return False
+
+    @classmethod
+    def lt(cls, item: ITEM, key: str, val: str) -> bool:
+        if len(getattr(item, key)) < int(val):
+            return True
+        else:
+            return False
+
+    @classmethod
+    def gt_eq(cls, item: ITEM, key: str, val: str) -> bool:
+        if len(getattr(item, key)) >= int(val):
+            return True
+        else:
+            return False
+
+    @classmethod
+    def lt_eq(cls, item: ITEM, key: str, val: str) -> bool:
+        if len(getattr(item, key)) <= int(val):
+            return True
+        else:
+            return False
+
+    @classmethod
+    def range(cls, item: ITEM, key: str, val_range: tuple[str, str]) -> bool:
+        try:
+            if getattr(item, key) > int(val_range[0]) < int(val_range[1]):
+                return True
+            else:
+                return False
+        except KeyError:
+            return False
+
+
 class ParentFilterWorker(FilterWorker):
     @classmethod
     def eq(cls, item: ITEM, key: str, val: str) -> bool:
@@ -323,6 +370,7 @@ class ItemFilter:
             case 'desc': return DescFilterWorker.apply_filter(item, *filter_values)
             case 'parent': return ParentFilterWorker.apply_filter(item, *filter_values)
             case 'scheduled': return ScheduledEntryFilterWorker.apply_filter(item, *filter_values)
+            case 'children': return ChildrenFilterWorker.apply_filter(item, *filter_values)
             case _: return AttribFilterWorker.apply_filter(item, *filter_values)
 
     def _get_filter_values(self, filter_str: str):
