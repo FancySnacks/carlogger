@@ -55,7 +55,7 @@ class LogEntry:
     def get_formatted_info(self) -> str:
         """Return well-formatted string representing data of this class."""
         desc = self.desc.replace('\n', ' ')
-        return f"[{self.date}] [{self.get_shortened_id()}] {desc} [Mileage: {self.mileage}] [Type: {self.category}]"
+        return f"[{self.date}] [{self.get_shortened_id()}] {desc} [Mileage: {self.mileage}] [Type: {self.category}]\n"
 
     def __dict__(self) -> dict:
         d = {

@@ -93,10 +93,10 @@ class ItemSorter:
         if items[0].__class__.__name__ in ('LogEntry', 'ScheduledLogEntry'):
             return self.sort_by_latest_entry_raw(items)
 
-        entry_map: list[tuple[Any, list]] = []
+        entry_map: list[tuple[Any, ...]] = []
 
         for item in items:
-            entry_map.append((item, [date_string_to_date(entry.date) for entry in item.get_all_entry_logs()]))
+            entry_map.append((item, date_string_to_date(item.latest_entry.date)))
 
         items = sorted(entry_map, key=lambda x: x[1], reverse=True)
 

@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from carlogger.printer import Printer
-from carlogger.util import format_date_string_to_tuple, create_car_dir_path
+from carlogger.util import format_date_string_to_tuple, create_car_dir_path, date_string_to_date
 from carlogger.items.car_info import CarInfo
 from carlogger.items.component_collection import ComponentCollection
 from carlogger.items.car_component import CarComponent
@@ -36,6 +36,10 @@ class Car:
     @property
     def children(self) -> list[ComponentCollection]:
         return self.collections
+
+    @property
+    def latest_entry(self) -> LogEntry:
+        return sorted(self.get_all_entry_logs(), key=lambda x: date_string_to_date(x.date))[-1]
 
     def get_non_nested_collections(self) -> list[ComponentCollection]:
         """Get only collections belonging to this car that aren't children of other collections."""
