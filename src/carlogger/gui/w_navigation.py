@@ -1,6 +1,5 @@
-from customtkinter import CTkFrame, CTkButton, CTkLabel, CTkEntry
+from customtkinter import CTkFrame, CTkButton, CTkLabel
 
-from carlogger.gui.w_searchbar import Searchbar
 from carlogger.gui.const_gui import BG_GRAY_PRIMARY, get_img_from_class
 
 
@@ -19,8 +18,6 @@ class NavigationBar(CTkFrame):
 
         self.main_frame = CTkFrame(master=self.master_frame, fg_color='transparent')
         self.main_frame.pack(expand=True, fill='both', side='left', padx=5, pady=5)
-
-        self.search_bar = Searchbar(self.master_frame, self.root)
 
         self.main_frame.grid_columnconfigure(0, weight=1)
         self.main_frame.grid_columnconfigure(1, weight=0)
