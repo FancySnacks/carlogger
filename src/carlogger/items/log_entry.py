@@ -28,6 +28,9 @@ class LogEntry:
     _id: str
     custom_info: dict[str, ...] = field(default_factory=dict)
 
+    def __post_init__(self):
+        self.clamp_custom_info_keys()
+
     @property
     def id(self) -> str:
         return self._id
@@ -78,6 +81,11 @@ class LogEntry:
         if isinstance(other, LogEntry):
             return self.id == other.id
         return NotImplemented
+
+    def clamp_custom_info_keys(self):
+        if len(self.custom_info.keys()) > 0:
+            custom_info_keys = [(k.lower(), v) for k, v in self.custom_info.items()]
+            self.custom_info = dict(custom_info_keys)
 
 
 @dataclass

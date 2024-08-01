@@ -295,6 +295,8 @@ class AppSession:
         for key, value in updated_data.items():
             setattr(entry, key, value)
 
+        entry.clamp_custom_info_keys()
+
         if is_scheduled_entry(entry):
             entry.get_new_date()
 
