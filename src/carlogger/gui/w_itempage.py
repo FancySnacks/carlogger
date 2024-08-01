@@ -6,7 +6,7 @@ from carlogger.gui.w_collectionlist import CollectionContainer
 from carlogger.gui.w_componentlist import ComponentContainer
 from carlogger.gui.w_item_infobox import ItemInfoBox, CollectionInfoBox, ComponentInfoBox
 from carlogger.gui.w_itemlist import ItemContainer
-from carlogger.gui.const_gui import component_icon
+from carlogger.gui.const_gui import component_icon, get_img_from_path
 
 
 class ItemPage:
@@ -15,12 +15,14 @@ class ItemPage:
         self.item_ref = item_ref
         self.itembox_widget = itembox_widget
 
+        self.container = container
+
         self.main_frame = CTkFrame(master)
         self.main_frame.grid(row=0, column=0, sticky='nsew')
 
         self.main_frame.grid_columnconfigure(0, weight=1)
 
-        self.item_info_box = itembox_widget(self.main_frame, item_ref, image=container.image)
+        self.item_info_box = itembox_widget(self.main_frame, item_ref, image=self.get_item_img())
 
         self.container = container(self.main_frame,
                                    root=root,
@@ -30,6 +32,12 @@ class ItemPage:
 
     def create_items(self, items: list):
         self.container.create_items(items)
+
+    def get_item_img(self):
+        if img := self.item_ref.custom_info.get('image'):
+            return get_img_from_path(img, self)
+        else:
+            return self.container.image
 
     def destroy(self):
         self.main_frame.destroy()
@@ -57,13 +65,19 @@ class ComponentPage:
 
         self.main_frame.grid_columnconfigure(0, weight=1)
 
-        self.item_info_box = self.itembox_widget(self.main_frame, item_ref, image=component_icon)
+        self.item_info_box = self.itembox_widget(self.main_frame, item_ref, image=self.get_item_img())
 
         self.item_container = ItemContainer(self.main_frame, parent_car=None, root=root, component=self.item_ref,
                                             item_page_ref=self)
         self.item_container.grid(row=1, column=0, sticky="nsew")
 
         self.item_list = ItemList(self.main_frame, widget=self.item_container, app_session=root.app_session)
+
+    def get_item_img(self):
+        if img := self.item_ref.custom_info.get('image'):
+            return get_img_from_path(img, self)
+        else:
+            return component_icon
 
     def destroy(self):
         self.main_frame.destroy()

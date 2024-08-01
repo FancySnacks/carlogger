@@ -23,7 +23,6 @@ class CollectionContainer(Container):
         self.edit_button = CTkButton(self.management_buttons_frame,
                                      text="Edit Car",
                                      font=('Lato', 18),
-                                     fg_color='green',
                                      width=35,
                                      corner_radius=0,
                                      command=self.open_edit_window)

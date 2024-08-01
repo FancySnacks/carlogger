@@ -35,7 +35,6 @@ class ItemContainer(CTkFrame):
             self.edit_button = CTkButton(self.edit_button_frame,
                                          text="Edit Component",
                                          font=('Lato', 18),
-                                         fg_color='green',
                                          width=35,
                                          corner_radius=0,
                                          command=self.open_edit_window)
