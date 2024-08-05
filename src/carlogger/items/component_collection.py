@@ -94,10 +94,11 @@ class ComponentCollection:
 
         return joined_entries
 
-    def create_component(self, name: str, **kwargs) -> CarComponent:
+    def create_component(self, name: str, desc='', **kwargs) -> CarComponent:
         """Create new car component, add it to the list and return object reference."""
         if not self._check_for_component_duplicates(name):
-            new_component = CarComponent(name, custom_info=kwargs, path=self.path.parent.joinpath('components'))
+            new_component = CarComponent(name, desc=desc, custom_info=kwargs,
+                                         path=self.path.parent.joinpath('components'))
             new_component.parent = self
             new_component.current_mileage = self.car.mileage
 

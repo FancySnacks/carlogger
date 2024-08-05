@@ -141,6 +141,7 @@ class DirectoryManager:
                 components = self.load_car_components_from_path(new_collection)
                 new_collection.collections = \
                     [ComponentCollection(name=data.get('name'),
+                                         desc=data.get('desc'),
                                          collections=data.get('collections'),
                                          components=data.get('components'),
                                          parent_collection=data.get('parent_collection'),
@@ -173,6 +174,7 @@ class DirectoryManager:
                     item_data: dict = self.data_manager.load_file(child['path'])
 
                     c = CarComponent(item_data['name'],
+                                     desc=item_data.get('desc'),
                                      custom_info=item_data.get('custom_info', {}),
                                      path=collection.path.parent.joinpath('components'))
                     c.parent = collection

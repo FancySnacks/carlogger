@@ -255,9 +255,9 @@ class CarComponent:
         """Returns object properties as JSON-serializable dictionary."""
         d = {'type': 'component',
              'name': self.name,
-             'desc': self.desc,
              'current_part': self._clamp_current_part(),
              'part_list': [part.to_json() for part in self.part_list],
+             'desc': self.desc,
              'log_entries': [entry.to_json() for entry in self.log_entries],
              'scheduled_log_entries': [entry.to_json() for entry in self.scheduled_log_entries],
              'custom_info': self.custom_info,

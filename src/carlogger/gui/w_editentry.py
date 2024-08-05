@@ -318,7 +318,7 @@ class EditEntryPopup:
         else:
             self.date_entry.configure(border_color='red')
 
-        desc = self.desc_entry.get(1.0, END).strip()
+        desc = self.desc_entry.get(0.0, END).strip()
         if desc:
             self.desc_entry.configure(border_color='')
             updated_data['desc'] = desc

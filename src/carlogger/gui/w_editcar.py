@@ -1,6 +1,6 @@
-from customtkinter import CTk, CTkFrame, CTkLabel, CTkButton, CTkEntry, CTkScrollableFrame
+from customtkinter import CTk, CTkFrame, CTkLabel, CTkButton, CTkEntry, CTkScrollableFrame, CTkTextbox
 
-from tkinter import StringVar
+from tkinter import StringVar, END
 
 from carlogger.util import dict_diff
 
@@ -19,7 +19,7 @@ class EditCarPopup:
         self.overlay_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
 
         # ===== Main Popup Frame ===== #
-        self.popup_frame = CTkFrame(self.master, width=1200, height=600, corner_radius=10, bg_color='transparent')
+        self.popup_frame = CTkFrame(self.master, width=1200, height=725, corner_radius=10, bg_color='transparent')
         self.popup_frame.place(relx=0.5, rely=0.5, anchor='center')
 
         # ===== Widget ===== #
@@ -87,10 +87,24 @@ class EditCarPopup:
 
         self.name_var.trace_add('write', self.track_changes)
 
+        # ===== Desc ===== #
+        self.desc_var = StringVar(value=self.og_item_values['desc'])
+        self.desc_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
+        self.desc_frame.grid(row=1, column=0, sticky='w', pady=10, padx=10)
+
+        self.desc_label = CTkLabel(self.desc_frame, text="Desc", font=('Lato', 20))
+        self.desc_label.grid(row=0, column=0, sticky='w')
+
+        self.desc_entry = CTkTextbox(self.desc_frame, font=('Lato', 20), width=580, height=100, border_width=2)
+        self.desc_entry.grid(row=1, column=0, sticky='w')
+
+        self.desc_entry.insert(END, self.car_ref.desc.strip())
+        self.desc_entry.bind('<Key>', self.track_changes)
+
         # ===== Manufacturer ===== #
         self.manufacturer_var = StringVar(value=self.og_item_values['manufacturer'])
         self.manufacturer_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
-        self.manufacturer_frame.grid(row=1, column=0, sticky='w', pady=10, padx=10)
+        self.manufacturer_frame.grid(row=2, column=0, sticky='w', pady=10, padx=10)
 
         self.manufacturer_label = CTkLabel(self.manufacturer_frame, text="Manufacturer", font=('Lato', 20))
         self.manufacturer_label.grid(row=0, column=0, sticky='w')
@@ -105,7 +119,7 @@ class EditCarPopup:
         # ===== Model ===== #
         self.model_var = StringVar(value=self.og_item_values['model'])
         self.model_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
-        self.model_frame.grid(row=2, column=0, sticky='w', pady=10, padx=10)
+        self.model_frame.grid(row=3, column=0, sticky='w', pady=10, padx=10)
 
         self.model_label = CTkLabel(self.model_frame, text="Model", font=('Lato', 20))
         self.model_label.grid(row=0, column=0, sticky='w')
@@ -121,7 +135,7 @@ class EditCarPopup:
         # ===== Year ===== #
         self.year_var = StringVar(value=str(self.og_item_values['year']))
         self.year_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
-        self.year_frame.grid(row=3, column=0, sticky='w', pady=10, padx=10)
+        self.year_frame.grid(row=4, column=0, sticky='w', pady=10, padx=10)
 
         self.year_label = CTkLabel(self.year_frame, text="Year", font=('Lato', 20))
         self.year_label.grid(row=0, column=0, sticky='w')
@@ -136,7 +150,7 @@ class EditCarPopup:
         # ===== Mileage ===== #
         self.mileage_var = StringVar(value=str(self.og_item_values['mileage']))
         self.mileage_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
-        self.mileage_frame.grid(row=4, column=0, sticky='w', pady=10, padx=10)
+        self.mileage_frame.grid(row=5, column=0, sticky='w', pady=10, padx=10)
 
         self.mileage_label = CTkLabel(self.mileage_frame, text="Mileage", font=('Lato', 20))
         self.mileage_label.grid(row=0, column=0, sticky='w')
@@ -210,6 +224,9 @@ class EditCarPopup:
             self.name_entry.configure(border_color='')
         else:
             self.name_entry.configure(border_color='red')
+
+        desc = self.desc_entry.get(0.0, END)
+        updated_data['desc'] = desc
 
         manufacturer = self.manufacturer_entry.get()
         if manufacturer:

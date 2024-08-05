@@ -1,6 +1,6 @@
-from customtkinter import CTk, CTkFrame, CTkLabel, CTkButton, CTkEntry, CTkScrollableFrame, CTkOptionMenu
+from customtkinter import CTk, CTkFrame, CTkLabel, CTkButton, CTkEntry, CTkScrollableFrame, CTkOptionMenu, CTkTextbox
 
-from tkinter import StringVar
+from tkinter import StringVar, END
 
 from carlogger.items.part import Part
 from carlogger.util import dict_diff
@@ -99,6 +99,20 @@ class EditComponentPopup:
         self.name_entry.grid(row=1, column=0, sticky='w')
 
         self.name_var.trace_add('write', self.track_changes)
+
+        # ===== Desc ===== #
+        self.desc_var = StringVar(value=self.og_item_values['desc'])
+        self.desc_frame = CTkFrame(self.add_left_frame, fg_color='transparent')
+        self.desc_frame.grid(row=1, column=0, sticky='w', pady=10, padx=10)
+
+        self.desc_label = CTkLabel(self.desc_frame, text="Desc", font=('Lato', 20))
+        self.desc_label.grid(row=0, column=0, sticky='w')
+
+        self.desc_entry = CTkTextbox(self.desc_frame, font=('Lato', 20), width=580, height=100, border_width=2)
+        self.desc_entry.grid(row=1, column=0, sticky='w')
+
+        self.desc_entry.insert(END, self.collection_ref.desc.strip())
+        self.desc_entry.bind('<Key>', self.track_changes)
 
         # ===== Parents ===== #
 
@@ -227,6 +241,9 @@ class EditComponentPopup:
             self.name_entry.configure(border_color='')
         else:
             self.name_entry.configure(border_color='red')
+
+        desc = self.desc_entry.get(0.0, END)
+        updated_data['desc'] = desc
 
         updated_data['custom_info'] = self.property_container.get_properties()
         updated_data['part_list'] = [Part(**info) for info in self.part_container.get_parts()]
