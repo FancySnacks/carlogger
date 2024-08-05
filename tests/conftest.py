@@ -94,7 +94,8 @@ def mock_car_info() -> dict:
         'model': 'Leon 1',
         'year': 2003,
         'mileage': 205000,
-        'name': 'ProjectCar'
+        'name': 'ProjectCar',
+        'desc': 'test',
     }
 
     return d
@@ -107,7 +108,8 @@ def mock_car_dict_list() -> list[dict]:
         'model': '500',
         'year': 2017,
         'mileage': 13500,
-        'name': 'NewPurchase'
+        'name': 'NewPurchase',
+        'desc': 'test',
     }
 
     car_2 = {
@@ -115,7 +117,8 @@ def mock_car_dict_list() -> list[dict]:
         'model': 'Celica',
         'year': 2003,
         'mileage': 221387,
-        'name': 'ProjectCar'
+        'name': 'ProjectCar',
+        'desc': 'example',
     }
 
     return [car_1, car_2]

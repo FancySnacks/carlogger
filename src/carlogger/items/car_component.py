@@ -23,15 +23,16 @@ class CarComponent:
     """A certain car component or part that has maintenance logs."""
 
     name: str
+    desc: str = ""
+
     log_entries: list[LogEntry] = field(init=False, default_factory=list)
     scheduled_log_entries: list[ScheduledLogEntry] = field(init=False, default_factory=list)
 
     current_part: Part = field(init=False, default=None)
     part_list: list[Part] = field(init=False, default_factory=list)
+
     current_mileage: int = field(init=False, default=0)
-
     parent: ComponentCollection = field(init=False, default=None)
-
     custom_info: dict[str, ...] = field(default_factory=dict)
 
     path: str = ""
@@ -254,6 +255,7 @@ class CarComponent:
         """Returns object properties as JSON-serializable dictionary."""
         d = {'type': 'component',
              'name': self.name,
+             'desc': self.desc,
              'current_part': self._clamp_current_part(),
              'part_list': [part.to_json() for part in self.part_list],
              'log_entries': [entry.to_json() for entry in self.log_entries],

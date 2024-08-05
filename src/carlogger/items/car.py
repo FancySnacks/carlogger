@@ -11,7 +11,6 @@ from carlogger.items.car_info import CarInfo
 from carlogger.items.component_collection import ComponentCollection
 from carlogger.items.car_component import CarComponent
 from carlogger.items.log_entry import LogEntry, ScheduledLogEntry
-from carlogger.items.item_sorter import ItemSorter
 
 
 @dataclass

@@ -27,6 +27,8 @@ class ComponentCollection:
     """
 
     name: str
+    desc: str = ""
+
     components: list[CarComponent] = field(default_factory=list)
     collections: list[ComponentCollection] = field(default_factory=list)
 
@@ -161,6 +163,7 @@ class ComponentCollection:
     
     def to_json(self) -> dict:
         d = {'name': self.name,
+             'desc': self.desc,
              'parent_collection': self._get_parent_collection_path(self.parent_collection),
              'collections': [self._create_child_collection_reference(child, "json") for child in self.collections],
              'components': [self._create_child_reference(child, "json") for child in self.components],

@@ -41,7 +41,7 @@ class ItemInfoBox:
             new_label = CTkLabel(self.left_frame, text=self._get_key_as_name(key), font=('Lato', 22))
             new_label.grid(column=0, sticky='w', padx=20, pady=5)
 
-            new_value = CTkLabel(self.right_frame, text=val, font=('Lato', 18))
+            new_value = CTkLabel(self.right_frame, text=val, font=('Lato', 18), wraplength=550, justify='left')
             new_value.grid(column=0, sticky='w', padx=20, pady=5)
 
     def create_custom_info(self):

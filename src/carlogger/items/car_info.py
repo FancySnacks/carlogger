@@ -11,6 +11,7 @@ class CarInfo:
     mileage: int
     name: str = ""
     path: str = ""
+    desc: str = ""
     custom_info: dict[str, ...] = field(default_factory=dict)
 
     def __post_init__(self):
